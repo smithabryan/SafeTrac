@@ -50,3 +50,9 @@ def startPolling(request):
         print inst           # __str__ allows args to printed directly
     html = "<html><body>Starting to poll</body></html>"
     return HttpResponse(html)
+
+def testSendFromServer(request):
+    ser = serial.Serial('/dev/tty.usbmodemfa131',9600, timeout=1)
+    ser.write(2)
+    html = "<html><body>Wrote 2 to serial</body></html>"
+    return HttpResponse(html)    

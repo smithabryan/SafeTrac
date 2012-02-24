@@ -18,4 +18,5 @@ urlpatterns = patterns('',
     url(r'^test/', views.hello_world ),
     url(r'^start/', views.startPolling ),
     url(r'^login/', views.login ),
+    url(r'^testSend/', views.testSendFromServer ),
 )
