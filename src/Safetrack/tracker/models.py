@@ -13,6 +13,11 @@ class User(models.Model):
     accessLevel = models.PositiveIntegerField()
     lastLogin = models.DateField()
     email = models.EmailField()
+
+class SensorDataInteger(models.Model):
+    sensorType = models.CharField(max_length=1, choices=SENSOR_TYPES)
+    value = models.IntegerField()
+    time = models.DateField()    
     
 class SensorData(models.Model):
     sensorType = models.CharField(max_length=1, choices=SENSOR_TYPES)

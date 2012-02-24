@@ -7,7 +7,7 @@ from django.http import HttpResponse
 #from Safetrack.tracker.tasks import SerialReadTask
 import datetime
 import serial
-from Safetrack.tracker.models import SensorData
+from Safetrack.tracker.models import SensorData, SensorDataInteger
 from Safetrack.tracker.models import User
 from chartit import DataPool, Chart
 from django.shortcuts import render_to_response
@@ -34,14 +34,15 @@ def renderDataEmployee(request):
 #    humidSensor = SensorData.objects.filter(sensorType='H', user=user)
 #    noiseSensor = SensorData.objects.filter(sensorType='N', user=user)
 #    impactSensor = SensorData.objects.filter(sensorType='I', user=user)
-
+    SensorDataInteger.objects.get_or_create(sensorType='T',value='2',time=datetime.datetime.now()) 
+    
     #Create DataPool
     dataSeries = \
         DataPool(
             series = 
-            [{'options':{'source': SensorData.objects.all()},
+            [{'options':{'source': SensorDataInteger.objects.all()},
             'terms':[
-                'time',
+                'value',
                 'value']}
             ]);
     cht = Chart(
@@ -51,7 +52,7 @@ def renderDataEmployee(request):
                   'type': 'line',
                   'stacking': False},
                 'terms':{
-                  'time': [
+                  'value': [
                     'value']
                   }}],
             chart_options =
