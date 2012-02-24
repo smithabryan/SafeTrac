@@ -4,10 +4,11 @@
 
  -->
 <html>
-    {% block stylsheets %}{% endblock %}
-    {% block scripts %}{% endblock %}
     <head>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+        {% block stylsheets %}{% endblock %}
+        {% block scripts %}{% endblock %}
+        
         <title>{%block title %}{% endblock %}</title>
     </head>
 <!-- Page Content
@@ -17,6 +18,7 @@
     <body>
         {% block content %}{% endblock %}
     </body>
+    
 <!-- Footer -->
-    {%block eofScripts %}{% endblock %}
+    {%block footer %}{% endblock %}
 </html>
