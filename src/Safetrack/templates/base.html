@@ -3,7 +3,7 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
         {% block stylsheets %}{% endblock %}
         {% block scripts %}{% endblock %}
-        
+        {% block headSection %}{% endblock %}
         <title>{%block title %}{% endblock %}</title>
     </head>
 <!-- Page Content
@@ -15,8 +15,21 @@
             <h3>Log In {%block currentLoc%}{%endblock%}</h3>
             <!-- Need Logo & LogIn Button Here-->
         </div>
-        {% block content %}{% endblock %}
-        <!-- Default Screen -->
+        {% if auth %}
+            {% block content %}{% endblock %}
+        {% else %}
+            <div class="center">
+                {{errorMessage}}
+                <form name="" method="get">
+                    <input type="radio" name="userType" value="employee">Employee<br />
+                    <input type="radio" name="userType" value="supervisor">Supervisor<br />
+                    <input type="radio" name="userType" value="manager">Management<br />
+                    Username <input type="text" value="Enter your ID" name="user" />
+                    Password <input type="password" value="secrete" name="pwd" />
+                    <input type="submit" value="Submit" />
+                </form>
+            </div>
+        {% endif %}
     </body>
     
 <!-- Footer -->
