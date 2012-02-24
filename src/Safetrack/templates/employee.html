@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}{% endblock %}
+{% block content %}
+<!-- Employee View  -->
+        <div id="leftSide">
+            <div id="profile">
+                {{imgsrc}}
+            </div>
+            <div id="stats">
+                {{name}}
+            </div>
+            <button>Create Report</button>
+        </div>
+        <div id="rightSide">
+            <div id="controls">
+            </div>
+            <div id="canvas">
+                <div id="graph1">
+                </div>
+                <div id="graph2">
+                </div>
+                <div id="graph2">
+                </div>
+            </div>
+            <div id="status">
+                <h2>Right now you are: {{status}}</h2>
+                <table>
+                    <tr>
+                        <td>Temperature</td>
+                        <td>Humidity</td>
+                        <td>Noise</td>
+                        <td>Impact</td>
+                    </tr>
+                    <tr>
+                        <td>{{curTemp}}</td>
+                        <td>{{curHumid}}</td>
+                        <td>{{curNoise}}</td>
+                        <td>{{curImpact}}</td>
+                    </tr>
+                </table>
+            </div>	
+        </div>
+    </body>
+{% endblock %}
+{%block footer %}    
+{% endblock %}

@@ -1,0 +1,24 @@
+<html>
+    <head>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+        {% block stylsheets %}{% endblock %}
+        {% block scripts %}{% endblock %}
+        
+        <title>{%block title %}{% endblock %}</title>
+    </head>
+<!-- Page Content
+    Items
+        * individual pages
+ -->
+    <body>
+        <div id="headerSection">
+            <h3>Log In {%block currentLoc%}{%endblock%}</h3>
+            <!-- Need Logo & LogIn Button Here-->
+        </div>
+        {% block content %}{% endblock %}
+        <!-- Default Screen -->
+    </body>
+    
+<!-- Footer -->
+    {%block footer %}{% endblock %}
+</html>
