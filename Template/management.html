@@ -1,46 +1,37 @@
 {% extends "base.html" %}
 {% block title %}{% endblock %}
 {% block content %}
-<!-- Employee View  -->
-        <div id="rightSide">
-            <div id="profile">
-                {{imgsrc}}
-            </div>
-            <div id="stats">
-                {{name}}
-            </div>
-            <button>Create Report</button>
-        </div>
+<!-- Management View  -->
         <div id="leftSide">
-            <div id="controls">
-            </div>
-            <div id="canvas">
-                <div id="graph1">
-                </div>
-                <div id="graph2">
-                </div>
-                <div id="graph2">
-                </div>
-            </div>
-            <div id="status">
-                <h2>Right now you are: {{status}}</h2>
-                <table>
+            <!-- Searchbar Here -->
+            <table>
+                <tr><th>Team Name</th></tr>
+                {% for team in teams %}
+                    <tr><td>team.name</td></tr>
+                {% endfor %}
+            </table>
+            <!-- Searchbar Here -->
+            <table>
+                <tr>
+                    <td>Name</td>
+                    <td>Employee ID</td>
+                    <td>Job Title</td>
+                    <td>Location</td>
+                </tr>
+                {% for member in team %}
                     <tr>
-                        <td>Temperature</td>
-                        <td>Humidity</td>
-                        <td>Noise</td>
-                        <td>Impact</td>
+                        <td>{{member.name}}</td>
+                        <td>{{member.id}}</td>
+                        <td>{{member.title}}</td>
+                        <td>{{member.loc}}</td>
                     </tr>
-                    <tr>
-                        <td>{{curTemp}}</td>
-                        <td>{{curHumid}}</td>
-                        <td>{{curNoise}}</td>
-                        <td>{{curImpact}}</td>
-                    </tr>
-                </table>
-            </div>	
+                {% endfor %}
+            </table>
+        </div>
+        <div id="rightSide">
+            
         </div>
     </body>
 {% endblock %}
 {%block footer %}    
-{% endblock %}
+{% endblock %}ag

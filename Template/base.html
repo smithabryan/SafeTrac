@@ -1,8 +1,3 @@
-<!-- Header Aspect
-    Items
-        * logo
-
- -->
 <html>
     <head>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
@@ -16,7 +11,15 @@
         * individual pages
  -->
     <body>
-        {% block content %}{% endblock %}
+        <div id="headerSection">
+            <h3>Log In {%block currentLoc%}{%endblock%}</h3>
+            <!-- Need Logo & LogIn Button Here-->
+        </div>
+        {% if auth %}
+            {% block content %}{% endblock %}
+        {% else %}
+            <!-- Default Screen -->
+        {% endif %}
     </body>
     
 <!-- Footer -->
