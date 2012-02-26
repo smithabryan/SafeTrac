@@ -10,11 +10,16 @@ from Safetrack.tracker.models import SensorData, User, Goal, SafetyConstraint
 from chartit import DataPool, Chart
 from django.shortcuts import render_to_response
 
-defaults = {'profilepic':'../assets/defaultprofile.jpg'}
+defaults = {'profilepic':'../assets/defaultprofile.jpg',
+            'logo':'../assets/logo.png'}
+messages = {'logout': "You are logged out",
+            'login': "You have to log in",
+            'wrong': "Wrong username/password"}
 accessLevel = {'1':'Employee','2':'Supervisor','3':'Management'}
 
-'''support functions'''
-        
+header = {'logo':defaults['logo']}
+
+'''Support functions'''
 def hello_world(request):    
     now = datetime.datetime.now()
     html = "<html><body>It is now %s.</body></html>" % now
@@ -26,10 +31,18 @@ def checkStatus(modelObj):
 #Paul's Mod
 def authorized(request):
     if request.session.get('auth',False):
+        header['accessLevel'] = request.session['accessLevel']
         return True
     return False
-    
+
+'''Views'''
 #Paul's Mod    
+def logoutView(request):
+    request.session['auth'] = False
+    request.session['accessLevel'] = 0
+    
+    return render_to_response('base.html',{'auth':False,'errorMessage': messages['wrong']})
+    
 def loginView(request):
     userID = request.POST['user']
     pwd = request.POST['pwd']
@@ -38,11 +51,13 @@ def loginView(request):
         try:
             curUser = User.objects.filter(username=userID,password=pwd)
             request.session['auth'] = True
+            request.session['accessLevel'] = curUser.accessLevel
+            
             return chartView(request)
         except:
-            return render_to_response('base.html',{'auth':False,'errorMessage':'Check username and/or password'})
+            return render_to_response('base.html',{'auth':False,'errorMessage':messages['wrong']})
     else:
-        return render_to_response('base.html',{'auth':False,'errorMessage':'You must be logged in.'})
+        return render_to_response('base.html',{'auth':False,'errorMessage':messages['login']})
 
 def login(request):
     then = datetime.datetime.now()
@@ -70,7 +85,8 @@ def renderDataEmployee(request):
     SensorData.objects.get_or_create(sensorType='T',value='2',time=datetime.datetime.now(), user=user ) 
     
     '''Getting user data'''
-    employeeInfo = {'name':user.name,'title':user.title}
+    #employeeInfo = {'name':user.name,'title':user.title}
+    employeeInfo = {'name':"Mr. ABC", 'title': "Hello World"}
     
     '''Creating Charts'''
     dataSeries = \
@@ -117,9 +133,8 @@ def renderDataEmployee(request):
     '''Current Status; check status returns a dictionary'''
     status = checkStatus(sensorData)
     
-    return render_to_response('employee.html',{'chart1':cht,'imgsrc':defautls['profilepic'],'employeeInfo':employeeInfo,})    
+    return render_to_response('employee.html',{'chart1':cht,'imgsrc':defaults['profilepic'],'employeeInfo':employeeInfo,'header':header})    
     
-
 def startPolling(request):
     ser = serial.Serial('/dev/tty.usbmodemfa131',9600, timeout=1)
     then = datetime.datetime.now()
