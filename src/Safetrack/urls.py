@@ -22,6 +22,5 @@ urlpatterns = patterns('',
     url(r'^employee/', views.renderDataEmployee ),
     
     url(r'^testSend/', views.testSendFromServer ),
-    url(r'^addDummyData/', views.addDummyDataToDb ),
-    
+    url(r'^addDummyData/', views.addDummyDataToDb ),    
 )
