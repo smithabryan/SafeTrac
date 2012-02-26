@@ -1,11 +1,7 @@
 <html>
     <head>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-		<script src="http://code.highcharts.com/highcharts.js"></script>
-		<script src="http://code.highcharts.com/modules/exporting.js"></script>        
-        {% block stylsheets %}{% endblock %}
-        {% block scripts %}{% endblock %}
-        {% block headSection %}{% endblock %}
+		{% block headSection %}{% endblock %}
         <title>{%block title %}{% endblock %}</title>
     </head>
 <!-- Page Content
@@ -14,13 +10,21 @@
  -->
     <body>
         <div id="headerSection">
-            <h3>Log In {%block currentLoc%}{%endblock%}</h3>
-            <!-- Need Logo & LogIn Button Here-->
+            <img src={{header.logo}} />
+            {% if auth %}
+                <h3>Logged In As {{header.accessLevel}}</h3>
+                <a href="logout">Log Out</a>
+            {% endif %}
         </div>
-        {% block content %}{% endblock %}
+        {% comment %}
+        {% if auth %}
+            {% block content %}{% endblock %}
+        {% else %}
+        {% comment %}
+        {% endcomment %}
         <div class="center">
             {{errorMessage}}
-            <form name="" method="get">
+            <form action="login" method="post">
                 <input type="radio" name="userType" value="employee">Employee<br />
                 <input type="radio" name="userType" value="supervisor">Supervisor<br />
                 <input type="radio" name="userType" value="manager">Management<br />
@@ -29,6 +33,9 @@
                 <input type="submit" value="Submit" />
             </form>
         </div>
+        {% comment %}
+        {% endif %}
+        {% endcomment %}
     </body>
     
 <!-- Footer -->
