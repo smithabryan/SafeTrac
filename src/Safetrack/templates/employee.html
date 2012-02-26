@@ -14,7 +14,11 @@
                 {{imgsrc}}
             </div>
             <div id="stats">
-                {{name}}
+                <ul>
+                {% for key, value in employeeInfo.items %}
+                    <li>{{ key }}: {{ value }}</li>
+                {% endfor %}
+                </ul>
             </div>
             <button>Create Report</button>
         </div>
@@ -26,7 +30,7 @@
                 </div>
             </div>
             <div id="status">
-                <h2>Right now you are: {{status}}</h2>
+                <h2>Right now you are: {{status.safety}}</h2>
                 <table>
                     <tr>
                         <td>Temperature</td>
@@ -35,15 +39,16 @@
                         <td>Impact</td>
                     </tr>
                     <tr>
-                        <td>{{curTemp}}</td>
-                        <td>{{curHumid}}</td>
-                        <td>{{curNoise}}</td>
-                        <td>{{curImpact}}</td>
+                        <td>{{status.temp}}</td>
+                        <td>{{status.humid}}</td>
+                        <td>{{status.noise}}</td>
+                        <td>{{status.impact}}</td>
                     </tr>
                 </table>
             </div>	
         </div>
     </body>
 {% endblock %}
+
 {%block footer %}    
 {% endblock %}

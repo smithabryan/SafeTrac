@@ -10,6 +10,19 @@ from Safetrack.tracker.models import SensorData, User, Goal, SafetyConstraint
 from chartit import DataPool, Chart
 from django.shortcuts import render_to_response
 
+defaults = {'profilepic':'../assets/defaultprofile.jpg'}
+accessLevel = {'1':'Employee','2':'Supervisor','3':'Management'}
+
+'''support functions'''
+        
+def hello_world(request):    
+    now = datetime.datetime.now()
+    html = "<html><body>It is now %s.</body></html>" % now
+    return HttpResponse(html)
+
+def checkStatus(modelObj):
+    return {'safety':"Safe",'temp':'12C','humid':'??','noise':'20Db','impact':'0G'}
+
 #Paul's Mod
 def authorized(request):
     if request.session.get('auth',False):
@@ -30,11 +43,6 @@ def loginView(request):
             return render_to_response('base.html',{'auth':False,'errorMessage':'Check username and/or password'})
     else:
         return render_to_response('base.html',{'auth':False,'errorMessage':'You must be logged in.'})
-        
-def hello_world(request):    
-    now = datetime.datetime.now()
-    html = "<html><body>It is now %s.</body></html>" % now
-    return HttpResponse(html)
 
 def login(request):
     then = datetime.datetime.now()
@@ -54,17 +62,21 @@ def renderDataEmployee(request):
     #User ID from request OBJ?
 #
     user = User.objects.get(pk=1)
+    sensorData = SensorData.objects.all()
 #    tempSensor = SensorData.objects.filter(sensorType='T', user=user)
 #    humidSensor = SensorData.objects.filter(sensorType='H', user=user)
 #    noiseSensor = SensorData.objects.filter(sensorType='N', user=user)
 #    impactSensor = SensorData.objects.filter(sensorType='I', user=user)
     SensorData.objects.get_or_create(sensorType='T',value='2',time=datetime.datetime.now(), user=user ) 
     
-    #Create DataPool
+    '''Getting user data'''
+    employeeInfo = {'name':user.name,'title':user.title}
+    
+    '''Creating Charts'''
     dataSeries = \
         DataPool(
             series = 
-            [{'options':{'source': SensorData.objects.all()},
+            [{'options':{'source': sensorData},
             'terms':[
                 'value',
                 'value']},
@@ -102,7 +114,10 @@ def renderDataEmployee(request):
                     'title': {
                        'text': 'Time'}}})
     
-    return render_to_response('employee.html',{'chart1':cht})    
+    '''Current Status; check status returns a dictionary'''
+    status = checkStatus(sensorData)
+    
+    return render_to_response('employee.html',{'chart1':cht,'imgsrc':defautls['profilepic'],'employeeInfo':employeeInfo,})    
     
 
 def startPolling(request):
