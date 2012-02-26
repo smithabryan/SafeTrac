@@ -6,8 +6,7 @@ from django.http import HttpResponse
 #from Safetrack.tracker.tasks import SerialReadTask
 import datetime
 import serial
-from Safetrack.tracker.models import SensorData, SensorDataInteger
-from Safetrack.tracker.models import User
+from Safetrack.tracker.models import SensorData, User, Goal, SafetyConstraint
 from chartit import DataPool, Chart
 from django.shortcuts import render_to_response
 
@@ -51,17 +50,21 @@ def renderDataEmployee(request):
         return loginView(request)
         
 #    user = User.objects.get(username='Falco')
+    #need to get forieign key of user
+    #User ID from request OBJ?
+#
+    user = User.objects.get(pk=1)
 #    tempSensor = SensorData.objects.filter(sensorType='T', user=user)
 #    humidSensor = SensorData.objects.filter(sensorType='H', user=user)
 #    noiseSensor = SensorData.objects.filter(sensorType='N', user=user)
 #    impactSensor = SensorData.objects.filter(sensorType='I', user=user)
-    SensorDataInteger.objects.get_or_create(sensorType='T',value='2',time=datetime.datetime.now()) 
+    SensorData.objects.get_or_create(sensorType='T',value='2',time=datetime.datetime.now(), user=user ) 
     
     #Create DataPool
     dataSeries = \
         DataPool(
             series = 
-            [{'options':{'source': SensorDataInteger.objects.all()},
+            [{'options':{'source': SensorData.objects.all()},
             'terms':[
                 'value',
                 'value']},
@@ -116,7 +119,7 @@ def startPolling(request):
             SensorData.objects.get_or_create(sensorType='T',value=splitData[0],time=then, user=dummyUser) 
             SensorData.objects.get_or_create(sensorType='H',value=splitData[1],time=then, user=dummyUser) 
             SensorData.objects.get_or_create(sensorType='N',value=splitData[2],time=then, user=dummyUser)
-    #        SensorData.objects.get_or_create(sensorType='I',value=splitData[3],time=then, user=dummyUser) 
+            SensorData.objects.get_or_create(sensorType='I',value=splitData[3],time=then, user=dummyUser) 
         except Exception as inst:
             print type(inst)     # the exception instance
             print inst.args      # arguments stored in .args
@@ -144,6 +147,9 @@ def addDummyDataToDb(request):
     SensorData.objects.get_or_create(sensorType='H',value='50.0',time=then, user=starfox) 
     SensorData.objects.get_or_create(sensorType='N',value='10.0',time=then, user=starfox)
     SensorData.objects.get_or_create(sensorType='I',value='100.0',time=then, user=starfox) 
+
+    Goal.objects.get_or_create(sensorType='T',value='100.0')
+    SafetyConstraint.objects.get_or_create(sensorType='T',maxValue='45.0',minValue='-10.0')
 
     html = "<html><body>Added two users with 4 sensorData each</body></html>"
     return HttpResponse(html)    
