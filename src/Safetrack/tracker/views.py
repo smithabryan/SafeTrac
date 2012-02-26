@@ -138,7 +138,7 @@ def renderDataEmployee(request):
     status = checkStatus(sensorData)
     
     #might have to check auth
-    return render_to_response('employee.html',{'auth':True,'chart1':cht,'imgsrc':defaults['profilepic'],'employeeInfo':employeeInfo,'header':header})   
+    return render_to_response('employee.html',{'auth':True,'chart1':cht,'imgsrc':defaults['profilepic'],'status':status,'employeeInfo':employeeInfo,'header':header})   
     
 def startPolling(request):
     ser = serial.Serial('/dev/tty.usbmodemfa131',9600, timeout=1)

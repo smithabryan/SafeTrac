@@ -1,16 +1,4 @@
-body
-{
-background-color:White;
-}
-h1
-{
-font-size:40pt;
-}
-h2
-{
-color:black;
-}
-p
-{
-margin-left:50px;
+#status {
+    color: red;
+    font-size: 51px;
 }
