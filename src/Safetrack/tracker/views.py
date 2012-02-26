@@ -52,9 +52,8 @@ def loginView(request):
             curUser = User.objects.filter(username=userID,password=pwd)
             request.session['auth'] = True
             request.session['accessLevel'] = curUser.accessLevel
-            
-            return chartView(request)
-        except:
+            return renderDataEmployee(request)
+        except: #should get specific error
             return render_to_response('base.html',{'auth':False,'errorMessage':messages['wrong']})
     else:
         return render_to_response('base.html',{'auth':False,'errorMessage':messages['login']})
@@ -133,7 +132,8 @@ def renderDataEmployee(request):
     '''Current Status; check status returns a dictionary'''
     status = checkStatus(sensorData)
     
-    return render_to_response('employee.html',{'chart1':cht,'imgsrc':defaults['profilepic'],'employeeInfo':employeeInfo,'header':header})    
+    #might have to check auth
+    return render_to_response('employee.html',{'auth':True,'chart1':cht,'imgsrc':defaults['profilepic'],'employeeInfo':employeeInfo,'header':header})   
     
 def startPolling(request):
     ser = serial.Serial('/dev/tty.usbmodemfa131',9600, timeout=1)
