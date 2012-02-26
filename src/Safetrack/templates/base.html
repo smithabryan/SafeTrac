@@ -1,11 +1,7 @@
 <html>
     <head>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-		<script src="http://code.highcharts.com/highcharts.js"></script>
-		<script src="http://code.highcharts.com/modules/exporting.js"></script>        
-        {% block stylsheets %}{% endblock %}
-        {% block scripts %}{% endblock %}
-        {% block headSection %}{% endblock %}
+		{% block headSection %}{% endblock %}
         <title>{%block title %}{% endblock %}</title>
     </head>
 <!-- Page Content
@@ -17,7 +13,13 @@
             <h3>Log In {%block currentLoc%}{%endblock%}</h3>
             <!-- Need Logo & LogIn Button Here-->
         </div>
-        {% block content %}{% endblock %}
+        <!-- Auth inside comment tag -->
+        {% comment %}
+        {% if auth %}
+            {% block content %}{% endblock %}
+        {% else %}
+        {% comment %}
+        {% endcomment %}
         <div class="center">
             {{errorMessage}}
             <form name="" method="get">
@@ -29,6 +31,9 @@
                 <input type="submit" value="Submit" />
             </form>
         </div>
+        {% comment %}
+        {% endif %}
+        {% endcomment %}
     </body>
     
 <!-- Footer -->

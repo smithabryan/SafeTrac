@@ -1,6 +1,5 @@
 '''
 Created on Feb 21, 2012
-
 @author: zachgoldstein
 '''
 from django.http import HttpResponse
@@ -12,6 +11,27 @@ from Safetrack.tracker.models import User
 from chartit import DataPool, Chart
 from django.shortcuts import render_to_response
 
+#Paul's Mod
+def authorized(request):
+    if request.session.get('auth',False):
+        return True
+    return False
+    
+#Paul's Mod    
+def loginView(request):
+    userID = request.POST['user']
+    pwd = request.POST['pwd']
+        
+    if userID !="" and pwd !="":
+        try:
+            curUser = User.objects.filter(username=userID,password=pwd)
+            request.session['auth'] = True
+            return chartView(request)
+        except:
+            return render_to_response('base.html',{'auth':False,'errorMessage':'Check username and/or password'})
+    else:
+        return render_to_response('base.html',{'auth':False,'errorMessage':'You must be logged in.'})
+        
 def hello_world(request):    
     now = datetime.datetime.now()
     html = "<html><body>It is now %s.</body></html>" % now
@@ -26,9 +46,10 @@ def login(request):
     return HttpResponse(html)
 
 def renderDataEmployee(request):
-    #need to get forieign key of user
-    #User ID from request OBJ?
-#
+#Paul's Mod
+    if not authorized(request):
+        return loginView(request)
+        
 #    user = User.objects.get(username='Falco')
 #    tempSensor = SensorData.objects.filter(sensorType='T', user=user)
 #    humidSensor = SensorData.objects.filter(sensorType='H', user=user)
@@ -43,7 +64,13 @@ def renderDataEmployee(request):
             [{'options':{'source': SensorDataInteger.objects.all()},
             'terms':[
                 'value',
+                'value']},
+            '''
+            {'options':{'source': SensorDataInteger.objects.all()},
+            'terms':[
+                'value',
                 'value']}
+            '''    
             ]);
     cht = Chart(
             datasource = dataSeries,
@@ -54,7 +81,17 @@ def renderDataEmployee(request):
                 'terms':{
                   'value': [
                     'value']
-                  }}],
+                  }},
+              '''
+               {'options':{
+               'type': 'line',
+              'stacking': False},
+            'terms':{
+              'value': [
+                'value']
+              }}
+              '''
+                ],
             chart_options =
               {'title': {
                    'text': 'Chart'},
