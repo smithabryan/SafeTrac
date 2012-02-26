@@ -10,10 +10,12 @@
  -->
     <body>
         <div id="headerSection">
-            <h3>Log In {%block currentLoc%}{%endblock%}</h3>
-            <!-- Need Logo & LogIn Button Here-->
+            <img src={{header.logo}} />
+            {% if auth %}
+                <h3>Logged In As {{header.accessLevel}}</h3>
+                <a href="logout">Log Out</a>
+            {% endif %}
         </div>
-        <!-- Auth inside comment tag -->
         {% comment %}
         {% if auth %}
             {% block content %}{% endblock %}
@@ -22,7 +24,7 @@
         {% endcomment %}
         <div class="center">
             {{errorMessage}}
-            <form name="" method="get">
+            <form action="login" method="post">
                 <input type="radio" name="userType" value="employee">Employee<br />
                 <input type="radio" name="userType" value="supervisor">Supervisor<br />
                 <input type="radio" name="userType" value="manager">Management<br />

@@ -15,9 +15,10 @@ urlpatterns = patterns('',
 
     # Uncomment the next line to enable the admin:
     # url(r'^admin/', include(admin.site.urls)),
+    url(r'^login/', views.loginView ),
+    url(r'^logout/', views.loginView ),
     url(r'^test/', views.hello_world ),
     url(r'^start/', views.startPolling ),
-    url(r'^login/', views.login ),
     url(r'^employee/', views.renderDataEmployee ),
     
     url(r'^testSend/', views.testSendFromServer ),
