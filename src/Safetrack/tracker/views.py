@@ -47,13 +47,12 @@ def logoutView(request):
     
 def loginView(request):
     userID = "Falco" 
-#    request.POST['user']
+#    request.POST.get('user',False)
     pwd = "fuckstarfox"
-#    request.POST['pwd']
+#    request.POST.get('pwd',False)
         
     if userID and pwd:
         curUser = User.objects.filter(username=userID,password=pwd)
-        
         if len(curUser) == 1:
             curUser = curUser[0]
             request.session['auth'] = True
