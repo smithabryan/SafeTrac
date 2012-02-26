@@ -16,12 +16,9 @@
                 <a href="logout">Log Out</a>
             {% endif %}
         </div>
-        {% comment %}
         {% if auth %}
             {% block content %}{% endblock %}
         {% else %}
-        {% comment %}
-        {% endcomment %}
         <div class="center">
             {{errorMessage}}
             <form action="login" method="post">
@@ -33,9 +30,7 @@
                 <input type="submit" value="Submit" />
             </form>
         </div>
-        {% comment %}
         {% endif %}
-        {% endcomment %}
     </body>
     
 <!-- Footer -->
