@@ -51,6 +51,7 @@ def loginView(request):
         
     if userID and pwd:
         curUser = User.objects.filter(username=userID,password=pwd)
+        
         if len(curUser) == 1:
             curUser = curUser[0]
             request.session['auth'] = True
