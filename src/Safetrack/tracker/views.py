@@ -46,16 +46,17 @@ def logoutView(request):
     return render_to_response('base.html',{'auth':False,'errorMessage': messages['wrong']})
     
 def loginView(request):
-    userID = request.POST['user']
-    pwd = request.POST['pwd']
+    userID = request.POST.get('user',False)
+    pwd = request.POST.get('pwd',False)
         
-    if userID !="" and pwd !="":
-        try:
-            curUser = User.objects.filter(username=userID,password=pwd)
+    if userID and pwd:
+        curUser = User.objects.filter(username=userID,password=pwd)
+        if len(curUser) == 1:
+            curUser = curUser[0]
             request.session['auth'] = True
             request.session['accessLevel'] = curUser.accessLevel
             return renderDataEmployee(request)
-        except: #should get specific error
+        else:
             return render_to_response('base.html',{'auth':False,'errorMessage':messages['wrong']})
     else:
         return render_to_response('base.html',{'auth':False,'errorMessage':messages['login']})
@@ -97,12 +98,12 @@ def renderDataEmployee(request):
             'terms':[
                 'value',
                 'value']},
-            '''
-            {'options':{'source': SensorDataInteger.objects.all()},
-            'terms':[
-                'value',
-                'value']}
-            '''    
+            #
+            # {'options':{'source': SensorDataInteger.objects.all()},
+            # 'terms':[
+                # 'value',
+                # 'value']}
+            #
             ]);
     cht = Chart(
             datasource = dataSeries,
@@ -114,15 +115,15 @@ def renderDataEmployee(request):
                   'value': [
                     'value']
                   }},
-              '''
-               {'options':{
-               'type': 'line',
-              'stacking': False},
-            'terms':{
-              'value': [
-                'value']
-              }}
-              '''
+              #
+               # {'options':{
+               # 'type': 'line',
+              # 'stacking': False},
+            # 'terms':{
+              # 'value': [
+                # 'value']
+              # }}
+              #
                 ],
             chart_options =
               {'title': {
@@ -131,11 +132,11 @@ def renderDataEmployee(request):
                     'title': {
                        'text': 'Time'}}})
     
-    '''Current Status; check status returns a dictionary'''
+    # Current Status; check status returns a dictionary
     status = checkStatus(sensorData)
     
     #might have to check auth
-    return render_to_response('employee.html',{'auth':True,'chart1':cht,'imgsrc':defaults['profilepic'],'employeeInfo':employeeInfo,'header':header})   
+    return render_to_response('employee.html',{'auth':True,'chart1':cht,'imgsrc':defaults['profilepic'],'employeeInfo':employeeInfo,'status':status,'header':header})   
     
 def startPolling(request):
     ser = serial.Serial('/dev/tty.usbmodemfa131',9600, timeout=1)

@@ -13,15 +13,12 @@
             <img src={{header.logo}} />
             {% if auth %}
                 <h3>Logged In As {{header.accessLevel}}</h3>
-                <a href="logout">Log Out</a>
+                <a class="button" href="logout">Log Out</a>
             {% endif %}
         </div>
-        {% comment %}
         {% if auth %}
             {% block content %}{% endblock %}
         {% else %}
-        {% comment %}
-        {% endcomment %}
         <div class="center">
             {{errorMessage}}
             <form action="login" method="post">
@@ -33,9 +30,7 @@
                 <input type="submit" value="Submit" />
             </form>
         </div>
-        {% comment %}
         {% endif %}
-        {% endcomment %}
     </body>
     
 <!-- Footer -->
