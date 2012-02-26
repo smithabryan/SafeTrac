@@ -6,7 +6,7 @@ from django.http import HttpResponse
 #from Safetrack.tracker.tasks import SerialReadTask
 import datetime
 import serial
-from Safetrack.tracker.models import SensorData, User, Goal, SafetyConstraint
+from Safetrack.tracker.models import SensorData, User, Goal, SafetyConstraint, Team
 from chartit import DataPool, Chart
 from django.shortcuts import render_to_response
 from decimal import *
@@ -189,4 +189,3 @@ def addDummyDataToDb(request):
 
     html = "<html><body>Added two users with 4 sensorData each</body></html>"
     return HttpResponse(html)    
-    
