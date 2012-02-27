@@ -130,7 +130,6 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'Safetrack.tracker',
     'kombu.transport.django',
-#    'django.contrib.staticfiles',
     'djcelery',
     'chartit',
     # Uncomment the next line to enable the admin:
@@ -165,7 +164,6 @@ LOGGING = {
 
 
 # celery ( background processes in django )
-
 import djcelery
 djcelery.setup_loader()
 

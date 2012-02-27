@@ -49,17 +49,18 @@ def logoutView(request):
     
 def loginView(request):
     userID = "Falco" 
-#    request.POST['user']
+#    request.POST.get('user',False)
     pwd = "fuckstarfox"
-#    request.POST['pwd']
+#    request.POST.get('pwd',False)
         
-    if userID !="" and pwd !="":
-        try:
-            curUser = User.objects.filter(username=userID,password=pwd)
+    if userID and pwd:
+        curUser = User.objects.filter(username=userID,password=pwd)
+        if len(curUser) == 1:
+            curUser = curUser[0]
             request.session['auth'] = True
             request.session['accessLevel'] = curUser.accessLevel
             return renderDataEmployee(request)
-        except: #should get specific error
+        else: #should get specific error
             return render_to_response('base.html',{'auth':False,'errorMessage':messages['wrong']})
     else:
         return render_to_response('base.html',{'auth':False,'errorMessage':messages['login']})
@@ -141,8 +142,8 @@ def renderDataEmployee(request):
     # View code here...
     t = loader.get_template('employee.html')
     c = RequestContext(request, {'auth':True,'chart1':cht,'imgsrc':defaults['profilepic'],'employeeInfo':employeeInfo,'header':header})
-    return HttpResponse(t.render(c))    
-    
+    return HttpResponse(t.render(c))       
+ 
 def startPolling(request):
     ser = serial.Serial('/dev/tty.usbmodemfa131',9600, timeout=1)
     then = datetime.datetime.now()
