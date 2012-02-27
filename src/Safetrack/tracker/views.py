@@ -11,9 +11,11 @@ from chartit import DataPool, Chart
 from django.shortcuts import render_to_response
 from decimal import *
 import re
+from django.http import HttpResponse
+from django.template import RequestContext, loader
 
-defaults = {'profilepic':'../assets/defaultprofile.jpg',
-            'logo':'../assets/logo.png'}
+defaults = {'profilepic':'assets/defaultprofile.jpg',
+            'logo':'assets/logo.png'}
 messages = {'logout': "You are logged out",
             'login': "You have to log in",
             'wrong': "Wrong username/password"}
@@ -136,8 +138,10 @@ def renderDataEmployee(request):
     '''Current Status; check status returns a dictionary'''
     status = checkStatus(sensorData)
     
-    #might have to check auth
-    return render_to_response('employee.html',{'auth':True,'chart1':cht,'imgsrc':defaults['profilepic'],'employeeInfo':employeeInfo,'header':header})   
+    # View code here...
+    t = loader.get_template('employee.html')
+    c = RequestContext(request, {'auth':True,'chart1':cht,'imgsrc':defaults['profilepic'],'employeeInfo':employeeInfo,'header':header})
+    return HttpResponse(t.render(c))    
     
 def startPolling(request):
     ser = serial.Serial('/dev/tty.usbmodemfa131',9600, timeout=1)
@@ -152,12 +156,13 @@ def startPolling(request):
                     splitItem = re.sub(r'[^\w.]', '', dataString)
                     cleanedData.append(splitItem)
             if len(cleanedData) == 4:
-                dummyUser = User.objects.get(pk=1)
+#                dummyUser = User.objects.get(pk=1)
+                falco = User.objects.create(username='Falco', password='starfoxisawimp',accessLevel=3,lastLogin=then,email='falcoRox@gmail.com')
                 roundedDecimalValue = Decimal('%.3f' % float(cleanedData[3]))
-                SensorData.objects.get_or_create(sensorType='T',value=cleanedData[0],time=then, user=dummyUser) 
-                SensorData.objects.get_or_create(sensorType='H',value=cleanedData[1],time=then, user=dummyUser) 
-                SensorData.objects.get_or_create(sensorType='N',value=cleanedData[2],time=then, user=dummyUser)
-                SensorData.objects.get_or_create(sensorType='I',value=roundedDecimalValue,time=then, user=dummyUser) 
+                SensorData.objects.get_or_create(sensorType='T',value=cleanedData[0],time=then, user=falco) 
+                SensorData.objects.get_or_create(sensorType='H',value=cleanedData[1],time=then, user=falco) 
+                SensorData.objects.get_or_create(sensorType='N',value=cleanedData[2],time=then, user=falco)
+                SensorData.objects.get_or_create(sensorType='I',value=roundedDecimalValue,time=then, user=falco) 
         except Exception as inst:
             print type(inst)     # the exception instance
             print inst.args      # arguments stored in .args
