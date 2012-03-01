@@ -30,7 +30,23 @@
                 </div>
             </div>
             <div id="status">
-                <h2>Right now you are: {{status.safety}}</h2>
+				  {% if not isSafe %}
+	                  <div id="warning">
+	                  <h2>DANGER</h2>
+		                <ul>
+		                {% for item in dangerValues %}
+		   				    {% if item.isHigh %}
+			                    <li><p>Type:{{ item.sensorName }}: {{item.dataItem.value}} is too high!</p></li>
+							{% else %}
+			                    <li><p>Type:{{ item.sensorName }}: {{item.dataItem.value}} is too low!</p></li>
+				  			{% endif %}
+		                {% endfor %}
+		                </ul>
+	                  </div>
+	                  
+				  {% else %}
+	                  <h2>Workers in safe conditions</h2>
+				  {% endif %}
                 <table>
                     <tr>
                         <td>Temperature</td>
@@ -39,10 +55,10 @@
                         <td>Impact</td>
                     </tr>
                     <tr>
-                        <td>{{status.temp}}</td>
-                        <td>{{status.humid}}</td>
-                        <td>{{status.noise}}</td>
-                        <td>{{status.impact}}</td>
+                        <td>{{currentValues.temp}}</td>
+                        <td>{{currentValues.humid}}</td>
+                        <td>{{currentValues.noise}}</td>
+                        <td>{{currentValues.impact}}</td>
                     </tr>
                 </table>
             </div>	

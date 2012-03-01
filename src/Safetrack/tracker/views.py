@@ -4,6 +4,7 @@ Created on Feb 21, 2012
 '''
 from django.http import HttpResponse
 #from Safetrack.tracker.tasks import SerialReadTask
+import time
 import datetime
 import serial
 from Safetrack.tracker.models import SensorData, User, Goal, SafetyConstraint, Team
@@ -25,7 +26,7 @@ header = {'logo':defaults['logo']}
 
 '''Support functions'''
 def hello_world(request):    
-    now = datetime.datetime.now()
+    now = int(round(time.time() * 1000))
     html = "<html><body>It is now %s.</body></html>" % now
     return HttpResponse(html)
 
@@ -73,6 +74,34 @@ def login(request):
     html = "<html><body>Added user</body></html>"
     return HttpResponse(html)
 
+def getLatestData(user):
+    safetyConstraints = SafetyConstraint.objects.all()
+    latestDataItem = SensorData.objects.filter(user=user).order_by('-time')[0]
+    latestDataItems = SensorData.objects.filter(time=latestDataItem.time)
+    temp = latestDataItems.filter(sensorType='T')[0].value
+    noise = latestDataItems.filter(sensorType='N')[0].value
+    humidity = latestDataItems.filter(sensorType='H')[0].value
+    impact = latestDataItems.filter(sensorType='I')[0].value
+    # get latest data
+    
+    isSafe = True
+    dangerValues = [];
+    for constraint in safetyConstraints:
+        for dataItem in latestDataItems:
+            if dataItem.sensorType == constraint.sensorType:
+                if dataItem.value > constraint.maxValue or dataItem.value < constraint.minValue:
+                    isSafe = False
+                    isHigh = False;
+                    sensorName = ""
+                    if dataItem.value > constraint.maxValue:
+                        isHigh = True;
+                    if constraint.sensorType == 'T' : sensorName = "Temperature"
+                    if constraint.sensorType == 'N' : sensorName = "Noise"
+                    if constraint.sensorType == 'I' : sensorName = "Impact"
+                    if constraint.sensorType == 'H' : sensorName = "Humidity"
+                    dangerValues.append({"dataItem":dataItem,"constraint":constraint,"isHigh":isHigh,"sensorName":sensorName})
+    return [isSafe, dangerValues, {'temp':temp,'humid':humidity,'noise':noise,'impact':impact}]
+
 def renderDataEmployee(request):
 #Paul's Mod
 #    if not authorized(request):
@@ -83,7 +112,8 @@ def renderDataEmployee(request):
     #User ID from request OBJ?
 #
     user = User.objects.get(pk=1)
-    sensorData = SensorData.objects.all()
+    sensorData = SensorData.objects.filter(sensorType='N')
+    latestData = getLatestData(user)
 #    tempSensor = SensorData.objects.filter(sensorType='T', user=user)
 #    humidSensor = SensorData.objects.filter(sensorType='H', user=user)
 #    noiseSensor = SensorData.objects.filter(sensorType='N', user=user)
@@ -101,7 +131,7 @@ def renderDataEmployee(request):
             [{'options':{'source': sensorData},
             'terms':[
                 'value',
-                'value']},
+                'dataNum']},
 #            '''
 #            {'options':{'source': SensorDataInteger.objects.all()},
 #            'terms':[
@@ -116,7 +146,7 @@ def renderDataEmployee(request):
                   'type': 'line',
                   'stacking': False},
                 'terms':{
-                  'value': [
+                  'dataNum': [
                     'value']
                   }},
 #              '''
@@ -141,12 +171,21 @@ def renderDataEmployee(request):
     
     # View code here...
     t = loader.get_template('employee.html')
-    c = RequestContext(request, {'auth':True,'chart1':cht,'imgsrc':defaults['profilepic'],'employeeInfo':employeeInfo,'header':header})
+    c = RequestContext(request,         {'auth':True,
+                                         'chart1':cht,
+                                         'imgsrc':defaults['profilepic'],
+                                         'employeeInfo':employeeInfo,
+                                         'header':header,
+                                         'isSafe':latestData[0],
+                                         'dangerValues':latestData[1],
+                                         'currentValues':latestData[2]
+                                         })
     return HttpResponse(t.render(c))       
  
 def startPolling(request):
     ser = serial.Serial('/dev/tty.usbmodemfa131',9600, timeout=1)
     then = datetime.datetime.now()
+    numDataTaken = 0
     while ( (datetime.datetime.now() - then) < datetime.timedelta(seconds=30)):
         x = ser.readline(30)
         print x
@@ -158,12 +197,16 @@ def startPolling(request):
                     cleanedData.append(splitItem)
             if len(cleanedData) == 4:
 #                dummyUser = User.objects.get(pk=1)
-                falco = User.objects.create(username='Falco', password='starfoxisawimp',accessLevel=3,lastLogin=then,email='falcoRox@gmail.com')
+                numDataTaken += 1
+                request.session['numDataTaken'] = numDataTaken
+                now = time.time()*1000000
+                falco = User.objects.create(username='Falco', password='starfoxisawimp',accessLevel=3,lastLogin=datetime.datetime.now(),email='falcoRox@gmail.com')
                 roundedDecimalValue = Decimal('%.3f' % float(cleanedData[3]))
-                SensorData.objects.get_or_create(sensorType='T',value=cleanedData[0],time=then, user=falco) 
-                SensorData.objects.get_or_create(sensorType='H',value=cleanedData[1],time=then, user=falco) 
-                SensorData.objects.get_or_create(sensorType='N',value=cleanedData[2],time=then, user=falco)
-                SensorData.objects.get_or_create(sensorType='I',value=roundedDecimalValue,time=then, user=falco) 
+                print "noise,time is ("+repr(cleanedData[2])+","+repr(now)+")"
+                SensorData.objects.get_or_create(sensorType='T',value=cleanedData[0],time=now, dataNum=numDataTaken, user=falco) 
+                SensorData.objects.get_or_create(sensorType='H',value=cleanedData[1],time=now, dataNum=numDataTaken, user=falco) 
+                SensorData.objects.get_or_create(sensorType='N',value=cleanedData[2],time=now, dataNum=numDataTaken, user=falco)
+                SensorData.objects.get_or_create(sensorType='I',value=roundedDecimalValue,time=now, dataNum=numDataTaken, user=falco) 
         except Exception as inst:
             print type(inst)     # the exception instance
             print inst.args      # arguments stored in .args
@@ -178,22 +221,23 @@ def testSendFromServer(request):
     return HttpResponse(html)    
 
 def addDummyDataToDb(request):
-    then = datetime.datetime.now()    
+    then = datetime.datetime.now() 
+    thenFloat = time.time()*1000000   
     falco = User.objects.create(username='Falco', password='starfoxisawimp',accessLevel=3,lastLogin=then,email='falcoRox@gmail.com')
-    starfox = User.objects.create(username='Starfox', password='falcocantfly',accessLevel=3,lastLogin=then,email='starfoxy@gmail.com')    
+    starfox = User.objects.create(username='Starfox', password='falcocantfly',accessLevel=3,lastLogin=then,email='starfoxy@gmail.com')
 
-    SensorData.objects.get_or_create(sensorType='T',value='0.0',time=then, user=falco) 
-    SensorData.objects.get_or_create(sensorType='H',value='50',time=then, user=falco) 
-    SensorData.objects.get_or_create(sensorType='N',value='10',time=then, user=falco)
-    SensorData.objects.get_or_create(sensorType='I',value='100',time=then, user=falco) 
+    SensorData.objects.get_or_create(sensorType='T',value='0.4',time=thenFloat, dataNum=1, user=falco) 
+    SensorData.objects.get_or_create(sensorType='H',value='50',time=thenFloat, dataNum=1, user=falco) 
+    SensorData.objects.get_or_create(sensorType='N',value='10',time=thenFloat, dataNum=1, user=falco)
+    SensorData.objects.get_or_create(sensorType='I',value='100',time=thenFloat, dataNum=1, user=falco) 
 
-    SensorData.objects.get_or_create(sensorType='T',value='22.1',time=then, user=starfox) 
-    SensorData.objects.get_or_create(sensorType='H',value='50.0',time=then, user=starfox) 
-    SensorData.objects.get_or_create(sensorType='N',value='10.0',time=then, user=starfox)
-    SensorData.objects.get_or_create(sensorType='I',value='100.0',time=then, user=starfox) 
+    SensorData.objects.get_or_create(sensorType='T',value='22.1',time=thenFloat+1, dataNum=2, user=starfox) 
+    SensorData.objects.get_or_create(sensorType='H',value='50.0',time=thenFloat+1, dataNum=2, user=starfox) 
+    SensorData.objects.get_or_create(sensorType='N',value='10.0',time=thenFloat+1, dataNum=2, user=starfox)
+    SensorData.objects.get_or_create(sensorType='I',value='100.0',time=thenFloat+1, dataNum=2, user=starfox) 
 
     Goal.objects.get_or_create(sensorType='T',value='100.0')
-    SafetyConstraint.objects.get_or_create(sensorType='T',maxValue='45.0',minValue='-10.0')
+    SafetyConstraint.objects.get_or_create(sensorType='T',maxValue='100',minValue='90')
 
     html = "<html><body>Added two users with 4 sensorData each</body></html>"
     return HttpResponse(html)    
