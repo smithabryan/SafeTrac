@@ -14,11 +14,6 @@ class User(models.Model):
     lastLogin = models.DateField()
     email = models.EmailField()
 
-class SensorDataInteger(models.Model):
-    sensorType = models.CharField(max_length=1, choices=SENSOR_TYPES)
-    value = models.IntegerField()
-    time = models.DateField()    
-    
 class SensorData(models.Model):
     sensorType = models.CharField(max_length=1, choices=SENSOR_TYPES)
     value = models.DecimalField(max_digits=10, decimal_places=3)

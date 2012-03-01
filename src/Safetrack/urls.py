@@ -1,6 +1,7 @@
 from django.conf.urls.defaults import patterns, include, url
-from Safetrack.tracker import views  
-
+from Safetrack.tracker import views
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+from Safetrack import settings
 # Uncomment the next two lines to enable the admin:
 # from django.contrib import admin
 # admin.autodiscover()
@@ -23,5 +24,5 @@ urlpatterns = patterns('',
     
     url(r'^testSend/', views.testSendFromServer ),
     url(r'^addDummyData/', views.addDummyDataToDb ),
-    
 )
+urlpatterns += staticfiles_urlpatterns()

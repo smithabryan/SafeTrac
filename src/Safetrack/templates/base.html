@@ -1,6 +1,7 @@
 <html>
     <head>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/style.css" />
 		{% block headSection %}{% endblock %}
         <title>{%block title %}{% endblock %}</title>
     </head>
@@ -10,18 +11,15 @@
  -->
     <body>
         <div id="headerSection">
-            <img src={{header.logo}} />
+            <img src="{{ STATIC_URL }}assets/logo.png">
             {% if auth %}
                 <h3>Logged In As {{header.accessLevel}}</h3>
-                <a href="logout">Log Out</a>
+                <a class="button" href="logout">Log Out</a>
             {% endif %}
         </div>
-        {% comment %}
         {% if auth %}
             {% block content %}{% endblock %}
         {% else %}
-        {% comment %}
-        {% endcomment %}
         <div class="center">
             {{errorMessage}}
             <form action="login" method="post">
@@ -33,9 +31,7 @@
                 <input type="submit" value="Submit" />
             </form>
         </div>
-        {% comment %}
         {% endif %}
-        {% endcomment %}
     </body>
     
 <!-- Footer -->

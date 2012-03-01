@@ -6,14 +6,16 @@ from django.http import HttpResponse
 #from Safetrack.tracker.tasks import SerialReadTask
 import datetime
 import serial
-from Safetrack.tracker.models import SensorData, User, Goal, SafetyConstraint
+from Safetrack.tracker.models import SensorData, User, Goal, SafetyConstraint, Team
 from chartit import DataPool, Chart
 from django.shortcuts import render_to_response
 from decimal import *
 import re
+from django.http import HttpResponse
+from django.template import RequestContext, loader
 
-defaults = {'profilepic':'../assets/defaultprofile.jpg',
-            'logo':'../assets/logo.png'}
+defaults = {'profilepic':'assets/defaultprofile.jpg',
+            'logo':'assets/logo.png'}
 messages = {'logout': "You are logged out",
             'login': "You have to log in",
             'wrong': "Wrong username/password"}
@@ -46,16 +48,19 @@ def logoutView(request):
     return render_to_response('base.html',{'auth':False,'errorMessage': messages['wrong']})
     
 def loginView(request):
-    userID = request.POST['user']
-    pwd = request.POST['pwd']
+    userID = "Falco" 
+#    request.POST.get('user',False)
+    pwd = "fuckstarfox"
+#    request.POST.get('pwd',False)
         
-    if userID !="" and pwd !="":
-        try:
-            curUser = User.objects.filter(username=userID,password=pwd)
+    if userID and pwd:
+        curUser = User.objects.filter(username=userID,password=pwd)
+        if len(curUser) == 1:
+            curUser = curUser[0]
             request.session['auth'] = True
             request.session['accessLevel'] = curUser.accessLevel
             return renderDataEmployee(request)
-        except: #should get specific error
+        else: #should get specific error
             return render_to_response('base.html',{'auth':False,'errorMessage':messages['wrong']})
     else:
         return render_to_response('base.html',{'auth':False,'errorMessage':messages['login']})
@@ -70,8 +75,8 @@ def login(request):
 
 def renderDataEmployee(request):
 #Paul's Mod
-    if not authorized(request):
-        return loginView(request)
+#    if not authorized(request):
+#        return loginView(request)
         
 #    user = User.objects.get(username='Falco')
     #need to get forieign key of user
@@ -83,7 +88,7 @@ def renderDataEmployee(request):
 #    humidSensor = SensorData.objects.filter(sensorType='H', user=user)
 #    noiseSensor = SensorData.objects.filter(sensorType='N', user=user)
 #    impactSensor = SensorData.objects.filter(sensorType='I', user=user)
-    SensorData.objects.get_or_create(sensorType='T',value='2',time=datetime.datetime.now(), user=user ) 
+#    SensorData.objects.get_or_create(sensorType='T',value='2',time=datetime.datetime.now(), user=user ) 
     
     '''Getting user data'''
     #employeeInfo = {'name':user.name,'title':user.title}
@@ -97,12 +102,12 @@ def renderDataEmployee(request):
             'terms':[
                 'value',
                 'value']},
-            '''
-            {'options':{'source': SensorDataInteger.objects.all()},
-            'terms':[
-                'value',
-                'value']}
-            '''    
+#            '''
+#            {'options':{'source': SensorDataInteger.objects.all()},
+#            'terms':[
+#                'value',
+#                'value']}
+#            '''    
             ]);
     cht = Chart(
             datasource = dataSeries,
@@ -114,15 +119,15 @@ def renderDataEmployee(request):
                   'value': [
                     'value']
                   }},
-              '''
-               {'options':{
-               'type': 'line',
-              'stacking': False},
-            'terms':{
-              'value': [
-                'value']
-              }}
-              '''
+#              '''
+#               {'options':{
+#               'type': 'line',
+#              'stacking': False},
+#            'terms':{
+#              'value': [
+#                'value']
+#              }}
+#              '''
                 ],
             chart_options =
               {'title': {
@@ -134,9 +139,11 @@ def renderDataEmployee(request):
     '''Current Status; check status returns a dictionary'''
     status = checkStatus(sensorData)
     
-    #might have to check auth
-    return render_to_response('employee.html',{'auth':True,'chart1':cht,'imgsrc':defaults['profilepic'],'employeeInfo':employeeInfo,'header':header})   
-    
+    # View code here...
+    t = loader.get_template('employee.html')
+    c = RequestContext(request, {'auth':True,'chart1':cht,'imgsrc':defaults['profilepic'],'employeeInfo':employeeInfo,'header':header})
+    return HttpResponse(t.render(c))       
+ 
 def startPolling(request):
     ser = serial.Serial('/dev/tty.usbmodemfa131',9600, timeout=1)
     then = datetime.datetime.now()
@@ -150,12 +157,13 @@ def startPolling(request):
                     splitItem = re.sub(r'[^\w.]', '', dataString)
                     cleanedData.append(splitItem)
             if len(cleanedData) == 4:
-                dummyUser = User.objects.get(pk=1)
+#                dummyUser = User.objects.get(pk=1)
+                falco = User.objects.create(username='Falco', password='starfoxisawimp',accessLevel=3,lastLogin=then,email='falcoRox@gmail.com')
                 roundedDecimalValue = Decimal('%.3f' % float(cleanedData[3]))
-                SensorData.objects.get_or_create(sensorType='T',value=cleanedData[0],time=then, user=dummyUser) 
-                SensorData.objects.get_or_create(sensorType='H',value=cleanedData[1],time=then, user=dummyUser) 
-                SensorData.objects.get_or_create(sensorType='N',value=cleanedData[2],time=then, user=dummyUser)
-                SensorData.objects.get_or_create(sensorType='I',value=roundedDecimalValue,time=then, user=dummyUser) 
+                SensorData.objects.get_or_create(sensorType='T',value=cleanedData[0],time=then, user=falco) 
+                SensorData.objects.get_or_create(sensorType='H',value=cleanedData[1],time=then, user=falco) 
+                SensorData.objects.get_or_create(sensorType='N',value=cleanedData[2],time=then, user=falco)
+                SensorData.objects.get_or_create(sensorType='I',value=roundedDecimalValue,time=then, user=falco) 
         except Exception as inst:
             print type(inst)     # the exception instance
             print inst.args      # arguments stored in .args
@@ -189,4 +197,3 @@ def addDummyDataToDb(request):
 
     html = "<html><body>Added two users with 4 sensorData each</body></html>"
     return HttpResponse(html)    
-    
