@@ -13,8 +13,8 @@
         <div id="headerSection">
             <img src="{{ STATIC_URL }}assets/logo.png">
             {% if auth %}
-                <h3>Logged In As {{header.accessLevel}}</h3>
-                <a class="button" href="logout">Log Out</a>
+                <h3>Logged In as {{header.userType}}</h3>
+                <a class="button" href="{% url LOGOUT %}">Log Out</a>
             {% endif %}
         </div>
         {% if auth %}
@@ -22,7 +22,7 @@
         {% else %}
         <div class="center">
             {{errorMessage}}
-            <form action="login" method="post">
+            <form action="" method="post">{% csrf_token %}
                 <input type="radio" name="userType" value="employee">Employee<br />
                 <input type="radio" name="userType" value="supervisor">Supervisor<br />
                 <input type="radio" name="userType" value="manager">Management<br />
