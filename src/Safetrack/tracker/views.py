@@ -4,24 +4,25 @@ Created on Feb 21, 2012
 '''
 from django.http import HttpResponse
 #from Safetrack.tracker.tasks import SerialReadTask
-import datetime
-import serial
 from Safetrack.tracker.models import SensorData, User, Goal, SafetyConstraint, Team
 from chartit import DataPool, Chart
-from django.shortcuts import render_to_response
-from decimal import *
-import re
+from django.shortcuts import render_to_response,redirect
 from django.http import HttpResponse
 from django.template import RequestContext, loader
+from django.core.context_processors import csrf
 
+from decimal import *
+import datetime
+import re
+import serial
 defaults = {'profilepic':'assets/defaultprofile.jpg',
             'logo':'assets/logo.png'}
 messages = {'logout': "You are logged out",
             'login': "You have to log in",
             'wrong': "Wrong username/password"}
-accessLevel = {'1':'Employee','2':'Supervisor','3':'Management'}
-
-header = {'logo':defaults['logo']}
+accessLevel = {1:'Employee',2:'Supervisor',3:'Management'}
+homepage = {1:'/employee',2:'/supervisor',3:'/management'}
+header = {'logo':defaults['logo'],'homepage':''}
 
 '''Support functions'''
 def hello_world(request):    
@@ -35,35 +36,44 @@ def checkStatus(modelObj):
 #Paul's Mod
 def authorized(request):
     if request.session.get('auth',False):
-        header['accessLevel'] = request.session['accessLevel']
+        header['userType'] = accessLevel[request.session['accessLevel']]
         return True
     return False
 
 '''Views'''
-#Paul's Mod    
 def logoutView(request):
-    request.session['auth'] = False
-    request.session['accessLevel'] = 0
+    request.session.flush()
     
-    return render_to_response('base.html',{'auth':False,'errorMessage': messages['wrong']})
-    
+    t = loader.get_template('base.html')
+    c = RequestContext(request, {'auth':False,'errorMessage':messages['logout']})
+
+    return HttpResponse(t.render(c))
+
 def loginView(request):
-    userID = "Falco" 
-#    request.POST.get('user',False)
-    pwd = "fuckstarfox"
-#    request.POST.get('pwd',False)
-        
+    userID = request.POST.get('user',False)
+    pwd = request.POST.get('pwd',False)
+
+    t = loader.get_template('base.html')
+    c = RequestContext(request, {'auth':False,'errorMessage':messages['login']})
+
+    if authorized(request):
+        return redirect(header['homepage'])
+
     if userID and pwd:
         curUser = User.objects.filter(username=userID,password=pwd)
+
         if len(curUser) == 1:
             curUser = curUser[0]
             request.session['auth'] = True
             request.session['accessLevel'] = curUser.accessLevel
-            return renderDataEmployee(request)
+            header['homepage'] = homepage[curUser.accessLevel]
+
+            return redirect(header['homepage'])
+
         else: #should get specific error
-            return render_to_response('base.html',{'auth':False,'errorMessage':messages['wrong']})
-    else:
-        return render_to_response('base.html',{'auth':False,'errorMessage':messages['login']})
+	    	c = RequestContext(request, {'auth':False,'errorMessage':messages['wrong']})
+
+    return HttpResponse(t.render(c))
 
 def login(request):
     then = datetime.datetime.now()
@@ -74,14 +84,9 @@ def login(request):
     return HttpResponse(html)
 
 def renderDataEmployee(request):
-#Paul's Mod
-#    if not authorized(request):
-#        return loginView(request)
-        
-#    user = User.objects.get(username='Falco')
-    #need to get forieign key of user
-    #User ID from request OBJ?
-#
+    if not authorized(request):
+        return loginView(request)
+
     user = User.objects.get(pk=1)
     sensorData = SensorData.objects.all()
 #    tempSensor = SensorData.objects.filter(sensorType='T', user=user)
@@ -89,10 +94,10 @@ def renderDataEmployee(request):
 #    noiseSensor = SensorData.objects.filter(sensorType='N', user=user)
 #    impactSensor = SensorData.objects.filter(sensorType='I', user=user)
 #    SensorData.objects.get_or_create(sensorType='T',value='2',time=datetime.datetime.now(), user=user ) 
-    
+   
     '''Getting user data'''
-    #employeeInfo = {'name':user.name,'title':user.title}
-    employeeInfo = {'name':"Mr. ABC", 'title': "Hello World"}
+    #Need to fix to grab data
+    employeeInfo = {'name':user.username,'title':"Worker"}
     
     '''Creating Charts'''
     dataSeries = \
@@ -158,7 +163,7 @@ def startPolling(request):
                     cleanedData.append(splitItem)
             if len(cleanedData) == 4:
 #                dummyUser = User.objects.get(pk=1)
-                falco = User.objects.create(username='Falco', password='starfoxisawimp',accessLevel=3,lastLogin=then,email='falcoRox@gmail.com')
+                falco = User.objects.create(username='Falco', password='starfoxisawimp',accessLevel=1,lastLogin=then,email='falcoRox@gmail.com')
                 roundedDecimalValue = Decimal('%.3f' % float(cleanedData[3]))
                 SensorData.objects.get_or_create(sensorType='T',value=cleanedData[0],time=then, user=falco) 
                 SensorData.objects.get_or_create(sensorType='H',value=cleanedData[1],time=then, user=falco) 
@@ -179,7 +184,8 @@ def testSendFromServer(request):
 
 def addDummyDataToDb(request):
     then = datetime.datetime.now()    
-    falco = User.objects.create(username='Falco', password='starfoxisawimp',accessLevel=3,lastLogin=then,email='falcoRox@gmail.com')
+    falco = User.objects.create(username='abc', password='abc',accessLevel=1,lastLogin=then,email='falcx@gmail.com')
+    falco = User.objects.create(username='Falco', password='starfoxisawimp',accessLevel=1,lastLogin=then,email='falcoRox@gmail.com')
     starfox = User.objects.create(username='Starfox', password='falcocantfly',accessLevel=3,lastLogin=then,email='starfoxy@gmail.com')    
 
     SensorData.objects.get_or_create(sensorType='T',value='0.0',time=then, user=falco) 
