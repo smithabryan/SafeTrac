@@ -1,9 +1,47 @@
-#status {
+p {
+	color: black;
+    font-size: 12px;
+}
+
+h1 {
+
+}
+
+#headerSection {
+	height: 20%
+
+}
+
+#leftSide {
+    width: 25%;
+    height: 50%;
+    float: left;    
+}
+
+#leftSide #stats {
+
+}
+
+#leftSide #profile {
+
+}
+
+
+#rightSide {
+    width: 75%;
+    height: 50%;
+    float: right;    
+}
+#rightSide #status{
     color: red;
     font-size: 51px;
 }
 
-p {
-	color: black;
-    font-size: 12px;
+#footer {
+    text-align: right;
+    background: none repeat scroll 0 0 #CCCCCC;
+    clear: left;
+    height: 1%;
+    padding: 20px;
+    text-align: right;
 }

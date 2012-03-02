@@ -168,7 +168,8 @@ def renderDataEmployee(request):
 #              '''
                 ],
             chart_options =
-              {'title': {
+              {'height': 100,
+               'title': {
                    'text': 'Chart'},
                'xAxis': {
                     'title': {
@@ -193,6 +194,7 @@ def renderDataEmployee(request):
 def startPolling(request):
     ser = serial.Serial('/dev/tty.usbmodemfa131',9600, timeout=1)
     then = datetime.datetime.now()
+    now = int(round(time.time() * 1000))
     numDataTaken = 0
     while ( (datetime.datetime.now() - then) < datetime.timedelta(seconds=30)):
         x = ser.readline(30)
@@ -228,7 +230,7 @@ def testSendFromServer(request):
 def addDummyDataToDb(request):
     then = datetime.datetime.now()    
     thenFloat = time.time()*1000000
-    falco = User.objects.create(username='abc', password='abc',accessLevel=1,lastLogin=then,email='falcx@gmail.com')
+    abc = User.objects.create(username='abc', password='abc',accessLevel=1,lastLogin=then,email='falcx@gmail.com')
     falco = User.objects.create(username='Falco', password='starfoxisawimp',accessLevel=3,lastLogin=then,email='falcoRox@gmail.com')
     starfox = User.objects.create(username='Starfox', password='falcocantfly',accessLevel=3,lastLogin=then,email='starfoxy@gmail.com')    
 
@@ -236,6 +238,11 @@ def addDummyDataToDb(request):
     SensorData.objects.get_or_create(sensorType='H',value='50',time=thenFloat, dataNum=1, user=falco) 
     SensorData.objects.get_or_create(sensorType='N',value='10',time=thenFloat, dataNum=1, user=falco)
     SensorData.objects.get_or_create(sensorType='I',value='100',time=thenFloat, dataNum=1, user=falco) 
+
+    SensorData.objects.get_or_create(sensorType='T',value='0.4',time=thenFloat, dataNum=1, user=abc) 
+    SensorData.objects.get_or_create(sensorType='H',value='50',time=thenFloat, dataNum=1, user=abc) 
+    SensorData.objects.get_or_create(sensorType='N',value='10',time=thenFloat, dataNum=1, user=abc)
+    SensorData.objects.get_or_create(sensorType='I',value='100',time=thenFloat, dataNum=1, user=abc)
 
     SensorData.objects.get_or_create(sensorType='T',value='22.1',time=thenFloat+1, dataNum=2, user=starfox) 
     SensorData.objects.get_or_create(sensorType='H',value='50.0',time=thenFloat+1, dataNum=2, user=starfox) 
