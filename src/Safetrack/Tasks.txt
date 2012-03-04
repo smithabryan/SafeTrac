@@ -1,0 +1,9 @@
+Modification to Model
+Workers
+ * profile = static url to pic
+ * groupID = grouped under who's view
+ * name = 
+ * title = 
+ 
+Safety Detection
+GetLatestData needs to be a hittable URL to allow AJAX calls
