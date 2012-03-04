@@ -69,7 +69,9 @@ def loginView(request):
         if len(curUser) == 1:
             curUser = curUser[0]
             request.session['auth'] = True
+            request.session['user'] = curUser
             request.session['accessLevel'] = curUser.accessLevel
+
             header['homepage'] = homepage[curUser.accessLevel]
 
             return redirect(header['homepage'])
@@ -191,6 +193,23 @@ def renderDataEmployee(request):
                                          })
     return HttpResponse(t.render(c))       
  
+def renderDataSupervisor(request):
+    if not authorized(request):
+        return loginView(request)
+   
+    groupID = request.session['user'].groupID
+    group = User.objects.filter(groupID=userID,accessLevel=1)#filtering for members in this supvisor's group; only worker 
+
+    t = loader.get_template('supervisor.html')
+    c = RequestContext(request,{'group':group})
+
+    return HttpResponse(t.render(c))       
+
+def renderDataManagement(request):
+    t = loader.get_template('management.html')
+    c = RequestContext(request,{})
+    return HttpResponse(t.render(c))
+
 def startPolling(request):
     ser = serial.Serial('/dev/tty.usbmodemfa131',9600, timeout=1)
     then = datetime.datetime.now()

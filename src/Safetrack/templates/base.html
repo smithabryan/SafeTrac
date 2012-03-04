@@ -1,6 +1,7 @@
 <html>
     <head>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+        <script src="{{ STATIC_URL }}scripts/init.js"></script>
 		<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/style.css" />
 		{% block headSection %}{% endblock %}
         <title>{%block title %}{% endblock %}</title>
@@ -22,7 +23,7 @@
         {% else %}
         <div class="center">
             {{errorMessage}}
-            <form action="" method="post">{% csrf_token %}
+            <form action="{% url LOGIN%}" method="post">{% csrf_token %}
                 <input type="radio" name="userType" value="employee">Employee<br />
                 <input type="radio" name="userType" value="supervisor">Supervisor<br />
                 <input type="radio" name="userType" value="manager">Management<br />
