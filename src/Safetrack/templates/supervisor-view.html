@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block title %}SafeTrac -- Supervisor{% endblock %}
+{% block headSection %}
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js"></script>
+    <script src="http://code.highcharts.com/highcharts.js"></script>
+    <script src="http://code.highcharts.com/modules/exporting.js"></script>
+    {% load chartit %}
+    {{ chart1|load_charts:"graph1" }}
+{% endblock %}
+{% block content %}
+
+<!-- Supervisor View  -->
+    <div class="page" id="page1">
+        <div id="leftSide">
+            <div id="groupBlk">
+                <ul>
+                {% for member in group %}
+                    <li>
+                        <div>
+                        <img src="{{STAITC}}{{member.profile}}">
+                        <h3>{{member.name}}</h3>
+                        <h3>{{member.location}}</h3>
+                        </div>
+                    </li>
+                {% endfor %}
+                </ul>
+            </div> 
+            <div id="viewBlk">
+            </div>
+        </div>
+        <div id="rightSide">
+            <div id="controls">
+            </div>
+            <div id="canvas">
+                <div id="graph1">
+                </div>
+            </div>
+            <div id="status">
+                  {% if not isSafe %}
+                      <div id="warning">
+                      <h2>DANGER</h2>
+                        <ul>
+                        {% for item in dangerValues %}
+                            {% if item.isHigh %}
+                                <li><p>Type:{{ item.sensorName }}: {{item.dataItem.value}} is too high!</p></li>
+                            {% else %}
+                                <li><p>Type:{{ item.sensorName }}: {{item.dataItem.value}} is too low!</p></li>
+                            {% endif %}
+                        {% endfor %}
+                        </ul>
+                      </div>
+
+                  {% else %}
+                      <h2>Workers in safe conditions</h2>
+                  {% endif %}
+                <table>
+                    <tr>
+                        <td>Temperature</td>
+                        <td>Humidity</td>
+                        <td>Noise</td>
+                        <td>Impact</td>
+                    </tr>
+                    <tr>
+                        <td>{{currentValues.temp}}</td>
+                        <td>{{currentValues.humid}}</td>
+                        <td>{{currentValues.noise}}</td>
+                        <td>{{currentValues.impact}}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+<!-- Managing View -->
+    <div class="page" id="page2">
+        <!-- Searchbar Here -->
+        <table>
+            <tr><th>Team Name</th></tr>
+            {% for team in teams %}
+            <tr><td>team.name</td></tr>
+            {% endfor %}
+        </table>
+        <!-- Searchbar Here -->
+        <div id="searchBlk">
+        </div>
+    </div>
+{% endblock %}
+{%block footer %}    
+{% endblock %}

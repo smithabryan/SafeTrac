@@ -197,11 +197,68 @@ def renderDataSupervisor(request):
     if not authorized(request):
         return loginView(request)
    
-    groupID = request.session['user'].groupID
-    group = User.objects.filter(groupID=userID,accessLevel=1)#filtering for members in this supvisor's group; only worker 
+    #groupID = request.session['user'].groupID
+    group = User.objects.filter(accessLevel=1)#filtering for members in this supvisor's group; only worker 
 
+    user = User.objects.get(pk=1)
+    sensorData = SensorData.objects.filter(sensorType='N')
+    latestData = getLatestData(user)
+
+    '''Creating Charts'''
+    dataSeries = \
+        DataPool(
+            series = 
+            [{'options':{'source': sensorData},
+            'terms':[
+                'value',
+                'dataNum']},
+#            '''
+#            {'options':{'source': SensorDataInteger.objects.all()},
+#            'terms':[
+#                'value',
+#                'value']}
+#            '''    
+            ]);
+    cht = Chart(
+            datasource = dataSeries,
+            series_options =
+              [{'options':{
+                  'type': 'line',
+                  'stacking': False},
+                'terms':{
+                  'dataNum': [
+                    'value']
+                  }},
+#              '''
+#               {'options':{
+#               'type': 'line',
+#              'stacking': False},
+#            'terms':{
+#              'value': [
+#                'value']
+#              }}
+#              '''
+                ],
+            chart_options =
+              {'height': 100,
+               'title': {
+                   'text': 'Chart'},
+               'xAxis': {
+                    'title': {
+                       'text': 'Time'}}})
+    
+    '''Current Status; check status returns a dictionary'''
+    status = checkStatus(sensorData)
+    
     t = loader.get_template('supervisor.html')
-    c = RequestContext(request,{'group':group})
+    c = RequestContext(request, {'auth':True,
+                                 'chart1':cht,
+                                 'imgsrc':defaults['profilepic'],
+                                 'header':header,
+                                 'isSafe':latestData[0],
+                                 'dangerValues':latestData[1],
+                                 'currentValues':latestData[2],
+                                 'group':group})
 
     return HttpResponse(t.render(c))       
 
@@ -249,19 +306,20 @@ def testSendFromServer(request):
 def addDummyDataToDb(request):
     then = datetime.datetime.now()    
     thenFloat = time.time()*1000000
-    abc = User.objects.create(username='abc', password='abc',accessLevel=1,lastLogin=then,email='falcx@gmail.com')
-    falco = User.objects.create(username='Falco', password='starfoxisawimp',accessLevel=3,lastLogin=then,email='falcoRox@gmail.com')
-    starfox = User.objects.create(username='Starfox', password='falcocantfly',accessLevel=3,lastLogin=then,email='starfoxy@gmail.com')    
+    #abc = User.objects.create(username='abc', password='abc',accessLevel=1,lastLogin=then,email='falcx@gmail.com')
+    #falco = User.objects.create(username='Falco', password='starfoxisawimp',accessLevel=3,lastLogin=then,email='falcoRox@gmail.com')
+   #starfox = User.objects.create(username='', password='falcocantfly',accessLevel=3,lastLogin=then,email='starfoxy@gmail.com')    
+    starfox = User.objects.create(username='ppp', password='ppp',accessLevel=2,lastLogin=then,email='starfoxy@gmail.com')    
 
-    SensorData.objects.get_or_create(sensorType='T',value='0.4',time=thenFloat, dataNum=1, user=falco) 
-    SensorData.objects.get_or_create(sensorType='H',value='50',time=thenFloat, dataNum=1, user=falco) 
-    SensorData.objects.get_or_create(sensorType='N',value='10',time=thenFloat, dataNum=1, user=falco)
-    SensorData.objects.get_or_create(sensorType='I',value='100',time=thenFloat, dataNum=1, user=falco) 
+#    SensorData.objects.get_or_create(sensorType='T',value='0.4',time=thenFloat, dataNum=1, user=falco) 
+#    SensorData.objects.get_or_create(sensorType='H',value='50',time=thenFloat, dataNum=1, user=falco) 
+#    SensorData.objects.get_or_create(sensorType='N',value='10',time=thenFloat, dataNum=1, user=falco)
+#    SensorData.objects.get_or_create(sensorType='I',value='100',time=thenFloat, dataNum=1, user=falco) 
 
-    SensorData.objects.get_or_create(sensorType='T',value='0.4',time=thenFloat, dataNum=1, user=abc) 
-    SensorData.objects.get_or_create(sensorType='H',value='50',time=thenFloat, dataNum=1, user=abc) 
-    SensorData.objects.get_or_create(sensorType='N',value='10',time=thenFloat, dataNum=1, user=abc)
-    SensorData.objects.get_or_create(sensorType='I',value='100',time=thenFloat, dataNum=1, user=abc)
+#    SensorData.objects.get_or_create(sensorType='T',value='0.4',time=thenFloat, dataNum=1, user=abc) 
+#    SensorData.objects.get_or_create(sensorType='H',value='50',time=thenFloat, dataNum=1, user=abc) 
+#    SensorData.objects.get_or_create(sensorType='N',value='10',time=thenFloat, dataNum=1, user=abc)
+#    SensorData.objects.get_or_create(sensorType='I',value='100',time=thenFloat, dataNum=1, user=abc)
 
     SensorData.objects.get_or_create(sensorType='T',value='22.1',time=thenFloat+1, dataNum=2, user=starfox) 
     SensorData.objects.get_or_create(sensorType='H',value='50.0',time=thenFloat+1, dataNum=2, user=starfox) 
