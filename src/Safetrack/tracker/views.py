@@ -196,7 +196,14 @@ def renderDataEmployee(request):
 def renderDataSupervisor(request):
     if not authorized(request):
         return loginView(request)
-   
+  
+    page = request.GET('page','view')
+
+    if page == 'view':
+        renderSupervisorViewPage()
+    else:
+        renderSupervisorManagePage()
+ 
     #groupID = request.session['user'].groupID
     group = User.objects.filter(accessLevel=1)#filtering for members in this supvisor's group; only worker 
 
