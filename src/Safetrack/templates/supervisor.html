@@ -29,8 +29,17 @@
     </div>
 <!-- Managing View -->
     <div class="page" id="page2">
+        <!-- Searchbar Here -->
+        <table>
+            <tr><th>Team Name</th></tr>
+            {% for team in teams %}
+            <tr><td>team.name</td></tr>
+            {% endfor %}
+        </table>
+        <!-- Searchbar Here -->
+        <div id="searchBlk">
+        </div>
     </div>
-    
 {% endblock %}
 {%block footer %}    
 {% endblock %}
