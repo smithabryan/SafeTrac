@@ -4,7 +4,8 @@ from django.shortcuts import render_to_response,redirect
 from django.http import HttpResponse
 from django.template import RequestContext, loader
 from django.core.context_processors import csrf
-from supportFunc import checkStatus
+
+from supportFunc import defaults,header,checkStatus,getLatestData
 
 #Employee?
 def render(request):
@@ -66,7 +67,9 @@ def render(request):
     
     '''Current Status; check status returns a dictionary'''
     status = checkStatus(sensorData)
-    
+   
+    header['userType'] = request.session['userType']
+ 
     # View code here...
     t = loader.get_template('employee.html')
     c = RequestContext(request,         {'auth':True,

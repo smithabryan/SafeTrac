@@ -1,6 +1,8 @@
-from Safetrack.tracker.models import SafetyConstraint
+from Safetrack.tracker.models import SensorData, User, Goal, SafetyConstraint, Team
 
-#Support Functions
+header = {'logo':'assets/logo.png'}
+defaults = {'profilepic':'assets/defaultprofile.jpg'}
+
 def checkStatus(modelObj):
     return {'safety':"Safe",'temp':'12C','humid':'??','noise':'20Db','impact':'0G'}
 

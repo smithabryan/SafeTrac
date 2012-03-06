@@ -4,7 +4,7 @@ from django.shortcuts import render_to_response,redirect
 from django.http import HttpResponse
 from django.template import RequestContext, loader
 from django.core.context_processors import csrf
-from supportFunc import checkStatus
+from supportFunc import defaults,header,checkStatus,getLatestData
 
 #Management Py.
 def renderView(request):
@@ -61,6 +61,8 @@ def renderView(request):
     #Current Status; check status returns a dictionary
     status = checkStatus(sensorData)
     
+    header['userType'] = request.session['userType']
+
     t = loader.get_template('management-view.html')
     c = RequestContext(request, {'auth':True,
                                  'chart1':cht,

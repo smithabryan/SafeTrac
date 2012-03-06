@@ -22,14 +22,12 @@ import re
 import employee
 import supervisor
 import management
-defaults = {'profilepic':'assets/defaultprofile.jpg',
-            'logo':'assets/logo.png'}
+
 messages = {'logout': "You are logged out",
             'login': "You have to log in",
             'wrong': "Wrong username/password"}
 accessLevel = {1:'Employee',2:'Supervisor',3:'Management'}
 homepage = {1:'/employee',2:'/supervisor',3:'/management'}
-header = {'logo':defaults['logo'],'homepage':''}
 
 '''Support functions - global used'''
 def hello_world(request):    
@@ -39,7 +37,7 @@ def hello_world(request):
 
 def authorized(request):
     if request.session.get('auth',False):
-        header['userType'] = accessLevel[request.session['accessLevel']]
+        request.session['userType'] =  accessLevel[request.session['accessLevel']]
         return True
     return False
 
@@ -60,7 +58,7 @@ def loginView(request):
     c = RequestContext(request, {'auth':False,'errorMessage':messages['login']})
 
     if authorized(request):
-        return redirect(header['homepage'])
+        return redirect(request.session['homepage'])
 
     if userID and pwd:
         curUser = User.objects.filter(username=userID,password=pwd)
@@ -71,9 +69,10 @@ def loginView(request):
             request.session['user'] = curUser
             request.session['accessLevel'] = curUser.accessLevel
 
-            header['homepage'] = homepage[curUser.accessLevel]
+            request.session['homepage'] = homepage[curUser.accessLevel]
+            #header['homepage'] = homepage[curUser.accessLevel]
 
-            return redirect(header['homepage'])
+            return redirect(request.session['homepage'])
 
         else: #should get specific error
 	    	c = RequestContext(request, {'auth':False,'errorMessage':messages['wrong']})
