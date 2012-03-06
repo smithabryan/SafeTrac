@@ -19,8 +19,9 @@ from decimal import *
 import datetime
 import re
 
+import employee
 import supervisor
-
+import management
 defaults = {'profilepic':'assets/defaultprofile.jpg',
             'logo':'assets/logo.png'}
 messages = {'logout': "You are logged out",
@@ -110,29 +111,29 @@ def getLatestData(user):
 def renderDataEmployee(request):
     if not authorized(request):
         return loginView(request)
-    return employee.render()
+    return employee.render(request)
  
 def renderDataSupervisor(request):
     if not authorized(request):
         return loginView(request)
   
-    page = request.GET('page','view')
+    page = request.GET.get('page','view')
 
     if page == 'view':
-        return supervisor.renderView()
+        return supervisor.renderView(request)
     else:
-        return supervisor.renderManage()
+        return supervisor.renderManage(request)
 
 def renderDataManagement(request):
     if not authorized(request):
         return loginView(request)
   
-    page = request.GET('page','view')
+    page = request.GET.get('page','view')
 
     if page == 'view':
-        return management.renderView()
+        return management.renderView(request)
     else:
-        return management.renderManage()
+        return management.renderManage(request)
     
 def startPolling(request):
     ser = serial.Serial('/dev/tty.usbmodemfa131',9600, timeout=1)

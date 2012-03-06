@@ -4,7 +4,7 @@ from django.shortcuts import render_to_response,redirect
 from django.http import HttpResponse
 from django.template import RequestContext, loader
 from django.core.context_processors import csrf
-from supportFun import checkStatus
+from supportFunc import checkStatus
 
 #Employee?
 def render(request):
