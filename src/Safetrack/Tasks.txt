@@ -4,6 +4,9 @@ Workers
  * groupID = grouped under who's view
  * name = 
  * title = 
- 
+ * unsafeCount
+   -> temp 0
+   -> acceleration 0
+   -> noise 0 etc.
 Safety Detection
 GetLatestData needs to be a hittable URL to allow AJAX calls

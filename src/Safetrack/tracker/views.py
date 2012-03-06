@@ -18,7 +18,9 @@ from django.core.context_processors import csrf
 from decimal import *
 import datetime
 import re
-import serial
+
+import supervisor
+
 defaults = {'profilepic':'assets/defaultprofile.jpg',
             'logo':'assets/logo.png'}
 messages = {'logout': "You are logged out",
@@ -28,23 +30,19 @@ accessLevel = {1:'Employee',2:'Supervisor',3:'Management'}
 homepage = {1:'/employee',2:'/supervisor',3:'/management'}
 header = {'logo':defaults['logo'],'homepage':''}
 
-'''Support functions'''
+'''Support functions - global used'''
 def hello_world(request):    
     now = int(round(time.time() * 1000))
     html = "<html><body>It is now %s.</body></html>" % now
     return HttpResponse(html)
 
-def checkStatus(modelObj):
-    return {'safety':"Safe",'temp':'12C','humid':'??','noise':'20Db','impact':'0G'}
-
-#Paul's Mod
 def authorized(request):
     if request.session.get('auth',False):
         header['userType'] = accessLevel[request.session['accessLevel']]
         return True
     return False
 
-'''Views'''
+#Views
 def logoutView(request):
     request.session.flush()
     
@@ -81,14 +79,6 @@ def loginView(request):
 
     return HttpResponse(t.render(c))
 
-def login(request):
-    then = datetime.datetime.now()
-    dummyUser = User(username='Falco', password='fuckstarfox',accessLevel=3,lastLogin=then,email='falcoRox@gmail.com')
-    dummyUser.save()
-    request.session['userLoggedIn'] = dummyUser    
-    html = "<html><body>Added user</body></html>"
-    return HttpResponse(html)
-
 def getLatestData(user):
     safetyConstraints = SafetyConstraint.objects.all()
     latestDataItem = SensorData.objects.filter(user=user).order_by('-time')[0]
@@ -120,78 +110,7 @@ def getLatestData(user):
 def renderDataEmployee(request):
     if not authorized(request):
         return loginView(request)
-
-    user = User.objects.get(pk=1)
-    sensorData = SensorData.objects.filter(sensorType='N')
-    latestData = getLatestData(user)
-#    tempSensor = SensorData.objects.filter(sensorType='T', user=user)
-#    humidSensor = SensorData.objects.filter(sensorType='H', user=user)
-#    noiseSensor = SensorData.objects.filter(sensorType='N', user=user)
-#    impactSensor = SensorData.objects.filter(sensorType='I', user=user)
-#    SensorData.objects.get_or_create(sensorType='T',value='2',time=datetime.datetime.now(), user=user ) 
-   
-    '''Getting user data'''
-    #Need to fix to grab data
-    employeeInfo = {'name':user.username,'title':"Worker"}
-    
-    '''Creating Charts'''
-    dataSeries = \
-        DataPool(
-            series = 
-            [{'options':{'source': sensorData},
-            'terms':[
-                'value',
-                'dataNum']},
-#            '''
-#            {'options':{'source': SensorDataInteger.objects.all()},
-#            'terms':[
-#                'value',
-#                'value']}
-#            '''    
-            ]);
-    cht = Chart(
-            datasource = dataSeries,
-            series_options =
-              [{'options':{
-                  'type': 'line',
-                  'stacking': False},
-                'terms':{
-                  'dataNum': [
-                    'value']
-                  }},
-#              '''
-#               {'options':{
-#               'type': 'line',
-#              'stacking': False},
-#            'terms':{
-#              'value': [
-#                'value']
-#              }}
-#              '''
-                ],
-            chart_options =
-              {'height': 100,
-               'title': {
-                   'text': 'Chart'},
-               'xAxis': {
-                    'title': {
-                       'text': 'Time'}}})
-    
-    '''Current Status; check status returns a dictionary'''
-    status = checkStatus(sensorData)
-    
-    # View code here...
-    t = loader.get_template('employee.html')
-    c = RequestContext(request,         {'auth':True,
-                                         'chart1':cht,
-                                         'imgsrc':defaults['profilepic'],
-                                         'employeeInfo':employeeInfo,
-                                         'header':header,
-                                         'isSafe':latestData[0],
-                                         'dangerValues':latestData[1],
-                                         'currentValues':latestData[2]
-                                         })
-    return HttpResponse(t.render(c))       
+    return employee.render()
  
 def renderDataSupervisor(request):
     if not authorized(request):
@@ -200,80 +119,21 @@ def renderDataSupervisor(request):
     page = request.GET('page','view')
 
     if page == 'view':
-        renderSupervisorViewPage()
+        return supervisor.renderView()
     else:
-        renderSupervisorManagePage()
- 
-    #groupID = request.session['user'].groupID
-    group = User.objects.filter(accessLevel=1)#filtering for members in this supvisor's group; only worker 
-
-    user = User.objects.get(pk=1)
-    sensorData = SensorData.objects.filter(sensorType='N')
-    latestData = getLatestData(user)
-
-    '''Creating Charts'''
-    dataSeries = \
-        DataPool(
-            series = 
-            [{'options':{'source': sensorData},
-            'terms':[
-                'value',
-                'dataNum']},
-#            '''
-#            {'options':{'source': SensorDataInteger.objects.all()},
-#            'terms':[
-#                'value',
-#                'value']}
-#            '''    
-            ]);
-    cht = Chart(
-            datasource = dataSeries,
-            series_options =
-              [{'options':{
-                  'type': 'line',
-                  'stacking': False},
-                'terms':{
-                  'dataNum': [
-                    'value']
-                  }},
-#              '''
-#               {'options':{
-#               'type': 'line',
-#              'stacking': False},
-#            'terms':{
-#              'value': [
-#                'value']
-#              }}
-#              '''
-                ],
-            chart_options =
-              {'height': 100,
-               'title': {
-                   'text': 'Chart'},
-               'xAxis': {
-                    'title': {
-                       'text': 'Time'}}})
-    
-    '''Current Status; check status returns a dictionary'''
-    status = checkStatus(sensorData)
-    
-    t = loader.get_template('supervisor.html')
-    c = RequestContext(request, {'auth':True,
-                                 'chart1':cht,
-                                 'imgsrc':defaults['profilepic'],
-                                 'header':header,
-                                 'isSafe':latestData[0],
-                                 'dangerValues':latestData[1],
-                                 'currentValues':latestData[2],
-                                 'group':group})
-
-    return HttpResponse(t.render(c))       
+        return supervisor.renderManage()
 
 def renderDataManagement(request):
-    t = loader.get_template('management.html')
-    c = RequestContext(request,{})
-    return HttpResponse(t.render(c))
+    if not authorized(request):
+        return loginView(request)
+  
+    page = request.GET('page','view')
 
+    if page == 'view':
+        return management.renderView()
+    else:
+        return management.renderManage()
+    
 def startPolling(request):
     ser = serial.Serial('/dev/tty.usbmodemfa131',9600, timeout=1)
     then = datetime.datetime.now()
