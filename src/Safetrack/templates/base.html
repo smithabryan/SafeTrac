@@ -13,10 +13,12 @@
     <body>
         <div id="headerSection">
             <img src="{{ STATIC_URL }}assets/logo.png">
-            {% if auth %}
-                <h3>Logged In as {{header.userType}}</h3>
-                <a class="button" href="{% url LOGOUT %}">Log Out</a>
-            {% endif %}
+            <div style="display: block; float: right;">
+	            {% if auth %}
+	            	<a class="button" href="{% url LOGOUT %}">Log Out</a><br/>
+	                <h3>Logged In as {{header.userType}}</h3>
+	            {% endif %}
+            </div>
         </div>
         {% if auth %}
             {% block content %}{% endblock %}
