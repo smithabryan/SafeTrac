@@ -24,7 +24,7 @@
             {% block content %}{% endblock %}
         {% else %}
         <div class="center" align=center>
-<!--            <h2>{{errorMessage}}</h2> -->
+            <h2>{{errorMessage}}</h2>
             <form action="{% url LOGIN%}" method="post">{% csrf_token %}
                 <h3 style="color: #EFEFFB;"> Username </h3>
                 <input type="text" value="Enter your ID" name="user" />
@@ -37,12 +37,12 @@
         {% endif %}
     </body>
     
-<!-- Footer -->
+<!-- Footer 
 	<footer>
     	{%block footer %}
-<!--   	<div id="footer">
+ 	<div id="footer">
     		Paul Mou, Zach Goldstein, Khojasteh Dumasia, Bryan Smith, and Peter Kurzlics | SYDE, March 2012
     	</div>
     	{% endblock %}
-    </footer>    -->
+    </footer>-->
 </html>
