@@ -31,17 +31,11 @@ messages = {'logout': "You are logged out",
             'login': "You have to log in",
             'wrong': "Wrong username/password"}
 accessLevel = {1:'Employee',2:'Supervisor',3:'Management'}
-homepage = {1:'/employee',2:'/supervisor',3:'/management'}
+homepage = {1:'/employee/',2:'/supervisor/',3:'/management/'}
 
 '''Support functions - globally used'''
-def hello_world(request):    
-    now = int(round(time.time() * 1000))
-    html = "<html><body>It is now %s.</body></html>" % now
-    return HttpResponse(html)
-
 def authorized(request):
     if request.session.get('auth',False):
-        request.session['userType'] =  accessLevel[request.session['accessLevel']]
         return True
     return False
 
@@ -74,20 +68,11 @@ def getUsersStatus(request):
             
         return HttpResponse('ERROR') 
 
-#
-#Probably won't need
-#    
-def addToMonitored(request):
-    if not authorized(request):
-        return loginView(request)
-    if request.session['accessLevel'] <= 1:
-        return HttpResponse('ERROR')
+def getGoals(request):
+    pass
 
-def removeMonitored(request):
-    if not authorized(request):
-        return loginView(request)
-    if request.session['accessLevel'] <= 1:
-        return HttpResponse('ERROR')
+def setGoals(request):
+    pass
 
 def getUsers(request):
     if not authorized(request):
@@ -146,14 +131,14 @@ def logoutView(request):
     return HttpResponse(t.render(c))
 
 def loginView(request):
+    #if authorized(request):
+    #    return redirect(request.session['homepage'])
+
     userID = request.POST.get('user',False)
     pwd = request.POST.get('pwd',False)
-
+ 
     t = loader.get_template('base.html')
     c = RequestContext(request, {'auth':False,'errorMessage':messages['login']})
-
-    if authorized(request):
-        return redirect(request.session['homepage'])
 
     if userID and pwd:
         curUser = User.objects.filter(username=userID,password=pwd)
@@ -164,6 +149,7 @@ def loginView(request):
             request.session['user'] = curUser
             request.session['accessLevel'] = curUser.accessLevel
             request.session['homepage'] = homepage[curUser.accessLevel]
+            request.session['userType'] =  accessLevel[request.session['accessLevel']]
 
             return redirect(request.session['homepage'])
 
@@ -171,15 +157,6 @@ def loginView(request):
 	    	c = RequestContext(request, {'auth':False,'errorMessage':messages['wrong']})
 
     return HttpResponse(t.render(c))
-
-def login(request):
-    then = datetime.datetime.now()
-    dummyUser = User(username='Falco', password='fuckstarfox',accessLevel=3,lastLogin=then,email='falcoRox@gmail.com')
-    dummyUser.save()
-    request.session['userLoggedIn'] = dummyUser    
-    html = "<html><body>Added user</body></html>"
-    return HttpResponse(html)
-
 
 @cache_control(private=True)
 def renderDataEmployee(request):
