@@ -12,6 +12,7 @@ h1 {
 
 }
 
+
 #leftSide {
     width: 25%;
     height: 50%;
@@ -50,6 +51,17 @@ h1 {
 }
 
 .button{
-float: right;
+	float: right;
 }
+
+#titleImage {
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+#employeeTitle #titleImage {
+	margin-left: 0;
+}
+
 
