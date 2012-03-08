@@ -2,38 +2,39 @@
 {% block title %}SafeTrac -- Supervisor{% endblock %}
 {% block headSection %}
     <link rel=StyleSheet href="{{STATIC_URL}}css/tmp.css" type="text/css" MEDIA=screen>
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.8.18/themes/base/jquery-ui.css" type="text/css" media="all" />
+
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js"></script>
-    <script src="{{STATIC_URL}}scripts/dragndrop.js"></script>
+    <script type="text/javascript" src="{{STATIC_URL}}js/jquery.qtip-1.0.0-rc3.min.js"></script> 
+    <script src="{{STATIC_URL}}scripts/supportFun.js"></script>
+    <script src="{{STATIC_URL}}scripts/supervisor-manage.js"></script>
+
+	<style>
+    <!--...Doesn't Work-->
+    	.ui-autocomplete-loading { background: white url('images/ui-anim_basic_16x16.gif') right center no-repeat; }
+	    #city { width: 25em; }
+	</style>
 {% endblock %}
 {% block content %}
 <div class="page">
     <div id="leftSide">
         <h2>Group</h2>
         <div id="groupBlk">
-            <button id="all">Select All</button>
-            <button id="none">Deselect All</button>
             <ul id="member">
             </ul>
         </div>
     </div>
     <div id="rightSide">
-        <div id="control">
+        <h2>Search</h2>
+        <div class="ui-widget">
+        	Please enter employee name<br />
+        	<label for="city">Search for Employee</label>
+        	<input id="search" />
         </div>
-        <div id="canvas">
-            <div id="graph1">
-            </div>
-        </div>
-        <div id="status">
-            <h2>Summary</h2>
-            <div id="summary">
-            <h3>Normal</h3>
-                <ul>
-                </ul>
-            </div>
-            <h2>Details</h2>
-            <table id="memberTable">
-            </table>
-        </div>
+        <div id="viewBlk">
+            <ul id="member">
+            </ul>
+        </div> 
     </div>
 </div>
 {% endblock %}
