@@ -16,6 +16,8 @@ urlpatterns = patterns('',
 
     # Uncomment the next line to enable the admin:
     # url(r'^admin/', include(admin.site.urls)),
+    url(r'^getUsers.py',views.getUsers),
+
     url(r'^login/', views.loginView,name="LOGIN"),
     url(r'^logout/', views.logoutView,name="LOGOUT"),
     url(r'^test/', views.hello_world),

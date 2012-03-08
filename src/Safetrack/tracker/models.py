@@ -12,7 +12,8 @@ class User(models.Model):
     password = models.CharField(max_length = 30)
     accessLevel = models.PositiveIntegerField()
     lastLogin = models.DateField()
-    email = models.EmailField()
+    name = models.CharField(max_length=100)
+    location = models.CharField(max_length=100) 
 
 class SensorData(models.Model):
     sensorType = models.CharField(max_length=1, choices=SENSOR_TYPES)
@@ -33,5 +34,5 @@ class SafetyConstraint(models.Model):
 class Team(models.Model):
     members = models.ManyToManyField(User, related_name='workers')
     supervisor = models.ForeignKey(User, related_name='leaders')
-    goals = models.PositiveIntegerField()
-    constraints = models.PositiveIntegerField()
+   # goals = models.PositiveIntegerField()
+   # constraints = models.ManyToOneField(SafetyConstraint)

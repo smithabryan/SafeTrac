@@ -8,14 +8,14 @@ from supportFunc import defaults,header,checkStatus,getLatestData
 
 #Supervisor Py.
 def renderView(request):
-    #groupID = request.session['user'].groupID
-    group = User.objects.filter(accessLevel=1)#filtering for members in this supvisor's group; only worker 
-
-    user = User.objects.get(pk=1)
+    #assuming only managing 1 team
+    team = Team.objects.filter(supervisor=request.session['user'])[0]
+   # for member in team.members.all():
+   #     tmp+=member.name 
+  
     sensorData = SensorData.objects.filter(sensorType='N')
-    latestData = getLatestData(user)
+    latestData = getLatestData(team.members.all())
 
-    '''Creating Charts'''
     dataSeries = \
         DataPool(
             series = 
@@ -23,12 +23,6 @@ def renderView(request):
             'terms':[
                 'value',
                 'dataNum']},
-#            '''
-#            {'options':{'source': SensorDataInteger.objects.all()},
-#            'terms':[
-#                'value',
-#                'value']}
-#            '''    
             ]);
     cht = Chart(
             datasource = dataSeries,
@@ -40,15 +34,6 @@ def renderView(request):
                   'dataNum': [
                     'value']
                   }},
-#              '''
-#               {'options':{
-#               'type': 'line',
-#              'stacking': False},
-#            'terms':{
-#              'value': [
-#                'value']
-#              }}
-#              '''
                 ],
             chart_options =
               {'height': 100,
@@ -58,9 +43,7 @@ def renderView(request):
                     'title': {
                        'text': 'Time'}}})
     
-    #Current Status; check status returns a dictionary
-    status = checkStatus(sensorData)
-    
+    #status = checkStatus(sensorData)
     header['userType'] = request.session['userType']
 
     t = loader.get_template('supervisor-view.html')
@@ -68,9 +51,7 @@ def renderView(request):
                                  'chart1':cht,
                                  'imgsrc':defaults['profilepic'],
                                  'header':header,
-                                 'isSafe':latestData[0],
-                                 'dangerValues':latestData[1],
-                                 'currentValues':latestData[2],
+                                 'workerState':latestData,
                                  'group':group})
 
     return HttpResponse(t.render(c))       
@@ -78,6 +59,7 @@ def renderView(request):
 def renderManage(request):
     t = loader.get_template('supervisor-manage.html')
     header['userType'] = request.session['userType']
+
     c = RequestContext(request, {'auth':True,
                                  'header':header,
                                 })

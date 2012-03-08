@@ -9,9 +9,10 @@ from supportFunc import defaults,header,checkStatus,getLatestData
 
 #Employee?
 def render(request):
-    user = User.objects.get(pk=1)
+    user = request.session['user'] 
     sensorData = SensorData.objects.filter(sensorType='N')
     latestData = getLatestData(user)
+
 #    tempSensor = SensorData.objects.filter(sensorType='T', user=user)
 #    humidSensor = SensorData.objects.filter(sensorType='H', user=user)
 #    noiseSensor = SensorData.objects.filter(sensorType='N', user=user)

@@ -1,20 +1,19 @@
-{%extends "base.html" %}
+{% extends "base.html" %}
 {% block title %}SafeTrac -- Supervisor{% endblock %}
 {% block headSection %}
+    <link rel=StyleSheet href="{{STATIC_URL}}css/tmp.css" type="text/css" MEDIA=screen>
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js"></script>
+    <script src="{{STATIC_URL}}scripts/dragndrop.js"></script>
 {% endblock %}
 {% block content %}
-<div class="page" id="page2">
-    <!-- Searchbar Here -->
-    <table>
-        <tr><th>Team Name</th></tr>
-            {% for team in teams %}
-            <tr><td>team.name</td></tr>
-            {% endfor %}
-        </table>
-     <!-- Searchbar Here -->
-     <div id="searchBlk">
-     </div>
+<div class="page">
+    <h2>Group</h2>
+    <div id="groupBlk">
+        <button>Select All</button>
+        <button>Deselect All</button>
+        <ul id="member">
+        </ul>
+    </div> 
 </div>
 {% endblock %}
 {%block footer %}

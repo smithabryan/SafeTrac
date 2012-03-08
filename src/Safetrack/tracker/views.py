@@ -14,6 +14,9 @@ from django.shortcuts import render_to_response,redirect
 from django.http import HttpResponse
 from django.template import RequestContext, loader
 from django.core.context_processors import csrf
+from django.utils import simplejson
+
+from django.views.decorators.cache import cache_control
 
 from decimal import *
 import datetime
@@ -29,7 +32,7 @@ messages = {'logout': "You are logged out",
 accessLevel = {1:'Employee',2:'Supervisor',3:'Management'}
 homepage = {1:'/employee',2:'/supervisor',3:'/management'}
 
-'''Support functions - global used'''
+'''Support functions - globally used'''
 def hello_world(request):    
     now = int(round(time.time() * 1000))
     html = "<html><body>It is now %s.</body></html>" % now
@@ -41,7 +44,67 @@ def authorized(request):
         return True
     return False
 
-#Views
+#ajax Page
+# How to Return error and cause AJAX call to fail?
+
+#Status - not actual values!
+def getUsersStatus(request):    
+    if not authorized(request):
+        return loginView(request)
+
+    dataOrigin = None #
+    if request.session['accessLevel'] == 1:
+       user = request.session['user']
+       return getLatestData(user)
+    elif request.session['accessLevel'] == 2:
+        users = Team.objects.filter(supervisor=request.session['user'])
+        return getLatestData(users)
+    else: #managment
+        searchName = request.POST.get('name',"")
+        teamView = request.POST.get('teamView',False)
+
+        if searchName:
+            users = Users.objects.filter(name=searchName)[0]
+
+            if teamView:
+                users = Team.objects.filter(supervisor=users) 
+
+            return getLatestData(users) 
+       
+        return HttpResponse('ERROR') 
+
+#
+#Probably won't need
+#    
+def addToMonitored(request):
+    if not authorized(request):
+        return loginView(request)
+    if request.session['accessLevel'] <= 1:
+        return HttpResponse('ERROR')
+
+def removeMonitored(request):
+    if not authorized(request):
+        return loginView(request)
+    if request.session['accessLevel'] <= 1:
+        return HttpResponse('ERROR')
+
+def getUsers(request):
+    if not authorized(request):
+        return loginView(request)
+    if request.session['accessLevel'] <= 1:
+        return HttpResponse('ERROR')
+ 
+    teamLead = request.POST.get('username','')
+    teamLead
+    team = Team.objects.filter(supervisor=request.session['user'])[0] 
+    retJSON = [] 
+
+    for member in team.members.all():
+        retJSON.append({'name':member.name,'profile':'/static/assets/defaultprofile.jpg'})    
+    
+    return HttpResponse(simplejson.dumps(retJSON),mimetype="application/javascript") 
+
+#Normal Page Views
 def logoutView(request):
     request.session.flush()
     
@@ -68,9 +131,7 @@ def loginView(request):
             request.session['auth'] = True
             request.session['user'] = curUser
             request.session['accessLevel'] = curUser.accessLevel
-
             request.session['homepage'] = homepage[curUser.accessLevel]
-            #header['homepage'] = homepage[curUser.accessLevel]
 
             return redirect(request.session['homepage'])
 
@@ -79,11 +140,13 @@ def loginView(request):
 
     return HttpResponse(t.render(c))
 
+@cache_control(private=True)
 def renderDataEmployee(request):
     if not authorized(request):
         return loginView(request)
     return employee.render(request)
- 
+
+@cache_control(private=True)
 def renderDataSupervisor(request):
     if not authorized(request):
         return loginView(request)
@@ -95,6 +158,7 @@ def renderDataSupervisor(request):
     else:
         return supervisor.renderManage(request)
 
+@cache_control(private=True)
 def renderDataManagement(request):
     if not authorized(request):
         return loginView(request)
@@ -143,22 +207,30 @@ def testSendFromServer(request):
     return HttpResponse(html)    
 
 def addDummyDataToDb(request):
+    User.objects.all().delete()
+    SensorData.objects.all().delete()
+     
     then = datetime.datetime.now()    
     thenFloat = time.time()*1000000
-    #abc = User.objects.create(username='abc', password='abc',accessLevel=1,lastLogin=then,email='falcx@gmail.com')
-    #falco = User.objects.create(username='Falco', password='starfoxisawimp',accessLevel=3,lastLogin=then,email='falcoRox@gmail.com')
-   #starfox = User.objects.create(username='', password='falcocantfly',accessLevel=3,lastLogin=then,email='starfoxy@gmail.com')    
-    starfox = User.objects.create(username='ppp', password='ppp',accessLevel=2,lastLogin=then,email='starfoxy@gmail.com')    
 
-#    SensorData.objects.get_or_create(sensorType='T',value='0.4',time=thenFloat, dataNum=1, user=falco) 
-#    SensorData.objects.get_or_create(sensorType='H',value='50',time=thenFloat, dataNum=1, user=falco) 
-#    SensorData.objects.get_or_create(sensorType='N',value='10',time=thenFloat, dataNum=1, user=falco)
-#    SensorData.objects.get_or_create(sensorType='I',value='100',time=thenFloat, dataNum=1, user=falco) 
+    abc = User.objects.create(username='e', password='e',accessLevel=1,lastLogin=then,name="ABC",location="US")
+    falco = User.objects.create(username='m', password='m',accessLevel=3,lastLogin=then,name="AAA",location="US")
+    starfox = User.objects.create(username='s', password='s',accessLevel=2,lastLogin=then,name="BBB",location="US")    
 
-#    SensorData.objects.get_or_create(sensorType='T',value='0.4',time=thenFloat, dataNum=1, user=abc) 
-#    SensorData.objects.get_or_create(sensorType='H',value='50',time=thenFloat, dataNum=1, user=abc) 
-#    SensorData.objects.get_or_create(sensorType='N',value='10',time=thenFloat, dataNum=1, user=abc)
-#    SensorData.objects.get_or_create(sensorType='I',value='100',time=thenFloat, dataNum=1, user=abc)
+    team1 = Team.objects.create(supervisor=starfox)
+    team1.members.add(abc)
+    team1.members.add(falco)
+    team1.members.add(starfox)
+
+    SensorData.objects.get_or_create(sensorType='T',value='0.4',time=thenFloat, dataNum=1, user=falco) 
+    SensorData.objects.get_or_create(sensorType='H',value='50',time=thenFloat, dataNum=1, user=falco) 
+    SensorData.objects.get_or_create(sensorType='N',value='10',time=thenFloat, dataNum=1, user=falco)
+    SensorData.objects.get_or_create(sensorType='I',value='100',time=thenFloat, dataNum=1, user=falco) 
+
+    SensorData.objects.get_or_create(sensorType='T',value='0.4',time=thenFloat, dataNum=1, user=abc) 
+    SensorData.objects.get_or_create(sensorType='H',value='50',time=thenFloat, dataNum=1, user=abc) 
+    SensorData.objects.get_or_create(sensorType='N',value='10',time=thenFloat, dataNum=1, user=abc)
+    SensorData.objects.get_or_create(sensorType='I',value='100',time=thenFloat, dataNum=1, user=abc)
 
     SensorData.objects.get_or_create(sensorType='T',value='22.1',time=thenFloat+1, dataNum=2, user=starfox) 
     SensorData.objects.get_or_create(sensorType='H',value='50.0',time=thenFloat+1, dataNum=2, user=starfox) 

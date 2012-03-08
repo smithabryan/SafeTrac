@@ -1,0 +1,21 @@
+.highlighted {
+    border-color: red;
+    border-style: solid;
+}
+
+#groupBlk {
+    background-color:yellow;
+    width:50%;
+    height:50%;
+}
+
+#groupBlk li img:hover {
+    size: 120%;
+}
+
+#groupBlk li {
+    display: block;
+    float: left;
+    margin: 10px;
+}
+
