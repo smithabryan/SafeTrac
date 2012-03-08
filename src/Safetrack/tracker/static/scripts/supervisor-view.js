@@ -1,0 +1,55 @@
+function addToMonitored(added) {
+    console.log(added);
+    monitored[added] = true;
+}
+
+function rmFromMonitored(removed) {
+    monitored[removed] = false;
+}
+
+function setInteractivity() {
+    var groupBlk = $('#groupBlk ul');
+    var members = groupBlk.find('li');
+    $.each(members,function (ind) {
+        $(members[ind]).qtip({
+            content: $(members[ind]).attr('id')+"<br />"+$(members[ind]).attr('data-location'),
+            show: 'mouseover',
+            hide: 'mouseout',
+            position: {
+                corner: {
+                    target: 'topRight',
+                    tooltip: 'bottomLeft'
+                }
+            }
+        });                          
+
+        $(members[ind]).click(function () {
+
+            if ($(this).hasClass('highlighted')) {
+                $(this).removeClass('highlighted');
+                rmFromMonitored($(this).attr('id'));
+            }
+            else {
+                $(this).addClass('highlighted');
+                addToMonitored($(this).attr('id')); 
+            }
+       }); 
+    });
+}
+
+$(function() {
+    $("#tableHeader").click(function () {
+        $("#memberTable").toggle();    
+    });  
+    $("#selectAll").click(function() {
+        //implement
+    });
+    $("#none").click(function () {
+        //implement
+    });
+
+    getMembers(setInteractivity);
+});
+
+//background ajax calls every 30seconds
+periodicCheck = setInterval(latestInfo,5000)
