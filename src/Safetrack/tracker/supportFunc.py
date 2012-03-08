@@ -30,10 +30,17 @@ def getLatestData(users):
                         sensorName = ""
                         if dataItem.value > constraint.maxValue:
                             isHigh = True;
-                        if constraint.sensorType == 'T' : sensorName = "Temperature"
-                        if constraint.sensorType == 'N' : sensorName = "Noise"
-                        if constraint.sensorType == 'I' : sensorName = "Impact"
-                        if constraint.sensorType == 'H' : sensorName = "Humidity"
-                        dangerValues.append({"dataItem":dataItem,"constraint":constraint,"isHigh":isHigh,"sensorName":sensorName})
-        res[user.username] = {'state':isSate,'dangerValue': dangerValues,'temp':temp,'humid':humidity,'noise':noise,'impact':impact}
-    return HttpResponse(simplejson.dumps(res),mimetype="application/javascript") 
+                        if constraint.sensorType == 'T' : sensorName = "temp"
+                        if constraint.sensorType == 'N' : sensorName = "noise"
+                        if constraint.sensorType == 'I' : sensorName = "impact"
+                        if constraint.sensorType == 'H' : sensorName = "humid"
+
+                        dangerValues.append({
+                                            "cMax":constraint.maxValue,
+                                            "cMin":constraint.minValue,
+                                            "isHigh":isHigh,
+                                            "sensorName":sensorName})
+
+        res[user.name] = {'state':isSafe,'aboveLimits': dangerValues,'temp':temp,'humid':humidity,'noise':noise,'impact':impact}
+
+    return res 

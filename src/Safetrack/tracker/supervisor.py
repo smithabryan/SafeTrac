@@ -10,8 +10,6 @@ from supportFunc import defaults,header,checkStatus,getLatestData
 def renderView(request):
     #assuming only managing 1 team
     team = Team.objects.filter(supervisor=request.session['user'])[0]
-   # for member in team.members.all():
-   #     tmp+=member.name 
   
     sensorData = SensorData.objects.filter(sensorType='N')
     latestData = getLatestData(team.members.all())

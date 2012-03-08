@@ -32,8 +32,12 @@ h1 {
     float: right;    
 }
 #rightSide #status{
+    /*
+    This needs to be changed.
+
     color: red;
     font-size: 51px;
+    */
 }
 
 #footer {

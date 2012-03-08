@@ -7,15 +7,35 @@
 {% endblock %}
 {% block content %}
 <div class="page">
-    <h2>Group</h2>
-    <div id="groupBlk">
-        <button>Select All</button>
-        <button>Deselect All</button>
-        <ul id="member">
-        </ul>
-    </div> 
+    <div id="leftSide">
+        <h2>Group</h2>
+        <div id="groupBlk">
+            <button id="all">Select All</button>
+            <button id="none">Deselect All</button>
+            <ul id="member">
+            </ul>
+        </div>
+    </div>
+    <div id="rightSide">
+        <div id="control">
+        </div>
+        <div id="canvas">
+            <div id="graph1">
+            </div>
+        </div>
+        <div id="status">
+            <h2>Summary</h2>
+            <div id="summary">
+            <h3>Normal</h3>
+                <ul>
+                </ul>
+            </div>
+            <h2>Details</h2>
+            <table id="memberTable">
+            </table>
+        </div>
+    </div>
 </div>
 {% endblock %}
 {%block footer %}
 {% endblock %}
-                                                    

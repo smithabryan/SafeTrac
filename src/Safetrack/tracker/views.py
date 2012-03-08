@@ -18,6 +18,8 @@ from django.utils import simplejson
 
 from django.views.decorators.cache import cache_control
 
+from supportFunc import getLatestData
+
 from decimal import *
 import datetime
 import re
@@ -52,24 +54,25 @@ def getUsersStatus(request):
     if not authorized(request):
         return loginView(request)
 
-    dataOrigin = None #
+    dataOrigin = None
     if request.session['accessLevel'] == 1:
        user = request.session['user']
-       return getLatestData(user)
+       return HttpResponse(simplejson.dumps(getLatestData([user])),mimetype="application/javascript") 
     elif request.session['accessLevel'] == 2:
-        users = Team.objects.filter(supervisor=request.session['user'])
-        return getLatestData(users)
+        team = Team.objects.filter(supervisor=request.session['user'])[0]
+        return HttpResponse(simplejson.dumps(getLatestData(team.members.all())),mimetype="application/javascript") 
     else: #managment
         searchName = request.POST.get('name',"")
         teamView = request.POST.get('teamView',False)
 
         if searchName:
-            users = Users.objects.filter(name=searchName)[0]
+            users = Users.objects.filter(name=searchName)
 
             if teamView:
-                users = Team.objects.filter(supervisor=users) 
+                users = Team.objects.filter(supervisor=users)[0].members.all() 
 
-            return getLatestData(users) 
+            return HttpResponse(simplejson.dumps(getLatestData(users)),mimetype="application/javascript") 
+            
        
         return HttpResponse('ERROR') 
 
