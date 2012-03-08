@@ -1,0 +1,577 @@
+diff --git a/src/Safetrack/sqlite.db b/src/Safetrack/sqlite.db
+index 9123a22..88c5d12 100755
+Binary files a/src/Safetrack/sqlite.db and b/src/Safetrack/sqlite.db differ
+diff --git a/src/Safetrack/templates/.supervisor-view.html.swp b/src/Safetrack/templates/.supervisor-view.html.swp
+deleted file mode 100644
+index 911d0db..0000000
+Binary files a/src/Safetrack/templates/.supervisor-view.html.swp and /dev/null differ
+diff --git a/src/Safetrack/templates/supervisor-manage.html b/src/Safetrack/templates/supervisor-manage.html
+index 45dcdf9..f0a9bb0 100644
+--- a/src/Safetrack/templates/supervisor-manage.html
++++ b/src/Safetrack/templates/supervisor-manage.html
+@@ -2,38 +2,39 @@
+ {% block title %}SafeTrac -- Supervisor{% endblock %}
+ {% block headSection %}
+     <link rel=StyleSheet href="{{STATIC_URL}}css/tmp.css" type="text/css" MEDIA=screen>
++    <link rel="stylesheet" href="http://code.jquery.com/ui/1.8.18/themes/base/jquery-ui.css" type="text/css" media="all" />
++
+     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js"></script>
+-    <script src="{{STATIC_URL}}scripts/dragndrop.js"></script>
++    <script type="text/javascript" src="{{STATIC_URL}}js/jquery.qtip-1.0.0-rc3.min.js"></script> 
++    <script src="{{STATIC_URL}}scripts/supportFun.js"></script>
++    <script src="{{STATIC_URL}}scripts/supervisor-manage.js"></script>
++
++	<style>
++    <!--...Doesn't Work-->
++    	.ui-autocomplete-loading { background: white url('images/ui-anim_basic_16x16.gif') right center no-repeat; }
++	    #city { width: 25em; }
++	</style>
+ {% endblock %}
+ {% block content %}
+ <div class="page">
+     <div id="leftSide">
+         <h2>Group</h2>
+         <div id="groupBlk">
+-            <button id="all">Select All</button>
+-            <button id="none">Deselect All</button>
+             <ul id="member">
+             </ul>
+         </div>
+     </div>
+     <div id="rightSide">
+-        <div id="control">
+-        </div>
+-        <div id="canvas">
+-            <div id="graph1">
+-            </div>
+-        </div>
+-        <div id="status">
+-            <h2>Summary</h2>
+-            <div id="summary">
+-            <h3>Normal</h3>
+-                <ul>
+-                </ul>
+-            </div>
+-            <h2>Details</h2>
+-            <table id="memberTable">
+-            </table>
++        <h2>Search</h2>
++        <div class="ui-widget">
++        	Please enter employee name<br />
++        	<label for="city">Search for Employee</label>
++        	<input id="search" />
+         </div>
++        <div id="viewBlk">
++            <ul id="member">
++            </ul>
++        </div> 
+     </div>
+ </div>
+ {% endblock %}
+diff --git a/src/Safetrack/templates/supervisor-view.html b/src/Safetrack/templates/supervisor-view.html
+index a7555f4..29c0167 100644
+--- a/src/Safetrack/templates/supervisor-view.html
++++ b/src/Safetrack/templates/supervisor-view.html
+@@ -1,75 +1,43 @@
+ {% extends "base.html" %}
+ {% block title %}SafeTrac -- Supervisor{% endblock %}
+ {% block headSection %}
++    <link rel=StyleSheet href="{{STATIC_URL}}css/tmp.css" type="text/css" MEDIA=screen>
+     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js"></script>
+-    <script src="http://code.highcharts.com/highcharts.js"></script>
+-    <script src="http://code.highcharts.com/modules/exporting.js"></script>
+-    {% load chartit %}
+-    {{ chart1|load_charts:"graph1" }}
++    <script type="text/javascript" src="{{STATIC_URL}}js/jquery.qtip-1.0.0-rc3.min.js"></script> 
++    <script src="{{STATIC_URL}}scripts/supportFun.js"></script>
++    <script src="{{STATIC_URL}}scripts/supervisor-view.js"></script>
+ {% endblock %}
+ {% block content %}
+-
+-<!-- Supervisor View  -->
+-    <div class="page" id="page1">
+-        <div id="leftSide">
+-            <div id="groupBlk">
+-                <ul>
+-                {% for member in group %}
+-                    <li>
+-                        <div>
+-                        <img src="{{STAITC}}{{member.profile}}">
+-                        <h3>{{member.name}}</h3>
+-                        <h3>{{member.location}}</h3>
+-                        </div>
+-                    </li>
+-                {% endfor %}
+-                </ul>
+-            </div> 
+-            <div id="viewBlk">
+-            </div>
++<div class="page">
++    <div id="leftSide">
++        <h2>Group</h2>
++        <div id="groupBlk">
++            <button id="all">Select All</button>
++            <button id="none">Deselect All</button>
++            <ul id="member">
++            </ul>
+         </div>
+-        <div id="rightSide">
+-            <div id="controls">
+-            </div>
+-            <div id="canvas">
+-                <div id="graph1">
+-                </div>
++    </div>
++    <div id="rightSide">
++        <div id="control">
++        </div>
++        <div id="canvas">
++            <div id="graph1">
+             </div>
+-            <div id="status">
+-                  {% if not isSafe %}
+-                      <div id="warning">
+-                      <h2>DANGER</h2>
+-                        <ul>
+-                        {% for item in dangerValues %}
+-                            {% if item.isHigh %}
+-                                <li><p>Type:{{ item.sensorName }}: {{item.dataItem.value}} is too high!</p></li>
+-                            {% else %}
+-                                <li><p>Type:{{ item.sensorName }}: {{item.dataItem.value}} is too low!</p></li>
+-                            {% endif %}
+-                        {% endfor %}
+-                        </ul>
+-                      </div>
+-
+-                  {% else %}
+-                      <h2>Workers in safe conditions</h2>
+-                  {% endif %}
+-                <table>
+-                    <tr>
+-                        <td>Temperature</td>
+-                        <td>Humidity</td>
+-                        <td>Noise</td>
+-                        <td>Impact</td>
+-                    </tr>
+-                    <tr>
+-                        <td>{{currentValues.temp}}</td>
+-                        <td>{{currentValues.humid}}</td>
+-                        <td>{{currentValues.noise}}</td>
+-                        <td>{{currentValues.impact}}</td>
+-                    </tr>
+-                </table>
++        </div>
++        <div id="status">
++            <h2>Summary</h2>
++            <div id="summary">
++            <h3>Normal</h3>
++                <ul>
++                </ul>
+             </div>
++            <h2 id="tableHeader">Details</h2>
++            <table id="memberTable">
++            </table>
+         </div>
+     </div>
++</div>
+ {% endblock %}
+-{%block footer %}    
++{%block footer %}
+ {% endblock %}
+diff --git a/src/Safetrack/templates/supervisor.html b/src/Safetrack/templates/supervisor.html
+deleted file mode 100644
+index bd1c0b1..0000000
+--- a/src/Safetrack/templates/supervisor.html
++++ /dev/null
+@@ -1,45 +0,0 @@
+-{% extends "base.html" %}
+-{% block title %}SafeTrac -- Supervisor{% endblock %}
+-{% block headSection %}
+-<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js"></script>
+-{% endblock %}
+-{% block content %}
+-
+-<!-- Supervisor View  -->
+-    <div class="page" id="page1">
+-        <div id="leftSide">
+-            <div id="groupBlk">
+-                <ul>
+-                {% for member in group %}
+-                    <li>
+-                        <div>
+-                        <img src="{{STAITC}}{{member.profile}}">
+-                        <h3>{{member.name}}</h3>
+-                        <h3>{{member.location}}</h3>
+-                        </div>
+-                    </li>
+-                {% endfor %}
+-                </ul>
+-            </div> 
+-            <div id="viewBlk">
+-            </div>
+-        </div>
+-        <div id="rightSide">
+-        </div>
+-    </div>
+-<!-- Managing View -->
+-    <div class="page" id="page2">
+-        <!-- Searchbar Here -->
+-        <table>
+-            <tr><th>Team Name</th></tr>
+-            {% for team in teams %}
+-            <tr><td>team.name</td></tr>
+-            {% endfor %}
+-        </table>
+-        <!-- Searchbar Here -->
+-        <div id="searchBlk">
+-        </div>
+-    </div>
+-{% endblock %}
+-{%block footer %}    
+-{% endblock %}
+diff --git a/src/Safetrack/tracker/.supervisor.py.swp b/src/Safetrack/tracker/.supervisor.py.swp
+deleted file mode 100644
+index 699330f..0000000
+Binary files a/src/Safetrack/tracker/.supervisor.py.swp and /dev/null differ
+diff --git a/src/Safetrack/tracker/static/scripts/.dragndrop.js.swp b/src/Safetrack/tracker/static/scripts/.dragndrop.js.swp
+deleted file mode 100644
+index a2af84a..0000000
+Binary files a/src/Safetrack/tracker/static/scripts/.dragndrop.js.swp and /dev/null differ
+diff --git a/src/Safetrack/tracker/static/scripts/dragdrop.js b/src/Safetrack/tracker/static/scripts/dragdrop.js
+deleted file mode 100644
+index 5a2ae79..0000000
+--- a/src/Safetrack/tracker/static/scripts/dragdrop.js
++++ /dev/null
+@@ -1,49 +0,0 @@
+-var monitored = new Object()
+-var usersStatusURL = "ajax/usersStatus.py" //returns data in JSON
+-var usersGraphURL = "????"
+-
+-$.ajaxSetup ({
+-    cache: false
+-});
+-
+-$(function() {
+-    var viewBlk = $('#viewBlk');
+-    var groupBlk = $('#groupBlk');
+-    
+-    $('li',$('#groupBlk')).draggable();
+-   
+-    groupBlk.droppable({
+-        accept: "#group li",
+-        activeClass: "highlightSelection",
+-        drop: function(event,ui) {
+-            //remove from ajax calls
+-        }
+-    viewBlk.droppable({
+-        accept: "#group li",
+-        activeClass: "highlightSelection",
+-        drop: function(event,ui) {
+-            //add to ajax calls
+-        }
+-    });
+-});
+-
+-function latestInfo(users) {
+-    $.getJSON(
+-        usersStatusURL,
+-        {users:monitored},
+-
+-        function(data) {
+-            $.each(data,function(key,val) {
+-                $("#"+key).find('stat').html(val)
+-                if (val == "Danger") {
+-                    //add styles !!!
+-                }
+-            })
+-        });
+-    //graph AJAX call - Zach?
+-    $.getJSON()
+-
+-}
+-
+-//background ajax calls every 30seconds
+-periodicCheck = setInterval(latestInfo(user),30000)
+diff --git a/src/Safetrack/tracker/static/scripts/dragndrop.js b/src/Safetrack/tracker/static/scripts/dragndrop.js
+deleted file mode 100644
+index a7ee1db..0000000
+--- a/src/Safetrack/tracker/static/scripts/dragndrop.js
++++ /dev/null
+@@ -1,145 +0,0 @@
+-var monitored = new Object() 
+-var getTeamUserURL = "/getUsers.py/"
+-var updateUsersStatus = "/getUsersStatus.py/"
+-
+-//this file definitely needs to be cleaned soon~
+-
+-$.ajaxSetup ({
+-    cache: false
+-});
+-
+-Object.size = function(obj) {
+-    var size = 0, key;
+-    for (key in obj) {
+-        if (obj.hasOwnProperty(key)) size++;
+-    }
+-    return size;
+-};
+-
+-function latestInfo() {
+-    //if management, should read two var
+-    var searchName = "";
+-    var teamView = false;
+-
+-    if ($("#userType").val().substr(14,1)=="M") {
+-        searchName = $("#searchName").val();
+-        teamView = $("#teamView").checked ? true : false; 
+-    }
+-
+-    $.ajax ({
+-        type: "GET",
+-        url: updateUsersStatus,
+-        data: {"searchName":searchName,"teamView":teamView},
+-        dataType: "json",
+-        success: function(data) {
+-            var summaryDiv = $("#summary");
+-            var detailTable = $("#memberTable");
+-
+-            detailTable.empty();
+-            summaryDiv.html("Normal");
+-
+-            var heading = '<td id="name">Name</td>';
+-            heading += '<td id="temp">Temperature</td>';
+-            heading += '<td id="humid">Humidity</td>';
+-            heading += '<td id="noise">Noise</td>';
+-            heading += '<td id="impact">Impact</td>';
+-
+-            $('<tr />',{html:heading}).appendTo(detailTable)
+-            
+-            $.each(data, function (name,details) {
+-                
+-                var tableTags = '<td>'+name+'</td>';
+-                tableTags += '<td id="'+name+'temp">'+details['temp']+'</td>';
+-                tableTags += '<td id="'+name+'humid">'+details['humid']+'</td>';
+-                tableTags += '<td id="'+name+'noise">'+details['noise']+'</td>';
+-                tableTags += '<td id="'+name+'impact">'+details['impact']+'</td>';
+-
+-                $('<tr />',{html:tableTags}).appendTo(detailTable)
+-
+-                if (details['safe']) { 
+-                   //this is BAD!
+-                    summaryDiv.find('h3').addClass('warning');
+-                    summaryDiv.find('h3').html("Attention"); 
+-                    $('<li >',{html:name+"is in danger."}).appendTo(summaryDiv.find('ul')); 
+-                }
+-                else {
+-                    for (var i = 0; i < details['aboveLimits'].size; i++) {
+-                        if (details['isHigh'])
+-                            $("#"+name+details['sensorName']).addClass('dangerHigh')
+-                        else
+-                            $("#"+name+details['sensorName']).addClass('dangerLow')
+-                    }        
+-                } 
+-            })
+-        },
+-        failure: function (data) {
+-            alert('fail')
+-        } 
+-    });
+-}
+-
+-function setInteractivity() {
+-    var groupBlk = $('#groupBlk ul');
+-    var members = groupBlk.find('li');
+-    $.each(members,function (ind) {
+-        $(members[ind]).click(function () {
+-
+-            if ($(this).hasClass('highlighted')) {
+-                $(this).removeClass('highlighted');
+-                rmFromMonitored($(this).attr('id'));
+-            }
+-            else {
+-                $(this).addClass('highlighted');
+-                addToMonitored($(this).attr('id')); 
+-            }
+-       }); 
+-    });
+-}
+-
+-function addToMonitored(added) {
+-    console.log(added);
+-    monitored[added] = true;
+-    /*$.ajax ({
+-        type: "POST",
+-        url: addToMonitoredURL,
+-        data: added, 
+-        success: function(data) {
+-           //do nothing for now 
+-        },
+-        failure: function (data) {
+-            alert('fail')
+-        } 
+-    });*/
+-}
+-
+-function rmFromMonitored(removed) {
+-    monitored[removed] = false;
+-}
+-
+-function getUsers() {
+-    items = []
+-    $.ajax({
+-        type: "GET",
+-        url: getTeamUserURL, 
+-        data: {},
+-        dataType: "json",
+-        success: function(data) {
+-            $.each(data, function(ind) {
+-                items.push('<li id="'+data[ind].name+'">' + '<img src="'+data[ind].profile+'"></li>');
+-            });
+-
+-            $('#groupBlk #member').html(items.join(''))
+-            setInteractivity();
+-        },
+-        error: function(data) {
+-            alert("fail");
+-        }
+-    });
+-};    
+-
+-$(function() {
+-    getUsers()
+-});
+-
+-//background ajax calls every 30seconds
+-periodicCheck = setInterval(latestInfo,5000)
+diff --git a/src/Safetrack/tracker/static/scripts/init.js b/src/Safetrack/tracker/static/scripts/init.js
+deleted file mode 100644
+index 7e0b060..0000000
+--- a/src/Safetrack/tracker/static/scripts/init.js
++++ /dev/null
+@@ -1,2 +0,0 @@
+-var chart;
+-
+diff --git a/src/Safetrack/tracker/supervisor.py b/src/Safetrack/tracker/supervisor.py
+index d1e8a39..385a60d 100644
+--- a/src/Safetrack/tracker/supervisor.py
++++ b/src/Safetrack/tracker/supervisor.py
+@@ -8,49 +8,13 @@ from supportFunc import defaults,header,checkStatus,getLatestData
+ 
+ #Supervisor Py.
+ def renderView(request):
+-    #assuming only managing 1 team
+-    team = Team.objects.filter(supervisor=request.session['user'])[0]
+-  
+-    sensorData = SensorData.objects.filter(sensorType='N')
+-    latestData = getLatestData(team.members.all())
+-
+-    dataSeries = \
+-        DataPool(
+-            series = 
+-            [{'options':{'source': sensorData},
+-            'terms':[
+-                'value',
+-                'dataNum']},
+-            ]);
+-    cht = Chart(
+-            datasource = dataSeries,
+-            series_options =
+-              [{'options':{
+-                  'type': 'line',
+-                  'stacking': False},
+-                'terms':{
+-                  'dataNum': [
+-                    'value']
+-                  }},
+-                ],
+-            chart_options =
+-              {'height': 100,
+-               'title': {
+-                   'text': 'Chart'},
+-               'xAxis': {
+-                    'title': {
+-                       'text': 'Time'}}})
+-    
+-    #status = checkStatus(sensorData)
++    t = loader.get_template('supervisor-view.html')
+     header['userType'] = request.session['userType']
+ 
+-    t = loader.get_template('supervisor-view.html')
+     c = RequestContext(request, {'auth':True,
+-                                 'chart1':cht,
+-                                 'imgsrc':defaults['profilepic'],
++                                 'chart1':'',
+                                  'header':header,
+-                                 'workerState':latestData,
+-                                 'group':group})
++                                 })
+ 
+     return HttpResponse(t.render(c))       
+ 
+diff --git a/src/Safetrack/tracker/supervisor.pyc b/src/Safetrack/tracker/supervisor.pyc
+index be74d80..e13ea91 100644
+Binary files a/src/Safetrack/tracker/supervisor.pyc and b/src/Safetrack/tracker/supervisor.pyc differ
+diff --git a/src/Safetrack/tracker/supportFunc.py b/src/Safetrack/tracker/supportFunc.py
+index 85c74d1..b0e5c6a 100644
+--- a/src/Safetrack/tracker/supportFunc.py
++++ b/src/Safetrack/tracker/supportFunc.py
+@@ -41,6 +41,6 @@ def getLatestData(users):
+                                             "isHigh":isHigh,
+                                             "sensorName":sensorName})
+ 
+-        res[user.name] = {'state':isSafe,'aboveLimits': dangerValues,'temp':temp,'humid':humidity,'noise':noise,'impact':impact}
++        res[user.name] = {'location': user.location,'state':isSafe,'aboveLimits': dangerValues,'temp':temp,'humid':humidity,'noise':noise,'impact':impact}
+ 
+     return res 
+diff --git a/src/Safetrack/tracker/supportFunc.pyc b/src/Safetrack/tracker/supportFunc.pyc
+index fe3cf63..8f534dc 100644
+Binary files a/src/Safetrack/tracker/supportFunc.pyc and b/src/Safetrack/tracker/supportFunc.pyc differ
+diff --git a/src/Safetrack/tracker/tests.pyc b/src/Safetrack/tracker/tests.pyc
+deleted file mode 100644
+index 34e78d8..0000000
+Binary files a/src/Safetrack/tracker/tests.pyc and /dev/null differ
+diff --git a/src/Safetrack/tracker/views.py b/src/Safetrack/tracker/views.py
+index 27e1565..621d712 100644
+--- a/src/Safetrack/tracker/views.py
++++ b/src/Safetrack/tracker/views.py
+@@ -76,6 +76,13 @@ def getUsersStatus(request):
+        
+         return HttpResponse('ERROR') 
+ 
++def getSearchResult(request):
++    if not authorized(request):
++        return loginView(request)
++    name = request.POST.get('name','*')
++    users = Users.objects.filter(name=name); 
++
++    return HttpResponse(simplejson.dumps(getLatestData(users)),mimetype="application/javascript") 
+ #
+ #Probably won't need
+ #    
+@@ -103,7 +110,7 @@ def getUsers(request):
+     retJSON = [] 
+ 
+     for member in team.members.all():
+-        retJSON.append({'name':member.name,'profile':'/static/assets/defaultprofile.jpg'})    
++        retJSON.append({'location':member.location,'name':member.name,'profile':'/static/assets/defaultprofile.jpg'})    
+     
+     return HttpResponse(simplejson.dumps(retJSON),mimetype="application/javascript") 
+ 
+diff --git a/src/Safetrack/tracker/views.pyc b/src/Safetrack/tracker/views.pyc
+index b2d8b57..9574574 100644
+Binary files a/src/Safetrack/tracker/views.pyc and b/src/Safetrack/tracker/views.pyc differ
+diff --git a/src/Safetrack/urls.py b/src/Safetrack/urls.py
+index 66f4aec..20f230c 100644
+--- a/src/Safetrack/urls.py
++++ b/src/Safetrack/urls.py
+@@ -17,6 +17,7 @@ urlpatterns = patterns('',
+     # Uncomment the next line to enable the admin:
+     # url(r'^admin/', include(admin.site.urls)),
+     url(r'^getUsersStatus.py',views.getUsersStatus),
++    url(r'^getSearchResult.py',views.getSearchResult),
+     url(r'^getUsers.py',views.getUsers),
+ 
+     url(r'^login/', views.loginView,name="LOGIN"),
+diff --git a/src/Safetrack/urls.pyc b/src/Safetrack/urls.pyc
+index 954702e..ca31686 100644
+Binary files a/src/Safetrack/urls.pyc and b/src/Safetrack/urls.pyc differ
