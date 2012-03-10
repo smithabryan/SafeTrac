@@ -364,3 +364,9 @@ def getNewChartData(request):
     data = simplejson.dumps(dataList)
     
     return HttpResponse(data, mimetype='application/javascript')
+
+def testFeedback(request):
+    ser = serial.Serial('/dev/tty.usbmodemfa121',9600, timeout=1)
+    ser.write('@')
+    html = "<html><body>Sending an Asterisk to serial port</body></html>"
+    return HttpResponse(html)    

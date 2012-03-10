@@ -29,5 +29,6 @@ urlpatterns = patterns('',
     url(r'^testSend/', views.testSendFromServer),
     url(r'^addDummyData/', views.addDummyDataToDb),
     url(r'^getNewChartData/', views.getNewChartData),
+    url(r'^testingFeedback/', views.testFeedback),    
 )
 urlpatterns += staticfiles_urlpatterns()
