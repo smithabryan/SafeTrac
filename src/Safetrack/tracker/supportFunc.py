@@ -1,49 +1,12 @@
 from Safetrack.tracker.models import SensorData, User, Goal, SafetyConstraint, Team
+from django.http import HttpResponse
+from django.utils import simplejson
 
 header = {'logo':'assets/logo.png'}
 defaults = {'profilepic':'assets/defaultprofile.jpg'}
 
 def checkStatus(modelObj):
     return {'safety':"Safe",'temp':'12C','humid':'??','noise':'20Db','impact':'0G'}
-
-#def getLatestData(users):
-#    res = {}
-#    for user in users:
-#        safetyConstraints = SafetyConstraint.objects.all()
-#        latestTime = SensorData.objects.filter(user=user).order_by('-time')[0]
-#
-#        latestDataItems = SensorData.objects.filter(time=latestTime.time)
-#        temp = latestDataItems.filter(sensorType='T')[0].value
-#        noise = latestDataItems.filter(sensorType='N')[0].value
-#        humidity = latestDataItems.filter(sensorType='H')[0].value
-#        impact = latestDataItems.filter(sensorType='I')[0].value
-#
-#        # get latest data
-#        isSafe = True
-#        dangerValues = [];
-#        for constraint in safetyConstraints:
-#            for dataItem in latestDataItems:
-#                if dataItem.sensorType == constraint.sensorType:
-#                    if dataItem.value > constraint.maxValue or dataItem.value < constraint.minValue:
-#                        isSafe = False
-#                        isHigh = False;
-#                        sensorName = ""
-#                        if dataItem.value > constraint.maxValue:
-#                            isHigh = True;
-#                        if constraint.sensorType == 'T' : sensorName = "temp"
-#                        if constraint.sensorType == 'N' : sensorName = "noise"
-#                        if constraint.sensorType == 'I' : sensorName = "impact"
-#                        if constraint.sensorType == 'H' : sensorName = "humid"
-#
-#                        dangerValues.append({
-#                                            "cMax":constraint.maxValue,
-#                                            "cMin":constraint.minValue,
-#                                            "isHigh":isHigh,
-#                                            "sensorName":sensorName})
-#
-#        res[user.name] = {'state':isSafe,'aboveLimits': dangerValues,'temp':temp,'humid':humidity,'noise':noise,'impact':impact}
-#
-#    return res 
 
 def getLatestData(user):
     safetyConstraints = SafetyConstraint.objects.all()
@@ -82,4 +45,50 @@ def getLatestData(user):
                         if constraint.sensorType == 'I' : sensorName = "Impact"
                         if constraint.sensorType == 'H' : sensorName = "Humidity"
                         dangerValues.append({"dataItem":dataItem,"constraint":constraint,"isHigh":isHigh,"sensorName":sensorName})
-    return {'state':isSafe,'aboveLimits': dangerValues, 'currentValues':{'temp':temp,'humid':humidity,'noise':noise,'impact':impact,'time':latestDataItem.time}}                        
+    return {'state':isSafe,'aboveLimits': dangerValues, 'currentValues':{'temp':temp,'humid':humidity,'noise':noise,'impact':impact,'time':latestDataItem.time}}
+
+def getTemperatureData(request):
+    request.session['dataViewingType'] = "Temp"
+    user = request.session['user']
+    sensorDataList = SensorData.objects.filter(sensorType='T', user=user)[0:10]
+    returnListValues = []
+    returnListTimes = []
+    for sensorData in sensorDataList:
+        returnListValues.append(sensorData.value)
+        returnListTimes.append(sensorData.time)
+    data = simplejson.dumps([returnListValues,returnListTimes])
+    return HttpResponse(data, mimetype='application/javascript')
+
+def getNoiseData(request):
+    request.session['dataViewingType'] = "Noise"
+    user = request.session['user']
+    sensorDataList = SensorData.objects.filter(sensorType='N', user=user)[0:10]
+    returnListValues = []
+    returnListTimes = []
+    for sensorData in sensorDataList:
+        returnListValues.append(sensorData.value)
+        returnListTimes.append(sensorData.time)
+    data = simplejson.dumps([returnListValues,returnListTimes])
+    return HttpResponse(data, mimetype='application/javascript')
+def getHumidityData(request):
+    request.session['dataViewingType'] = "Humidity"
+    user = request.session['user']
+    sensorDataList = SensorData.objects.filter(sensorType='H', user=user)[0:10]
+    returnListValues = []
+    returnListTimes = []
+    for sensorData in sensorDataList:
+        returnListValues.append(sensorData.value)
+        returnListTimes.append(sensorData.time)
+    data = simplejson.dumps([returnListValues,returnListTimes])
+    return HttpResponse(data, mimetype='application/javascript')
+def getImpactData(request):
+    request.session['dataViewingType'] = "Impact"
+    user = request.session['user']
+    sensorDataList = SensorData.objects.filter(sensorType='I', user=user)[0:10]
+    returnListValues = []
+    returnListTimes = []
+    for sensorData in sensorDataList:
+        returnListValues.append(sensorData.value)
+        returnListTimes.append(sensorData.time)
+    data = simplejson.dumps([returnListValues,returnListTimes])
+    return HttpResponse(data, mimetype='application/javascript')

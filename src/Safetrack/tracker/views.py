@@ -345,24 +345,27 @@ def getNewChartData(request):
     latestDataItem = latestDataItem[latestDataItem.count()-1]
     latestDataItems = SensorData.objects.filter(time=latestDataItem.time)
     
+    # used in employee.render
     if 'lastNewChartDataTime' not in request.session:
         request.session['lastNewChartDataTime'] = latestDataItem.time
     elif request.session['lastNewChartDataTime'] == latestDataItem.time:
         return HttpResponse([], mimetype='application/javascript')
     else:
         request.session['lastNewChartDataTime'] = latestDataItem.time
-#    user = request.session['currentGraphUsers']
     
-    sensorData = SensorData.objects.filter(sensorType='N')
-#    tempSensor = SensorData.objects.filter(sensorType='T', user=user)
-#    humidSensor = SensorData.objects.filter(sensorType='H', user=user)
-#    impactSensor = SensorData.objects.filter(sensorType='I', user=user)
     dataList = []
     for dataItem in latestDataItems:
-        if dataItem.sensorType == 'N':
-            dataList.append([dataItem.time,dataItem.value] )
+        if 'dataViewingType' not in request.session and dataItem.sensorType == 'N':
+            dataList.append([dataItem.time,dataItem.value] )    
+        elif request.session['dataViewingType'] == "Temp" and dataItem.sensorType == 'T':
+            dataList.append([dataItem.time,dataItem.value] )    
+        elif request.session['dataViewingType'] == "Noise" and dataItem.sensorType == 'N':
+            dataList.append([dataItem.time,dataItem.value] )    
+        elif request.session['dataViewingType'] == "Humidity" and dataItem.sensorType == 'H':
+            dataList.append([dataItem.time,dataItem.value] )    
+        elif request.session['dataViewingType'] == "Impact" and dataItem.sensorType == 'I':
+            dataList.append([dataItem.time,dataItem.value] )    
     data = simplejson.dumps(dataList)
-    
     return HttpResponse(data, mimetype='application/javascript')
 
 def testFeedback(request):

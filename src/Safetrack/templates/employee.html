@@ -7,13 +7,52 @@
     {{ chart1|load_charts:"graph1" }}
 	<script type="text/javascript" charset="utf-8">    
 	elem = document.getElementById('rightSide');	
-	$(window).ready(function()
+	$(document).ready(function()
 	{    
 	    chart.setSize(
 	       400,
 	       300,
 	       false
 	    );   
+	    
+	
+	$(".chartSwitch").click(function(event) {
+  		var callName = "";
+  		var type = "";
+		if(event.target.id == "TemperatureButton")
+  		{
+  			callName = "/getTemperatureData/";
+  			type = "Temperature"
+  		}
+  		else if(event.target.id == "HumidityButton")
+  		{
+  			callName = "/getHumidityData/";
+  			type = "Humidity"
+  		}
+  		else if(event.target.id == "NoiseButton")
+  		{
+  			callName = "/getNoiseData/";
+  			type = "Noise"
+  		}
+  		else if(event.target.id == "ImpactButton")
+  		{
+  			callName = "/getImpactData/";
+  			type = "Impact Force"
+  		}
+  		//set session (do on server through call)
+  		
+		$.getJSON(callName,
+	        function(data){
+		    	chart.yAxis[0].setTitle({
+        			text: type
+    			});
+    			chart.series[0].setData(data[0],false);
+				chart.xAxis[0].setCategories(data[1], false);
+				chart.redraw();
+	        }
+		);		
+		  		
+	});	    
 	});	
 	setInterval(function(){
 	
@@ -45,6 +84,7 @@
 	        }
 	    )
 	}, 1000);
+
 	
 	</script>
 {% endblock %}
@@ -73,6 +113,12 @@
                 <div id="graph1">
                 </div>
             </div>
+			    <div class="chartSwitch">
+	      			<a id="TemperatureButton" class="chartSwitch" href="#">Temperature</a>                
+    	  			<a id="NoiseButton" class="chartSwitch" href="#">Noise</a>
+      				<a id="HumidityButton" class="chartSwitch" href="#">Humidity</a>  
+      				<a id="ImpactButton" class="chartSwitch" href="#">Impacts</a>
+    			</div>
             <div id="status">
 				  {% if not isSafe %}
 	                  <div id="warning">
