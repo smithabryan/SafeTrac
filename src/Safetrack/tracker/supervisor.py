@@ -4,7 +4,7 @@ from django.shortcuts import render_to_response,redirect
 from django.http import HttpResponse
 from django.template import RequestContext, loader
 from django.core.context_processors import csrf
-from supportFunc import defaults,header,checkStatus,getLatestData
+from Safetrack.tracker.supportFunc import *
 
 #Supervisor Py.
 def renderView(request):
@@ -13,6 +13,9 @@ def renderView(request):
   
     sensorData = SensorData.objects.filter(sensorType='N')
     latestData = getLatestData(team.members.all())
+
+    #groupID = request.session['user'].groupID
+    group = User.objects.filter(accessLevel=1)#filtering for members in this supvisor's group; only worker 
 
     dataSeries = \
         DataPool(

@@ -12,6 +12,7 @@ class User(models.Model):
     password = models.CharField(max_length = 30)
     accessLevel = models.PositiveIntegerField()
     lastLogin = models.DateField()
+    email = models.EmailField()
     name = models.CharField(max_length=100)
     location = models.CharField(max_length=100) 
 

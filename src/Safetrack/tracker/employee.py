@@ -5,14 +5,14 @@ from django.http import HttpResponse
 from django.template import RequestContext, loader
 from django.core.context_processors import csrf
 
-from supportFunc import defaults,header,checkStatus,getLatestData
+from Safetrack.tracker.supportFunc import *
 
 #Employee?
 def render(request):
-    user = request.session['user'] 
+    user = request.session['user']
     sensorData = SensorData.objects.filter(sensorType='N')
     latestData = getLatestData(user)
-
+    request.session['lastNewChartDataTime'] = latestData['currentValues']['time']
 #    tempSensor = SensorData.objects.filter(sensorType='T', user=user)
 #    humidSensor = SensorData.objects.filter(sensorType='H', user=user)
 #    noiseSensor = SensorData.objects.filter(sensorType='N', user=user)
@@ -78,8 +78,8 @@ def render(request):
                                          'imgsrc':defaults['profilepic'],
                                          'employeeInfo':employeeInfo,
                                          'header':header,
-                                         'isSafe':latestData[0],
-                                         'dangerValues':latestData[1],
-                                         'currentValues':latestData[2]
+                                         'isSafe':latestData['state'],
+                                         'dangerValues':latestData['aboveLimits'],
+                                         'currentValues':latestData['currentValues']
                                          })
     return HttpResponse(t.render(c))       

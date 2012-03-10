@@ -7,6 +7,10 @@ from django.http import HttpResponse
 import datetime
 import serial
 import time
+from django.utils import simplejson
+
+from Safetrack.tracker.supportFunc import *
+from Safetrack.tracker import supervisor, employee, management
 
 from Safetrack.tracker.models import SensorData, User, Goal, SafetyConstraint, Team
 from chartit import DataPool, Chart
@@ -16,16 +20,11 @@ from django.template import RequestContext, loader
 from django.core.context_processors import csrf
 from django.views.decorators.cache import cache_control
 
-from supportFunc import getLatestData
 
 from decimal import *
 import datetime
 import re
 
-import employee
-import supervisor
-import management
-import serial
 defaults = {'profilepic':'assets/defaultprofile.jpg',
             'logo':'assets/logo.png'}
 messages = {'logout': "You are logged out",
@@ -66,7 +65,7 @@ def getUsersStatus(request):
         teamView = request.POST.get('teamView',False)
 
         if searchName:
-            users = Users.objects.filter(name=searchName)
+            users = User.objects.filter(name=searchName)
 
             if teamView:
                 users = Team.objects.filter(supervisor=users)[0].members.all() 
@@ -129,7 +128,7 @@ def loginView(request):
     if userID and pwd:
         curUser = User.objects.filter(username=userID,password=pwd)
 
-        if len(curUser) == 1:
+        if curUser.count() == 1:
             curUser = curUser[0]
             request.session['auth'] = True
             request.session['user'] = curUser
@@ -151,33 +150,6 @@ def login(request):
     html = "<html><body>Added user</body></html>"
     return HttpResponse(html)
 
-def getLatestData(user):
-    safetyConstraints = SafetyConstraint.objects.all()
-    latestDataItem = SensorData.objects.filter(user=user).order_by('-time')[0]
-    latestDataItems = SensorData.objects.filter(time=latestDataItem.time)
-    temp = latestDataItems.filter(sensorType='T')[0].value
-    noise = latestDataItems.filter(sensorType='N')[0].value
-    humidity = latestDataItems.filter(sensorType='H')[0].value
-    impact = latestDataItems.filter(sensorType='I')[0].value
-    # get latest data
-    
-    isSafe = True
-    dangerValues = [];
-    for constraint in safetyConstraints:
-        for dataItem in latestDataItems:
-            if dataItem.sensorType == constraint.sensorType:
-                if dataItem.value > constraint.maxValue or dataItem.value < constraint.minValue:
-                    isSafe = False
-                    isHigh = False;
-                    sensorName = ""
-                    if dataItem.value > constraint.maxValue:
-                        isHigh = True;
-                    if constraint.sensorType == 'T' : sensorName = "Temperature"
-                    if constraint.sensorType == 'N' : sensorName = "Noise"
-                    if constraint.sensorType == 'I' : sensorName = "Impact"
-                    if constraint.sensorType == 'H' : sensorName = "Humidity"
-                    dangerValues.append({"dataItem":dataItem,"constraint":constraint,"isHigh":isHigh,"sensorName":sensorName})
-    return [isSafe, dangerValues, {'temp':temp,'humid':humidity,'noise':noise,'impact':impact}]
 
 @cache_control(private=True)
 def renderDataEmployee(request):
@@ -322,6 +294,18 @@ def testSendFromServer(request):
 def addDummyDataToDb(request):
     then = datetime.datetime.now()    
     thenFloat = time.time()*1000000
+
+    then = datetime.datetime.now()
+    thenString = str(datetime.datetime.strptime(str(then), '%Y-%m-%d %H:%M:%S.%f'))
+    thenString = thenString[0:22]
+ 
+    later = then+datetime.timedelta(seconds=1)
+    LaterString = str(datetime.datetime.strptime(str(later), '%Y-%m-%d %H:%M:%S.%f'))
+    LaterString = LaterString[0:22]
+ 
+    User.objects.all().delete()
+    SensorData.objects.all().delete()
+        
     abc = User.objects.create(username='abc', password='abc',accessLevel=1,lastLogin=then,email='falcx@gmail.com')
     falco = User.objects.create(username='Falco', password='starfoxisawimp',accessLevel=3,lastLogin=then,email='falcoRox@gmail.com')
     starfox = User.objects.create(username='Starfox', password='falcocantfly',accessLevel=3,lastLogin=then,email='starfoxy@gmail.com')    
@@ -361,7 +345,7 @@ def getNewChartData(request):
     latestDataItem = latestDataItem[latestDataItem.count()-1]
     latestDataItems = SensorData.objects.filter(time=latestDataItem.time)
     
-    if request.session.get('lastNewChartDataTime', False):
+    if 'lastNewChartDataTime' not in request.session:
         request.session['lastNewChartDataTime'] = latestDataItem.time
     elif request.session['lastNewChartDataTime'] == latestDataItem.time:
         return HttpResponse([], mimetype='application/javascript')

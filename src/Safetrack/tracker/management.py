@@ -4,7 +4,7 @@ from django.shortcuts import render_to_response,redirect
 from django.http import HttpResponse
 from django.template import RequestContext, loader
 from django.core.context_processors import csrf
-from supportFunc import defaults,header,checkStatus,getLatestData
+from Safetrack.tracker.supportFunc import *
 
 #Management Py.
 def renderView(request):
@@ -63,18 +63,17 @@ def renderView(request):
     
     header['userType'] = request.session['userType']
 
+    # View code here...
     t = loader.get_template('management-view.html')
-    c = RequestContext(request, {'auth':True,
-                                 'chart1':cht,
-                                 'imgsrc':defaults['profilepic'],
-                                 'header':header,
-                                 'isSafe':latestData[0],
-                                 'dangerValues':latestData[1],
-                                 'currentValues':latestData[2],
-                                 'group':group})
-
+    c = RequestContext(request,         {'auth':True,
+                                         'chart1':cht,
+                                         'imgsrc':defaults['profilepic'],
+                                         'header':header,
+                                         'isSafe':latestData.state,
+                                         'dangerValues':latestData.aboveLimits,
+                                         'currentValues':latestData.currentValues
+                                         })
     return HttpResponse(t.render(c))       
-
 def renderManage(request):
     t = loader.get_template('management-manage.html')
     c = RequestContext(request, {'auth':True,
