@@ -16,15 +16,17 @@ urlpatterns = patterns('',
 
     # Uncomment the next line to enable the admin:
     # url(r'^admin/', include(admin.site.urls)),
-    url(r'^login/', views.loginView ),
+    url(r'^getUsersStatus.py',views.getUsersStatus),
+    url(r'^getUsers.py',views.getUsers),
+
+    url(r'^login/', views.loginView,name="LOGIN"),
     url(r'^logout/', views.logoutView,name="LOGOUT"),
-    url(r'^test/', views.hello_world ),
-    url(r'^start/', views.startPolling ),
-    url(r'^employee/', views.renderDataEmployee ),
-    
-    url(r'^testSend/', views.testSendFromServer ),
-    url(r'^addDummyData/', views.addDummyDataToDb ),
-    url(r'^getNewChartData/', views.getNewChartData ),
-    
+    url(r'^test/', views.hello_world),
+    url(r'^start/', views.startPolling),
+    url(r'^employee/', views.renderDataEmployee),
+    url(r'^management/', views.renderDataManagement),
+    url(r'^supervisor/', views.renderDataSupervisor),
+    url(r'^testSend/', views.testSendFromServer),
+    url(r'^addDummyData/', views.addDummyDataToDb),
 )
 urlpatterns += staticfiles_urlpatterns()

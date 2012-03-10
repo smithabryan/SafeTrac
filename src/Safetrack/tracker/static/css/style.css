@@ -26,15 +26,18 @@ h1 {
 
 }
 
-
 #rightSide {
     width: 75%;
     height: 50%;
     float: right;    
 }
 #rightSide #status{
+    /*
+    This needs to be changed.
+
     color: red;
     font-size: 51px;
+    */
 }
 
 #footer {
@@ -45,3 +48,8 @@ h1 {
     padding: 20px;
     text-align: right;
 }
+
+.button{
+float: right;
+}
+

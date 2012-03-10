@@ -14,19 +14,18 @@ from django.shortcuts import render_to_response,redirect
 from django.http import HttpResponse
 from django.template import RequestContext, loader
 from django.core.context_processors import csrf
-from django.contrib.sessions.backends.db import SessionStore
+from django.views.decorators.cache import cache_control
+
+from supportFunc import getLatestData
 
 from decimal import *
 import datetime
 import re
+
+import employee
+import supervisor
+import management
 import serial
-
-from django.views.decorators.csrf import csrf_exempt 
-from django.core.context_processors import csrf 
-from django.views.decorators.csrf import csrf_protect
-from django.utils import simplejson
-from Safetrack import tasks
-
 defaults = {'profilepic':'assets/defaultprofile.jpg',
             'logo':'assets/logo.png'}
 messages = {'logout': "You are logged out",
@@ -34,25 +33,81 @@ messages = {'logout': "You are logged out",
             'wrong': "Wrong username/password"}
 accessLevel = {1:'Employee',2:'Supervisor',3:'Management'}
 homepage = {1:'/employee',2:'/supervisor',3:'/management'}
-header = {'logo':defaults['logo'],'homepage':''}
 
-'''Support functions'''
+'''Support functions - globally used'''
 def hello_world(request):    
     now = int(round(time.time() * 1000))
     html = "<html><body>It is now %s.</body></html>" % now
     return HttpResponse(html)
 
-def checkStatus(modelObj):
-    return {'safety':"Safe",'temp':'12C','humid':'??','noise':'20Db','impact':'0G'}
-
-#Paul's Mod
 def authorized(request):
     if request.session.get('auth',False):
-        header['userType'] = accessLevel[request.session['accessLevel']]
+        request.session['userType'] =  accessLevel[request.session['accessLevel']]
         return True
     return False
 
-'''Views'''
+#ajax Page
+# How to Return error and cause AJAX call to fail?
+
+#Status - not actual values!
+def getUsersStatus(request):    
+    if not authorized(request):
+        return loginView(request)
+
+    dataOrigin = None
+    if request.session['accessLevel'] == 1:
+       user = request.session['user']
+       return HttpResponse(simplejson.dumps(getLatestData([user])),mimetype="application/javascript") 
+    elif request.session['accessLevel'] == 2:
+        team = Team.objects.filter(supervisor=request.session['user'])[0]
+        return HttpResponse(simplejson.dumps(getLatestData(team.members.all())),mimetype="application/javascript") 
+    else: #managment
+        searchName = request.POST.get('name',"")
+        teamView = request.POST.get('teamView',False)
+
+        if searchName:
+            users = Users.objects.filter(name=searchName)
+
+            if teamView:
+                users = Team.objects.filter(supervisor=users)[0].members.all() 
+
+            return HttpResponse(simplejson.dumps(getLatestData(users)),mimetype="application/javascript") 
+            
+       
+        return HttpResponse('ERROR') 
+
+#
+#Probably won't need
+#    
+def addToMonitored(request):
+    if not authorized(request):
+        return loginView(request)
+    if request.session['accessLevel'] <= 1:
+        return HttpResponse('ERROR')
+
+def removeMonitored(request):
+    if not authorized(request):
+        return loginView(request)
+    if request.session['accessLevel'] <= 1:
+        return HttpResponse('ERROR')
+
+def getUsers(request):
+    if not authorized(request):
+        return loginView(request)
+    if request.session['accessLevel'] <= 1:
+        return HttpResponse('ERROR')
+ 
+    teamLead = request.POST.get('username','')
+    teamLead
+    team = Team.objects.filter(supervisor=request.session['user'])[0] 
+    retJSON = [] 
+
+    for member in team.members.all():
+        retJSON.append({'name':member.name,'profile':'/static/assets/defaultprofile.jpg'})    
+    
+    return HttpResponse(simplejson.dumps(retJSON),mimetype="application/javascript") 
+
+#Normal Page Views
 def logoutView(request):
     request.session.flush()
     
@@ -69,7 +124,7 @@ def loginView(request):
     c = RequestContext(request, {'auth':False,'errorMessage':messages['login']})
 
     if authorized(request):
-        return redirect(header['homepage'])
+        return redirect(request.session['homepage'])
 
     if userID and pwd:
         curUser = User.objects.filter(username=userID,password=pwd)
@@ -77,10 +132,11 @@ def loginView(request):
         if len(curUser) == 1:
             curUser = curUser[0]
             request.session['auth'] = True
+            request.session['user'] = curUser
             request.session['accessLevel'] = curUser.accessLevel
-            header['homepage'] = homepage[curUser.accessLevel]
+            request.session['homepage'] = homepage[curUser.accessLevel]
 
-            return redirect(header['homepage'])
+            return redirect(request.session['homepage'])
 
         else: #should get specific error
 	    	c = RequestContext(request, {'auth':False,'errorMessage':messages['wrong']})
@@ -99,56 +155,69 @@ def getLatestData(user):
     safetyConstraints = SafetyConstraint.objects.all()
     latestDataItem = SensorData.objects.filter(user=user).order_by('-time')[0]
     latestDataItems = SensorData.objects.filter(time=latestDataItem.time)
-    temps = latestDataItems.filter(sensorType='T')
-    noises = latestDataItems.filter(sensorType='N')
-    humidities = latestDataItems.filter(sensorType='H')
-    impacts = latestDataItems.filter(sensorType='I')
-    temp,noise,humidity,impact = -1,-1,-1,-1
-    if temps.count() > 0:
-        temp = temps[0].value
-    if noises.count() > 0:
-        noise = noises[0].value
-    if humidities.count() > 0:
-        humidity = humidities[0].value
-    if impacts.count() > 0:
-        impact = impacts[0].value
+    temp = latestDataItems.filter(sensorType='T')[0].value
+    noise = latestDataItems.filter(sensorType='N')[0].value
+    humidity = latestDataItems.filter(sensorType='H')[0].value
+    impact = latestDataItems.filter(sensorType='I')[0].value
+    # get latest data
     
-    if latestDataItems.count() > 0:
-        # get latest data
-        isSafe = True
-        dangerValues = [];
-        for constraint in safetyConstraints:
-            for dataItem in latestDataItems:
-                if dataItem.sensorType == constraint.sensorType:
-                    if dataItem.value > constraint.maxValue or dataItem.value < constraint.minValue:
-                        isSafe = False
-                        isHigh = False;
-                        sensorName = ""
-                        if dataItem.value > constraint.maxValue:
-                            isHigh = True;
-                        if constraint.sensorType == 'T' : sensorName = "Temperature"
-                        if constraint.sensorType == 'N' : sensorName = "Noise"
-                        if constraint.sensorType == 'I' : sensorName = "Impact"
-                        if constraint.sensorType == 'H' : sensorName = "Humidity"
-                        dangerValues.append({"dataItem":dataItem,"constraint":constraint,"isHigh":isHigh,"sensorName":sensorName})
-    #TODO make this a dict instead of array
-    return [isSafe, dangerValues, {'temp':temp,'humid':humidity,'noise':noise,'impact':impact, 'time':latestDataItem.time}]
+    isSafe = True
+    dangerValues = [];
+    for constraint in safetyConstraints:
+        for dataItem in latestDataItems:
+            if dataItem.sensorType == constraint.sensorType:
+                if dataItem.value > constraint.maxValue or dataItem.value < constraint.minValue:
+                    isSafe = False
+                    isHigh = False;
+                    sensorName = ""
+                    if dataItem.value > constraint.maxValue:
+                        isHigh = True;
+                    if constraint.sensorType == 'T' : sensorName = "Temperature"
+                    if constraint.sensorType == 'N' : sensorName = "Noise"
+                    if constraint.sensorType == 'I' : sensorName = "Impact"
+                    if constraint.sensorType == 'H' : sensorName = "Humidity"
+                    dangerValues.append({"dataItem":dataItem,"constraint":constraint,"isHigh":isHigh,"sensorName":sensorName})
+    return [isSafe, dangerValues, {'temp':temp,'humid':humidity,'noise':noise,'impact':impact}]
 
+@cache_control(private=True)
 def renderDataEmployee(request):
     if not authorized(request):
         return loginView(request)
-    user = list(User.objects.filter(username='Falco'))[0]
-    sensorData = SensorData.objects.filter(sensorType='N',user=user)[0:10]
+    return employee.render(request)
+
+@cache_control(private=True)
+def renderDataSupervisor(request):
+    if not authorized(request):
+        return loginView(request)
+  
+    page = request.GET.get('page','view')
+
+    if page == 'view':
+        return supervisor.renderView(request)
+    else:
+        return supervisor.renderManage(request)
+
+@cache_control(private=True)
+def renderDataManagement(request):
+    if not authorized(request):
+        return loginView(request)
+  
+    page = request.GET.get('page','view')
+
+    if page == 'view':
+        return management.renderView(request)
+    else:
+        return management.renderManage(request)
+    
+
+    user = User.objects.get(pk=1)
+    sensorData = SensorData.objects.filter(sensorType='N')
     latestData = getLatestData(user)
-    request.session['lastNewChartDataTime'] = latestData[2]['time']
 #    tempSensor = SensorData.objects.filter(sensorType='T', user=user)
 #    humidSensor = SensorData.objects.filter(sensorType='H', user=user)
 #    noiseSensor = SensorData.objects.filter(sensorType='N', user=user)
 #    impactSensor = SensorData.objects.filter(sensorType='I', user=user)
 #    SensorData.objects.get_or_create(sensorType='T',value='2',time=datetime.datetime.now(), user=user ) 
-
-    #set the state on the session so that our graph update knows who to grab data for....
-    request.session['currentGraphUsers'] = [user]
    
     '''Getting user data'''
     #Need to fix to grab data
@@ -161,7 +230,7 @@ def renderDataEmployee(request):
             [{'options':{'source': sensorData},
             'terms':[
                 'value',
-                'time']},
+                'dataNum']},
 #            '''
 #            {'options':{'source': SensorDataInteger.objects.all()},
 #            'terms':[
@@ -176,7 +245,7 @@ def renderDataEmployee(request):
                   'type': 'line',
                   'stacking': False},
                 'terms':{
-                  'time': [
+                  'dataNum': [
                     'value']
                   }},
 #              '''
@@ -190,13 +259,12 @@ def renderDataEmployee(request):
 #              '''
                 ],
             chart_options =
-              {'title': {'text': 'Chart'},
-               'xAxis': {'title': {'text': 'Time'},
-                         'type': 'linear',
-                         'tickPixelInterval': 100
-                         }
-               }
-            )
+              {'height': 100,
+               'title': {
+                   'text': 'Chart'},
+               'xAxis': {
+                    'title': {
+                       'text': 'Time'}}})
     
     '''Current Status; check status returns a dictionary'''
     status = checkStatus(sensorData)
@@ -252,17 +320,15 @@ def testSendFromServer(request):
     return HttpResponse(html)    
 
 def addDummyDataToDb(request):
-    then = datetime.datetime.now()
-    thenString = str(datetime.datetime.strptime(str(then), '%Y-%m-%d %H:%M:%S.%f'))
-    thenString = thenString[0:22]
-
-    later = then+datetime.timedelta(seconds=1)
-    LaterString = str(datetime.datetime.strptime(str(later), '%Y-%m-%d %H:%M:%S.%f'))
-    LaterString = LaterString[0:22]
- 
+    then = datetime.datetime.now()    
+    thenFloat = time.time()*1000000
     abc = User.objects.create(username='abc', password='abc',accessLevel=1,lastLogin=then,email='falcx@gmail.com')
     falco = User.objects.create(username='Falco', password='starfoxisawimp',accessLevel=3,lastLogin=then,email='falcoRox@gmail.com')
     starfox = User.objects.create(username='Starfox', password='falcocantfly',accessLevel=3,lastLogin=then,email='starfoxy@gmail.com')    
+    team1 = Team.objects.create(supervisor=starfox)
+    team1.members.add(abc)
+    team1.members.add(falco)
+    team1.members.add(starfox)
 
     SensorData.objects.get_or_create(sensorType='T',value='0.4',time=thenString, dataNum=1, user=falco) 
     SensorData.objects.get_or_create(sensorType='H',value='50',time=thenString, dataNum=1, user=falco) 

@@ -1,31 +1,28 @@
 <html>
     <head>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+        <script src="{{ STATIC_URL }}scripts/init.js"></script>
 		<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/style.css" />
 		{% block headSection %}{% endblock %}
         <title>{%block title %}{% endblock %}</title>
     </head>
-<!-- Page Content
-    Items
-        * individual pages
- -->
+<!-- Page Content -->
     <body>
         <div id="headerSection">
             <img src="{{ STATIC_URL }}assets/logo.png">
-            {% if auth %}
-                <h3>Logged In as {{header.userType}}</h3>
-                <a class="button" href="{% url LOGOUT %}">Log Out</a>
-            {% endif %}
+            <div style="display: block; float: right;">
+	            {% if auth %}
+	            	<a class="button" href="{% url LOGOUT %}">Log Out</a><br/>
+	                <h3 id="userType">Logged In as {{header.userType}}</h3>
+	            {% endif %}
+            </div>
         </div>
         {% if auth %}
             {% block content %}{% endblock %}
         {% else %}
         <div class="center">
-            {{errorMessage}}
-            <form action="" method="post">{% csrf_token %}
-                <input type="radio" name="userType" value="employee">Employee<br />
-                <input type="radio" name="userType" value="supervisor">Supervisor<br />
-                <input type="radio" name="userType" value="manager">Management<br />
+            <h2>{{errorMessage}}</h2>
+            <form action="{% url LOGIN%}" method="post">{% csrf_token %}
                 Username <input type="text" value="Enter your ID" name="user" />
                 Password <input type="password" value="secrete" name="pwd" />
                 <input type="submit" value="Submit" />
