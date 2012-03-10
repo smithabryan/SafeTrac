@@ -14,11 +14,19 @@ from django.shortcuts import render_to_response,redirect
 from django.http import HttpResponse
 from django.template import RequestContext, loader
 from django.core.context_processors import csrf
+from django.contrib.sessions.backends.db import SessionStore
 
 from decimal import *
 import datetime
 import re
 import serial
+
+from django.views.decorators.csrf import csrf_exempt 
+from django.core.context_processors import csrf 
+from django.views.decorators.csrf import csrf_protect
+from django.utils import simplejson
+from Safetrack import tasks
+
 defaults = {'profilepic':'assets/defaultprofile.jpg',
             'logo':'assets/logo.png'}
 messages = {'logout': "You are logged out",
@@ -91,42 +99,56 @@ def getLatestData(user):
     safetyConstraints = SafetyConstraint.objects.all()
     latestDataItem = SensorData.objects.filter(user=user).order_by('-time')[0]
     latestDataItems = SensorData.objects.filter(time=latestDataItem.time)
-    temp = latestDataItems.filter(sensorType='T')[0].value
-    noise = latestDataItems.filter(sensorType='N')[0].value
-    humidity = latestDataItems.filter(sensorType='H')[0].value
-    impact = latestDataItems.filter(sensorType='I')[0].value
-    # get latest data
+    temps = latestDataItems.filter(sensorType='T')
+    noises = latestDataItems.filter(sensorType='N')
+    humidities = latestDataItems.filter(sensorType='H')
+    impacts = latestDataItems.filter(sensorType='I')
+    temp,noise,humidity,impact = -1,-1,-1,-1
+    if temps.count() > 0:
+        temp = temps[0].value
+    if noises.count() > 0:
+        noise = noises[0].value
+    if humidities.count() > 0:
+        humidity = humidities[0].value
+    if impacts.count() > 0:
+        impact = impacts[0].value
     
-    isSafe = True
-    dangerValues = [];
-    for constraint in safetyConstraints:
-        for dataItem in latestDataItems:
-            if dataItem.sensorType == constraint.sensorType:
-                if dataItem.value > constraint.maxValue or dataItem.value < constraint.minValue:
-                    isSafe = False
-                    isHigh = False;
-                    sensorName = ""
-                    if dataItem.value > constraint.maxValue:
-                        isHigh = True;
-                    if constraint.sensorType == 'T' : sensorName = "Temperature"
-                    if constraint.sensorType == 'N' : sensorName = "Noise"
-                    if constraint.sensorType == 'I' : sensorName = "Impact"
-                    if constraint.sensorType == 'H' : sensorName = "Humidity"
-                    dangerValues.append({"dataItem":dataItem,"constraint":constraint,"isHigh":isHigh,"sensorName":sensorName})
-    return [isSafe, dangerValues, {'temp':temp,'humid':humidity,'noise':noise,'impact':impact}]
+    if latestDataItems.count() > 0:
+        # get latest data
+        isSafe = True
+        dangerValues = [];
+        for constraint in safetyConstraints:
+            for dataItem in latestDataItems:
+                if dataItem.sensorType == constraint.sensorType:
+                    if dataItem.value > constraint.maxValue or dataItem.value < constraint.minValue:
+                        isSafe = False
+                        isHigh = False;
+                        sensorName = ""
+                        if dataItem.value > constraint.maxValue:
+                            isHigh = True;
+                        if constraint.sensorType == 'T' : sensorName = "Temperature"
+                        if constraint.sensorType == 'N' : sensorName = "Noise"
+                        if constraint.sensorType == 'I' : sensorName = "Impact"
+                        if constraint.sensorType == 'H' : sensorName = "Humidity"
+                        dangerValues.append({"dataItem":dataItem,"constraint":constraint,"isHigh":isHigh,"sensorName":sensorName})
+    #TODO make this a dict instead of array
+    return [isSafe, dangerValues, {'temp':temp,'humid':humidity,'noise':noise,'impact':impact, 'time':latestDataItem.time}]
 
 def renderDataEmployee(request):
     if not authorized(request):
         return loginView(request)
-
-    user = User.objects.get(pk=1)
-    sensorData = SensorData.objects.filter(sensorType='N')
+    user = list(User.objects.filter(username='Falco'))[0]
+    sensorData = SensorData.objects.filter(sensorType='N',user=user)[0:10]
     latestData = getLatestData(user)
+    request.session['lastNewChartDataTime'] = latestData[2]['time']
 #    tempSensor = SensorData.objects.filter(sensorType='T', user=user)
 #    humidSensor = SensorData.objects.filter(sensorType='H', user=user)
 #    noiseSensor = SensorData.objects.filter(sensorType='N', user=user)
 #    impactSensor = SensorData.objects.filter(sensorType='I', user=user)
 #    SensorData.objects.get_or_create(sensorType='T',value='2',time=datetime.datetime.now(), user=user ) 
+
+    #set the state on the session so that our graph update knows who to grab data for....
+    request.session['currentGraphUsers'] = [user]
    
     '''Getting user data'''
     #Need to fix to grab data
@@ -139,7 +161,7 @@ def renderDataEmployee(request):
             [{'options':{'source': sensorData},
             'terms':[
                 'value',
-                'dataNum']},
+                'time']},
 #            '''
 #            {'options':{'source': SensorDataInteger.objects.all()},
 #            'terms':[
@@ -154,7 +176,7 @@ def renderDataEmployee(request):
                   'type': 'line',
                   'stacking': False},
                 'terms':{
-                  'dataNum': [
+                  'time': [
                     'value']
                   }},
 #              '''
@@ -168,12 +190,13 @@ def renderDataEmployee(request):
 #              '''
                 ],
             chart_options =
-              {'height': 100,
-               'title': {
-                   'text': 'Chart'},
-               'xAxis': {
-                    'title': {
-                       'text': 'Time'}}})
+              {'title': {'text': 'Chart'},
+               'xAxis': {'title': {'text': 'Time'},
+                         'type': 'linear',
+                         'tickPixelInterval': 100
+                         }
+               }
+            )
     
     '''Current Status; check status returns a dictionary'''
     status = checkStatus(sensorData)
@@ -194,7 +217,7 @@ def renderDataEmployee(request):
 def startPolling(request):
     ser = serial.Serial('/dev/tty.usbmodemfa131',9600, timeout=1)
     then = datetime.datetime.now()
-    now = int(round(time.time() * 1000))
+
     numDataTaken = 0
     while ( (datetime.datetime.now() - then) < datetime.timedelta(seconds=30)):
         x = ser.readline(30)
@@ -207,8 +230,9 @@ def startPolling(request):
                     cleanedData.append(splitItem)
             if len(cleanedData) == 4:
 #                dummyUser = User.objects.get(pk=1)
-                falco = User.objects.create(username='Falco', password='starfoxisawimp',accessLevel=3,lastLogin=then,email='falcoRox@gmail.com')
+                falco = list(User.objects.filter(username='Falco'))[0]
                 roundedDecimalValue = Decimal('%.3f' % float(cleanedData[3]))
+                now = str(datetime.datetime.strptime(str(datetime.datetime.now()), '%Y-%m-%d %H:%M:%S.%f'))[0:22]
                 print "noise,time is ("+repr(cleanedData[2])+","+repr(now)+")"
                 SensorData.objects.get_or_create(sensorType='T',value=cleanedData[0],time=now, dataNum=numDataTaken, user=falco) 
                 SensorData.objects.get_or_create(sensorType='H',value=cleanedData[1],time=now, dataNum=numDataTaken, user=falco) 
@@ -228,29 +252,65 @@ def testSendFromServer(request):
     return HttpResponse(html)    
 
 def addDummyDataToDb(request):
-    then = datetime.datetime.now()    
-    thenFloat = time.time()*1000000
+    then = datetime.datetime.now()
+    thenString = str(datetime.datetime.strptime(str(then), '%Y-%m-%d %H:%M:%S.%f'))
+    thenString = thenString[0:22]
+
+    later = then+datetime.timedelta(seconds=1)
+    LaterString = str(datetime.datetime.strptime(str(later), '%Y-%m-%d %H:%M:%S.%f'))
+    LaterString = LaterString[0:22]
+ 
     abc = User.objects.create(username='abc', password='abc',accessLevel=1,lastLogin=then,email='falcx@gmail.com')
     falco = User.objects.create(username='Falco', password='starfoxisawimp',accessLevel=3,lastLogin=then,email='falcoRox@gmail.com')
     starfox = User.objects.create(username='Starfox', password='falcocantfly',accessLevel=3,lastLogin=then,email='starfoxy@gmail.com')    
 
-    SensorData.objects.get_or_create(sensorType='T',value='0.4',time=thenFloat, dataNum=1, user=falco) 
-    SensorData.objects.get_or_create(sensorType='H',value='50',time=thenFloat, dataNum=1, user=falco) 
-    SensorData.objects.get_or_create(sensorType='N',value='10',time=thenFloat, dataNum=1, user=falco)
-    SensorData.objects.get_or_create(sensorType='I',value='100',time=thenFloat, dataNum=1, user=falco) 
+    SensorData.objects.get_or_create(sensorType='T',value='0.4',time=thenString, dataNum=1, user=falco) 
+    SensorData.objects.get_or_create(sensorType='H',value='50',time=thenString, dataNum=1, user=falco) 
+    SensorData.objects.get_or_create(sensorType='N',value='10',time=thenString, dataNum=1, user=falco)
+    SensorData.objects.get_or_create(sensorType='I',value='100',time=thenString, dataNum=1, user=falco) 
+    SensorData.objects.get_or_create(sensorType='T',value='0.6',time=LaterString, dataNum=1, user=falco) 
+    SensorData.objects.get_or_create(sensorType='H',value='60',time=LaterString, dataNum=2, user=falco) 
+    SensorData.objects.get_or_create(sensorType='N',value='12',time=LaterString, dataNum=2, user=falco)
+    SensorData.objects.get_or_create(sensorType='I',value='110',time=LaterString, dataNum=2, user=falco) 
 
-    SensorData.objects.get_or_create(sensorType='T',value='0.4',time=thenFloat, dataNum=1, user=abc) 
-    SensorData.objects.get_or_create(sensorType='H',value='50',time=thenFloat, dataNum=1, user=abc) 
-    SensorData.objects.get_or_create(sensorType='N',value='10',time=thenFloat, dataNum=1, user=abc)
-    SensorData.objects.get_or_create(sensorType='I',value='100',time=thenFloat, dataNum=1, user=abc)
+    SensorData.objects.get_or_create(sensorType='T',value='0.4',time=thenString, dataNum=1, user=abc) 
+    SensorData.objects.get_or_create(sensorType='H',value='50',time=thenString, dataNum=1, user=abc) 
+    SensorData.objects.get_or_create(sensorType='N',value='10',time=thenString, dataNum=1, user=abc)
+    SensorData.objects.get_or_create(sensorType='I',value='100',time=thenString, dataNum=1, user=abc)
 
-    SensorData.objects.get_or_create(sensorType='T',value='22.1',time=thenFloat+1, dataNum=2, user=starfox) 
-    SensorData.objects.get_or_create(sensorType='H',value='50.0',time=thenFloat+1, dataNum=2, user=starfox) 
-    SensorData.objects.get_or_create(sensorType='N',value='10.0',time=thenFloat+1, dataNum=2, user=starfox)
-    SensorData.objects.get_or_create(sensorType='I',value='100.0',time=thenFloat+1, dataNum=2, user=starfox) 
+    SensorData.objects.get_or_create(sensorType='T',value='22.1',time=thenString, dataNum=2, user=starfox) 
+    SensorData.objects.get_or_create(sensorType='H',value='50.0',time=thenString, dataNum=2, user=starfox) 
+    SensorData.objects.get_or_create(sensorType='N',value='10.0',time=thenString, dataNum=2, user=starfox)
+    SensorData.objects.get_or_create(sensorType='I',value='100.0',time=thenString, dataNum=2, user=starfox) 
 
     Goal.objects.get_or_create(sensorType='T',value='100.0')
     SafetyConstraint.objects.get_or_create(sensorType='T',maxValue='100',minValue='90')
 
     html = "<html><body>Added two users with 4 sensorData each</body></html>"
     return HttpResponse(html)    
+
+def getNewChartData(request):
+    user = list(User.objects.filter(username='Falco'))[0]
+    latestDataItem = SensorData.objects.filter(user=user)
+    latestDataItem = latestDataItem[latestDataItem.count()-1]
+    latestDataItems = SensorData.objects.filter(time=latestDataItem.time)
+    
+    if request.session.get('lastNewChartDataTime', False):
+        request.session['lastNewChartDataTime'] = latestDataItem.time
+    elif request.session['lastNewChartDataTime'] == latestDataItem.time:
+        return HttpResponse([], mimetype='application/javascript')
+    else:
+        request.session['lastNewChartDataTime'] = latestDataItem.time
+#    user = request.session['currentGraphUsers']
+    
+    sensorData = SensorData.objects.filter(sensorType='N')
+#    tempSensor = SensorData.objects.filter(sensorType='T', user=user)
+#    humidSensor = SensorData.objects.filter(sensorType='H', user=user)
+#    impactSensor = SensorData.objects.filter(sensorType='I', user=user)
+    dataList = []
+    for dataItem in latestDataItems:
+        if dataItem.sensorType == 'N':
+            dataList.append([dataItem.time,dataItem.value] )
+    data = simplejson.dumps(dataList)
+    
+    return HttpResponse(data, mimetype='application/javascript')

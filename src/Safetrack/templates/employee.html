@@ -5,10 +5,54 @@
     <script src="http://code.highcharts.com/modules/exporting.js"></script>
     {% load chartit %}
     {{ chart1|load_charts:"graph1" }}
+	<script type="text/javascript" charset="utf-8">    
+	elem = document.getElementById('rightSide');	
+	$(window).ready(function()
+	{    
+	    chart.setSize(
+	       400,
+	       300,
+	       false
+	    );   
+	});	
+	setInterval(function(){
+	
+		$.getJSON("/getNewChartData/",
+	        function(data){
+	        	if(data.length>0)
+	        	{
+	        		if(chart.series[0].length < 10)
+	        		{
+					    chart.series[0].addPoint(
+					    	{y:data[0][1]},
+					    	false,
+							false
+					   	);
+	        		}
+	         		else 
+	        		{
+					    chart.series[0].addPoint(
+					    	{y:data[0][1]},
+					        false,
+					        true
+					   	);
+	        		}
+					categories = chart.xAxis[0].categories;
+					categories.push(data[0][0]);
+					chart.xAxis[0].setCategories(categories, false);
+					chart.redraw();
+	        	}
+	        }
+	    )
+	}, 1000);
+	
+	</script>
 {% endblock %}
 
 {% block content %}
 <!-- Employee View  -->
+	<!--	$('#chart').replaceWith('<div id="chart">'+{{views.getNewChartData}}+'</div>');	  -->
+
         <div id="leftSide">
             <div id="profile">
                 <img src="{{ STATIC_URL }}{{imgsrc}}" />

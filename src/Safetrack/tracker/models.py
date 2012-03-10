@@ -17,7 +17,7 @@ class User(models.Model):
 class SensorData(models.Model):
     sensorType = models.CharField(max_length=1, choices=SENSOR_TYPES)
     value = models.DecimalField(max_digits=10, decimal_places=3)
-    time = models.FloatField()
+    time = models.CharField(max_length=30)
     dataNum = models.PositiveIntegerField()    
     user = models.ForeignKey(User)
     

@@ -182,7 +182,7 @@ from datetime import timedelta
 CELERYBEAT_SCHEDULE = {
     "runs-every-30-seconds": {
         "task": "tasks.SerialReadTask",
-        "schedule": timedelta(seconds=20),
-        "args": ('Falco',10)
+        "schedule": timedelta(seconds=1),
+        "args": ('Falco',30)
     },
 }
