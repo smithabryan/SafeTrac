@@ -49,6 +49,10 @@
 	</script>
 {% endblock %}
 
+{% block titleTextImage %}
+            <div id="employeeTitle"> <img id="titleImage" src="{{ STATIC_URL }}assets/title.png"> </div>
+{% endblock %}
+
 {% block content %}
 <!-- Employee View  -->
 	<!--	$('#chart').replaceWith('<div id="chart">'+{{views.getNewChartData}}+'</div>');	  -->
@@ -76,7 +80,7 @@
             <div id="status">
 				  {% if not isSafe %}
 	                  <div id="warning">
-	                  <h2>DANGER</h2>
+	                  <h2 style="color: #EFEFFB;">DANGER</h2>
 		                <ul>
 		                {% for item in dangerValues %}
 		   				    {% if item.isHigh %}
@@ -89,14 +93,14 @@
 	                  </div>
 	                  
 				  {% else %}
-	                  <h2>Workers in safe conditions</h2>
+	                  <h2 style="color: #EFEFFB;">Workers in safe conditions</h2>
 				  {% endif %}
                 <table>
                     <tr>
-                        <td>Temperature</td>
-                        <td>Humidity</td>
-                        <td>Noise</td>
-                        <td>Impact</td>
+                        <td style="color: #EFEFFB;">Temperature</td>
+                        <td style="color: #EFEFFB;">Humidity</td>
+                        <td style="color: #EFEFFB;">Noise</td>
+                        <td style="color: #EFEFFB;">Impact</td>
                     </tr>
                     <tr>
                         <td>{{currentValues.temp}}</td>
