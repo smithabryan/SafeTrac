@@ -1,16 +1,14 @@
 from Safetrack.tracker.models import SensorData, User, Goal, SafetyConstraint, Team
 from chartit import DataPool, Chart
-from django.shortcuts import render_to_response,redirect
 from django.http import HttpResponse
 from django.template import RequestContext, loader
-from django.core.context_processors import csrf
 
 from Safetrack.tracker.supportFunc import *
 
 #Employee?
 def render(request):
     user = request.session['user']
-    sensorData = SensorData.objects.filter(sensorType='N')
+    sensorData = SensorData.objects.filter(sensorType='N', user=user)[0:10]
     latestData = getLatestData(user)
     request.session['lastNewChartDataTime'] = latestData['currentValues']['time']
 #    tempSensor = SensorData.objects.filter(sensorType='T', user=user)
@@ -30,13 +28,7 @@ def render(request):
             [{'options':{'source': sensorData},
             'terms':[
                 'value',
-                'dataNum']},
-#            '''
-#            {'options':{'source': SensorDataInteger.objects.all()},
-#            'terms':[
-#                'value',
-#                'value']}
-#            '''    
+                'time']},
             ]);
     cht = Chart(
             datasource = dataSeries,
@@ -45,18 +37,9 @@ def render(request):
                   'type': 'line',
                   'stacking': False},
                 'terms':{
-                  'dataNum': [
+                  'time': [
                     'value']
                   }},
-#              '''
-#               {'options':{
-#               'type': 'line',
-#              'stacking': False},
-#            'terms':{
-#              'value': [
-#                'value']
-#              }}
-#              '''
                 ],
             chart_options =
               {'height': 100,

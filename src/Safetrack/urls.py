@@ -1,5 +1,5 @@
 from django.conf.urls.defaults import patterns, include, url
-from Safetrack.tracker import views
+from Safetrack.tracker import views, supportFunc
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from Safetrack import settings
 # Uncomment the next two lines to enable the admin:
@@ -28,6 +28,13 @@ urlpatterns = patterns('',
     url(r'^supervisor/', views.renderDataSupervisor),
     url(r'^testSend/', views.testSendFromServer),
     url(r'^addDummyData/', views.addDummyDataToDb),
+    url(r'^testingFeedback/', views.testFeedback),   
+    
+    #ajax calls
     url(r'^getNewChartData/', views.getNewChartData),
+    url(r'^getTemperatureData/', supportFunc.getTemperatureData),
+    url(r'^getNoiseData/', supportFunc.getNoiseData),
+    url(r'^getHumidityData/', supportFunc.getHumidityData),
+    url(r'^getImpactData/', supportFunc.getImpactData),
 )
 urlpatterns += staticfiles_urlpatterns()
