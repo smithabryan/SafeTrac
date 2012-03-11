@@ -2,6 +2,10 @@ body {
     background: #393939; 
     color: white; font: 14px Helvetica, sans-serif; 
 }
+.center {
+    margin: auto;
+}
+
 a { 
     text-decoration: none; color: #9bf9ff; 
     border-bottom: 1px dotted #9bf9ff; 
