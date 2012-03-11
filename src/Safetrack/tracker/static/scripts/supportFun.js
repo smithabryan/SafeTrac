@@ -25,10 +25,13 @@ function getMembers(onComplete,delBtn) {
         success: function(data) {
             $.each(data, function(ind) {
                 console.log(data[ind])
-                var liTag = '<li class="highlighted" id="'+data[ind].name+'"';
-                    liTag += ' data-location="'+data[ind].location+'">';
+                var liTag = '<li id="'+data[ind].name+'"';
+                    liTag += ' data-location="'+data[ind].location+'"';
                 if (delBtn) {
-                    liTag += '<img class="xBtn" src="/static/assets/x.png" />'
+                    liTag += '><img class="xBtn" src="/static/assets/x.png" />'
+                }
+                else {
+                    liTag += 'class="highlighted">'; 
                 }
                     liTag += '<img src="'+data[ind].profile+'" /></li>';
                 items.push(liTag);
