@@ -16,18 +16,16 @@ input[type=text]                    { float: left; width: 60px; font: bold 20px 
 form div                            { overflow: hidden; margin: 0 0 5px 0; }
 .numbutton                          { margin: 0 0 0 5px; text-indent: -9999px; cursor: pointer; width: 29px; height: 29px; float: left; text-align: center; background: url(../assets/buttons.png) no-repeat; }
 .dec                                { background-position: 0 -29px; }
-#submit                             { margin: 15px 0 0 175px; font: 20px Helvetica, sans-serif; padding: 5px 10px 3px 10px; border: 1px solid black; background: #eee; }
+#submit                             { font: 20px Helvetica, sans-serif; margin:2% 47%; padding: 5px 10px 3px 10px; border: 1px solid black; background: #eee; }
 #submit:hover                        { background: #ccc; }
 
-.cat, .knobs {
+.knobs {
     float: left;
     display: block;
-    margin-left: auto;
-    margin-right: auto;
 }
 
-.cat h3 {
-    padding-left: 100px
+.cat{
+    padding-left: 30%;
 }
 
 #highlighted {
