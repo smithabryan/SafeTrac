@@ -1,8 +1,7 @@
 $(function() {
 
-     $.ajax({
-		url: "/getConstraints.py/",
-		data: {
+    $.ajax({
+		url: "/getGoals.py/",
         },
         dataType: "json",
 		success: function(data) {

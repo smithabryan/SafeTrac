@@ -10,15 +10,15 @@
 <!-- Page Content -->
 	<body background="{{ STATIC_URL }}assets/bg.jpg")>	
          <div id="headerSection">
-         	{%block titleTextImage %}
-	            <img id="titleImage" src="{{ STATIC_URL }}assets/title.png">
-         	{% endblock %}
-            <div id="loggedInText">
+         	<div id="loggedInText">
 	            {% if auth %}
 	            	<a class="button" href="{% url LOGOUT %}">Log Out</a><br/>
 	                <h3 id="userType">Logged In as {{header.userType}}</h3> 
 	            {% endif %}
             </div>
+         	{%block titleTextImage %}
+	            <img id="titleImage" src="{{ STATIC_URL }}assets/title.png">
+         	{% endblock %}
         </div>
         {% if auth %}
             {% block content %}{% endblock %}
@@ -26,9 +26,9 @@
         <div class="center" align=center>
             <h2>{{errorMessage}}</h2>
             <form action="{% url LOGIN%}" method="post">{% csrf_token %}
-                <h3 style="color: #EFEFFB;"> Username </h3>
+                <h3> Username </h3>
                 <input type="text" value="Enter your ID" name="user" />
-                <h3 style="color: #EFEFFB;"> Password </h3>
+                <h3> Password </h3>
                 <input type="password" value="secrete" name="pwd" />
                 </br></br>
                 <input type="submit" value="Submit" />
