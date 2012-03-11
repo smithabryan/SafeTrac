@@ -3,11 +3,11 @@
     border-style: solid;
 }
 
-#groupBlk {
+/* #groupBlk {
     background-color:yellow;
     width:50%;
     height:50%;
-}
+} */
 
 #groupBlk li img:hover {
     size: 120%;
