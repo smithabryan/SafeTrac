@@ -19,7 +19,7 @@ def render(request):
    
     '''Getting user data'''
     #Need to fix to grab data
-    employeeInfo = {'name':user.username,'title':"Worker"}
+    employeeInfo = {'Name':user.username,'Title':"Worker"}
     
     '''Creating Charts'''
     dataSeries = \
