@@ -20,6 +20,12 @@ function setInteractivity() {
                     tooltip: 'bottomLeft'
                 }
             }
+            style: {
+                padding: 5,
+                border: {
+                    radius: 5
+                }
+            }
         });                          
 
         $(members[ind]).click(function () {
