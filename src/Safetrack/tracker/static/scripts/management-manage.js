@@ -2,7 +2,12 @@ $(function() {
 
     $.ajax({
 		url: "/getGoals.py/",
-		data: {},
+		data: {"data":[
+            {"type":"T","max":,"min":},
+            {"type":"N","max":,"min":},
+            {"type":"I","max":,"min":},
+            {"type":"H","max":,"min":},
+        },
         dataType: "json",
 		success: function( data ) {
         }
@@ -26,4 +31,17 @@ $(function() {
     	}
     	$button.parent().find("input").val(newVal);
     });
+
+    $.ajax({
+		url: "/getGoals.py/",
+		data: {"data":[
+            {"type":"T","max":,"min":},
+            {"type":"N","max":,"min":},
+            {"type":"I","max":,"min":},
+            {"type":"H","max":,"min":},
+        },
+        dataType: "json",
+		success: function( data ) {
+        }
+	});
 });

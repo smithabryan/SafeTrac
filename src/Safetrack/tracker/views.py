@@ -68,11 +68,33 @@ def getUsersStatus(request):
             
         return HttpResponse('ERROR') 
 
-def getGoals(request):
-    pass
+def getConstraints(request):
+    if not authorized(request):
+        return loginView(request)
 
-def setGoals(request):
-    pass
+    retJSON = [] 
+    constraints = SafetyConstraints.objects.all()
+   
+    for const in constraints:
+        retJSON.append({'type':const.sensorType,
+                        'max':const.maxValue,
+                        'min':const.minValue}); 
+    
+    return HttpResponse(json.dumps(retJSON));
+
+def setConstraints(request):
+    if not authorized(request):
+        return loginView(request)
+
+    sensorData = request.POST.get('sensorData')
+
+    for sensor in sensorData:
+        constraint = SafetyConstraints.objects.filter(sensorType=sensor['type'])[0]
+        constraint.minValue = sensor['min']
+        constraint.maxValue = sensor['max'] 
+        constraint.save()
+ 
+    return HttpResponse('200') 
 
 def getUsers(request):
     if not authorized(request):
@@ -317,7 +339,7 @@ def addDummyDataToDb(request):
     abc = User.objects.create(username='e', password='e',accessLevel=1,lastLogin=then,email='falcx@gmail.com',location="US",name="A")
     falco = User.objects.create(username='s', password='s',accessLevel=2,lastLogin=then,email='falcoRox@gmail.com',location="CA",name="AA")
     starfox = User.objects.create(username='m', password='m',accessLevel=3,lastLogin=then,email='starfoxy@gmail.com',location="UK",name="AAA")    
-    team1 = Team.objects.create(supervisor=starfox)
+    team1 = Team.objects.create(supervisor=falco)
     team1.members.add(abc)
     team1.members.add(starfox)
 
