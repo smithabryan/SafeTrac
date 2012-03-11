@@ -5,7 +5,9 @@ body {
 
 a { 
     text-decoration: none; color: #9bf9ff; 
-    border-bottom: 1px dotted #9bf9ff; 
+    border-bottom: 1px dotted #9bf9ff;
+    display: block;
+    width: 55px; 
 }
 a:hover { border-bottom-style: solid; }
 #page-wrap                          { width: 500px; margin: 25px auto; }
@@ -28,15 +30,15 @@ form div                            { overflow: hidden; margin: 0 0 5px 0; }
     padding-left: 30%;
 }
 
-#highlighted {
+/*#highlighted {
     border-color: red;
     border-style: solid;
-}
+}*/
 
 /* #groupBlk {
     background-color:yellow;
-    width:50%;
-    height:50%;
+    width:80%;
+    height:100%;
 } */
 
 #groupBlk li img:hover {
