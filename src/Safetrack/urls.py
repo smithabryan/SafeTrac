@@ -16,9 +16,6 @@ urlpatterns = patterns('',
 
     # Uncomment the next line to enable the admin:
     # url(r'^admin/', include(admin.site.urls)),
-    url(r'^getUsersStatus.py',views.getUsersStatus),
-    url(r'^getUsers.py',views.getUsers),
-
     url(r'^login/', views.loginView,name="LOGIN"),
     url(r'^logout/', views.logoutView,name="LOGOUT"),
     url(r'^test/', views.hello_world),
@@ -31,6 +28,11 @@ urlpatterns = patterns('',
     url(r'^testingFeedback/', views.testFeedback),   
     
     #ajax calls
+    url(r'^addUser.py/', views.addUser),
+    url(r'^removeUser.py/', views.removeUser),
+    url(r'^getMembers.py/', views.getMembers),
+    url(r'^getUsersStatus.py',views.getUsersStatus),
+    url(r'^getUsers.py',views.getUsers),
     url(r'^getNewChartData/', views.getNewChartData),
     url(r'^getTemperatureData/', supportFunc.getTemperatureData),
     url(r'^getNoiseData/', supportFunc.getNoiseData),

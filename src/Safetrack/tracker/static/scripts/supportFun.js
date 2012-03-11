@@ -1,9 +1,8 @@
 var monitored = new Object() 
-var getTeamUserURL = "/getUsers.py/"
+var getTeamUserURL = "/getMembers.py/"
 var updateUsersStatus = "/getUsersStatus.py/"
 
 //this file definitely needs to be cleaned soon~
-
 $.ajaxSetup ({
     cache: false
 });
@@ -15,6 +14,34 @@ Object.size = function(obj) {
     }
     return size;
 };
+
+function getMembers(onComplete,delBtn) {
+    items = []
+    $.ajax({
+        type: "GET",
+        url: getTeamUserURL, 
+        data: {},
+        dataType: "json",
+        success: function(data) {
+            $.each(data, function(ind) {
+                console.log(data[ind])
+                var liTag = '<li id="'+data[ind].name+'"';
+                    liTag += ' data-location="'+data[ind].location+'">';
+                if (delBtn) {
+                    liTag += '<img class="xBtn" src="/static/assets/x.png" />'
+                }
+                    liTag += '<img src="'+data[ind].profile+'" /></li>';
+                items.push(liTag);
+            });
+
+            $('#groupBlk #member').html(items.join(''))
+            onComplete();
+        },
+        error: function(data) {
+            alert("fail");
+        }
+    });
+};    
 
 function latestInfo() {
     //if management, should read two var
@@ -36,7 +63,7 @@ function latestInfo() {
             var detailTable = $("#memberTable");
 
             detailTable.empty();
-            summaryDiv.html("Normal");
+            summaryDiv.html("<h3>Normal</h3>");
 
             var heading = '<td id="name">Name</td>';
             heading += '<td id="temp">Temperature</td>';
@@ -56,13 +83,12 @@ function latestInfo() {
 
                 $('<tr />',{html:tableTags}).appendTo(detailTable)
 
-                if (details['safe']) { 
+                if (!details['state']) { 
                    //this is BAD!
                     summaryDiv.find('h3').addClass('warning');
                     summaryDiv.find('h3').html("Attention"); 
                     $('<li >',{html:name+"is in danger."}).appendTo(summaryDiv.find('ul')); 
-                }
-                else {
+              
                     for (var i = 0; i < details['aboveLimits'].size; i++) {
                         if (details['isHigh'])
                             $("#"+name+details['sensorName']).addClass('dangerHigh')
@@ -78,68 +104,3 @@ function latestInfo() {
     });
 }
 
-function setInteractivity() {
-    var groupBlk = $('#groupBlk ul');
-    var members = groupBlk.find('li');
-    $.each(members,function (ind) {
-        $(members[ind]).click(function () {
-
-            if ($(this).hasClass('highlighted')) {
-                $(this).removeClass('highlighted');
-                rmFromMonitored($(this).attr('id'));
-            }
-            else {
-                $(this).addClass('highlighted');
-                addToMonitored($(this).attr('id')); 
-            }
-       }); 
-    });
-}
-
-function addToMonitored(added) {
-    console.log(added);
-    monitored[added] = true;
-    /*$.ajax ({
-        type: "POST",
-        url: addToMonitoredURL,
-        data: added, 
-        success: function(data) {
-           //do nothing for now 
-        },
-        failure: function (data) {
-            alert('fail')
-        } 
-    });*/
-}
-
-function rmFromMonitored(removed) {
-    monitored[removed] = false;
-}
-
-function getUsers() {
-    items = []
-    $.ajax({
-        type: "GET",
-        url: getTeamUserURL, 
-        data: {},
-        dataType: "json",
-        success: function(data) {
-            $.each(data, function(ind) {
-                items.push('<li id="'+data[ind].name+'">' + '<img src="'+data[ind].profile+'"></li>');
-            });
-
-            $('#groupBlk #member').html(items.join(''))
-            setInteractivity();
-        },
-        error: function(data) {
-            alert("fail");
-        }
-    });
-};    
-
-$(function() {
-    getUsers()
-});
-
-//background ajax calls every 30seconds
-periodicCheck = setInterval(latestInfo,5000)

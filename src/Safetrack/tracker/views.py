@@ -20,7 +20,7 @@ from django.template import RequestContext, loader
 from django.core.context_processors import csrf
 from django.views.decorators.cache import cache_control
 
-
+from supportFunc import getLatestDataX, getLatestData
 from decimal import *
 import datetime
 import re
@@ -45,10 +45,10 @@ def authorized(request):
         return True
     return False
 
+##################
 #ajax Page
 # How to Return error and cause AJAX call to fail?
-
-#Status - not actual values!
+##################
 def getUsersStatus(request):    
     if not authorized(request):
         return loginView(request)
@@ -56,10 +56,10 @@ def getUsersStatus(request):
     dataOrigin = None
     if request.session['accessLevel'] == 1:
        user = request.session['user']
-       return HttpResponse(simplejson.dumps(getLatestData([user])),mimetype="application/javascript") 
+       return HttpResponse(simplejson.dumps(getLatestDataX([user])),mimetype="application/javascript") 
     elif request.session['accessLevel'] == 2:
         team = Team.objects.filter(supervisor=request.session['user'])[0]
-        return HttpResponse(simplejson.dumps(getLatestData(team.members.all())),mimetype="application/javascript") 
+        return HttpResponse(simplejson.dumps(getLatestDataX(team.members.all())),mimetype="application/javascript") 
     else: #managment
         searchName = request.POST.get('name',"")
         teamView = request.POST.get('teamView',False)
@@ -70,9 +70,8 @@ def getUsersStatus(request):
             if teamView:
                 users = Team.objects.filter(supervisor=users)[0].members.all() 
 
-            return HttpResponse(simplejson.dumps(getLatestData(users)),mimetype="application/javascript") 
+            return HttpResponse(simplejson.dumps(getLatestDataX(users)),mimetype="application/javascript") 
             
-       
         return HttpResponse('ERROR') 
 
 #
@@ -93,20 +92,51 @@ def removeMonitored(request):
 def getUsers(request):
     if not authorized(request):
         return loginView(request)
-    if request.session['accessLevel'] <= 1:
-        return HttpResponse('ERROR')
  
-    teamLead = request.POST.get('username','')
-    teamLead
+    retJSON = [] 
+
+    for user in User.objects.all():
+        retJSON.append({'location':user.location,'name':user.name,'profile':'/static/assets/defaultprofile.jpg'})    
+    
+    return HttpResponse(simplejson.dumps(retJSON),mimetype="application/javascript") 
+   
+def getMembers(request):
+    if not authorized(request):
+        return loginView(request)
+ 
     team = Team.objects.filter(supervisor=request.session['user'])[0] 
     retJSON = [] 
 
     for member in team.members.all():
-        retJSON.append({'name':member.name,'profile':'/static/assets/defaultprofile.jpg'})    
+        retJSON.append({'location':member.location,'name':member.name,'profile':'/static/assets/defaultprofile.jpg'})    
     
     return HttpResponse(simplejson.dumps(retJSON),mimetype="application/javascript") 
 
+def removeUser(request):
+    if not authorized(request):
+        return loginView(request)
+
+    team = Team.objects.filter(supervisor=request.session['user'])[0]
+    user = User.objects.filter(name=request.GET.get('name'))[0]
+    team.members.remove(user)
+   
+    return HttpResponse('200') 
+
+def addUser(request):
+    if not authorized(request):
+        return loginView(request)
+ 
+    team = Team.objects.filter(supervisor=request.session['user'])[0] 
+    user = User.objects.filter(name=request.GET.get('name'))[0]
+
+    team.members.add(user);
+    team.save();
+
+    return HttpResponse('200') 
+
+##################
 #Normal Page Views
+##################
 def logoutView(request):
     request.session.flush()
     
@@ -306,12 +336,12 @@ def addDummyDataToDb(request):
     User.objects.all().delete()
     SensorData.objects.all().delete()
         
-    abc = User.objects.create(username='abc', password='abc',accessLevel=1,lastLogin=then,email='falcx@gmail.com')
-    falco = User.objects.create(username='Falco', password='starfoxisawimp',accessLevel=3,lastLogin=then,email='falcoRox@gmail.com')
-    starfox = User.objects.create(username='Starfox', password='falcocantfly',accessLevel=2,lastLogin=then,email='starfoxy@gmail.com')    
+    added = User.objects.create(username='add', password='e',accessLevel=1,lastLogin=then,email='fa@gl.com',location="US",name="BB")
+    abc = User.objects.create(username='e', password='e',accessLevel=1,lastLogin=then,email='falcx@gmail.com',location="US",name="A")
+    falco = User.objects.create(username='s', password='s',accessLevel=2,lastLogin=then,email='falcoRox@gmail.com',location="CA",name="AA")
+    starfox = User.objects.create(username='m', password='m',accessLevel=3,lastLogin=then,email='starfoxy@gmail.com',location="UK",name="AAA")    
     team1 = Team.objects.create(supervisor=starfox)
     team1.members.add(abc)
-    team1.members.add(falco)
     team1.members.add(starfox)
 
     SensorData.objects.get_or_create(sensorType='T',value='0.4',time=thenString, dataNum=1, user=falco) 
