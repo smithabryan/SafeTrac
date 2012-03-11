@@ -19,7 +19,7 @@ function setInteractivity() {
                     target: 'topRight',
                     tooltip: 'bottomLeft'
                 }
-            }
+            },
             style: {
                 padding: 5,
                 border: {
