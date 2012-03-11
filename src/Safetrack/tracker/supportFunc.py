@@ -7,7 +7,7 @@ defaults = {'profilepic':'assets/defaultprofile.jpg'}
 
 def checkStatus(modelObj):
     return {'safety':"Safe",'temp':'12C','humid':'??','noise':'20Db','impact':'0G'}
-
+#STUPID GITHUB!
 def getLatestDataX(users):
     safetyConstraints = SafetyConstraint.objects.all()
     res = {}
