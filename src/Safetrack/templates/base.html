@@ -13,7 +13,7 @@
          	{%block titleTextImage %}
 	            <img id="titleImage" src="{{ STATIC_URL }}assets/title.png">
          	{% endblock %}
-            <div style="display: block; float: right;">
+            <div id="loggedInText">
 	            {% if auth %}
 	            	<a class="button" href="{% url LOGOUT %}">Log Out</a><br/>
 	                <h3 id="userType">Logged In as {{header.userType}}</h3> 

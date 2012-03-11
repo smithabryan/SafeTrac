@@ -126,7 +126,7 @@
             <div id="status">
 				  {% if not isSafe %}
 	                  <div id="warning">
-	                  <h2 style="color: #EFEFFB;">DANGER</h2>
+	                  <h2>DANGER</h2>
 		                <ul>
 		                {% for item in dangerValues %}
 		   				    {% if item.isHigh %}
@@ -139,14 +139,15 @@
 	                  </div>
 	                  
 				  {% else %}
-	                  <h2 style="color: #EFEFFB;">Workers in safe conditions</h2>
+	                  <h2>Workers in safe conditions</h2>
 				  {% endif %}
+			<div id="VariableTable">	  
                 <table>
                     <tr>
-                        <td style="color: #EFEFFB;">Temperature</td>
-                        <td style="color: #EFEFFB;">Humidity</td>
-                        <td style="color: #EFEFFB;">Noise</td>
-                        <td style="color: #EFEFFB;">Impact</td>
+                        <td>Temperature</td>
+                        <td>Humidity</td>
+                        <td>Noise</td>
+                        <td>Impact</td>
                     </tr>
                     <tr>
                         <td>{{currentValues.temp}}</td>
@@ -155,6 +156,7 @@
                         <td>{{currentValues.impact}}</td>
                     </tr>
                 </table>
+            </div>    
             </div>	
         </div>
 {% endblock %}
