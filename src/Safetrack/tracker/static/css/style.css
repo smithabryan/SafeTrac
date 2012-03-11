@@ -42,11 +42,11 @@ table{
 	color: #EFEFFB;
 	text-align: center;
 }
-/*
-.button{
+
+.logoutbutton{
 	float: right;
 	color: #EFEFFB;
-}*/
+}
 
 .warning {
 	color: red;

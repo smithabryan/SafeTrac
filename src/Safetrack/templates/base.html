@@ -12,7 +12,7 @@
          <div id="headerSection">
          	<div id="loggedInText">
 	            {% if auth %}
-                    <a class="button" href="{% url LOGOUT %}">Log Out</a>
+                    <a class="logoutbutton" href="{% url LOGOUT %}">Log Out</a>
                     <br/>
                     <h3 id="userType">Logged In as {{header.userType}}</h3>
 	            {% endif %}
