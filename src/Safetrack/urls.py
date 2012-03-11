@@ -18,7 +18,6 @@ urlpatterns = patterns('',
     # url(r'^admin/', include(admin.site.urls)),
     url(r'^login/', views.loginView,name="LOGIN"),
     url(r'^logout/', views.logoutView,name="LOGOUT"),
-    url(r'^test/', views.hello_world),
     url(r'^start/', views.startPolling),
     url(r'^employee/', views.renderDataEmployee),
     url(r'^management/', views.renderDataManagement),
@@ -26,7 +25,7 @@ urlpatterns = patterns('',
     url(r'^testSend/', views.testSendFromServer),
     url(r'^addDummyData/', views.addDummyDataToDb),
     url(r'^testingFeedback/', views.testFeedback),   
-    
+
     #ajax calls
     url(r'^addUser.py/', views.addUser),
     url(r'^removeUser.py/', views.removeUser),
@@ -40,5 +39,7 @@ urlpatterns = patterns('',
     url(r'^getImpactData/', supportFunc.getImpactData),
     url(r'^serialSafetyFeedback/', supportFunc.serialSafetyFeedbackAjax),
     url(r'^serialSafetyRefresh/', supportFunc.serialSafetyRefresh),
+
+    url(r'', views.loginView,name="LOGIN"),
 )
 urlpatterns += staticfiles_urlpatterns()

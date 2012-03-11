@@ -3,47 +3,19 @@
 {% block headSection %}
 {% endblock %}
 
-{% block titleTextImage %}
-            <div id="employeeTitle"> <img id="titleImage" src="{{ STATIC_URL }}assets/title.png"> </div>
+{% block titleTextImage %
+<div id="employeeTitle"> <img id="titleImage" src="{{ STATIC_URL }}assets/title.png"> </div>
 {% endblock %}
 
 {% block content %}
 
 <!-- Management View  -->
-    <div class="page" id="page1">
-        <div id="leftSide">
-            <!-- Searchbar Here -->
-            <table>
-                <tr><th>Team Name</th></tr>
-                {% for team in teams %}
-                    <tr><td>team.name</td></tr>
-                {% endfor %}
-            </table>
-            <!-- Searchbar Here -->
-            <table>
-                <tr>
-                    <td>Name</td>
-                    <td>Employee ID</td>
-                    <td>Job Title</td>
-                    <td>Location</td>
-                </tr>
-                {% for member in team %}
-                    <tr>
-                        <td>{{member.name}}</td>
-                        <td>{{member.id}}</td>
-                        <td>{{member.title}}</td>
-                        <td>{{member.loc}}</td>
-                    </tr>
-                {% endfor %}
-            </table>
-        </div>
-        <div id="rightSide">
-            <!-- Graphs -->
-        </div>
+<div class="page" id="page1">
+    <div id="leftSide">
     </div>
-    <div class="page" id="page2">
+    <div id="rightSide">
     </div>
-    
+</div>    
 {% endblock %}
 {%block footer %}    
 {% endblock %}

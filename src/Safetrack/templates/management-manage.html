@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}SafeTrac -- Management{% endblock %}
+{% block headSection %}
+    <link rel=StyleSheet href="{{STATIC_URL}}css/tmp.css" type="text/css" MEDIA=screen>
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.8.18/themes/base/jquery-ui.css" type="text/css" media="all" />
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="{{STATIC_URL}}js/jquery.qtip-1.0.0-rc3.min.js"></script> 
+    <script src="{{STATIC_URL}}scripts/supportFun.js"></script>
+    <script src="{{STATIC_URL}}scripts/management-manage.js"></script>
+{% endblock %}
+
+{% block titleTextImage %}
+<div id="employeeTitle"> <img id="titleImage" src="{{ STATIC_URL }}assets/title.png"> </div>
+{% endblock %}
+
+{% block content %}
+
+<!-- Management View  -->
+<div class="page" id="page1">
+    <div id="center">
+        <form method="post" action="">
+            <div class="cat">
+                <h3>Temperature</h3>
+                <div class="knobs" id="tempMax">
+                    <label for="name">Max</label>
+                    <input type="text" id="tempMax" value=""></input>
+                </div>
+                <div class="knobs" id="tempMin">
+                    <label for="name">Min</label>
+                    <input type="text" id="tempMin" value=""></input>
+                </div>
+            </div>
+            <div class="cat">
+                <h3>Humidity</h3>
+                <div class="knobs" id="humidMax">
+                    <label for="name">Max</label>
+                    <input type="text" id="humidMax" value=""></input>
+                </div>
+                <div class="knobs" id="humidMin">
+                    <label for="name">Min</label>
+                    <input type="text" id="humidMin" value=""></input>
+                </div>
+            </div>
+            <div class="cat">
+                <h3>Noise</h3>
+                <div class="knobs" id="noiseMax">
+                    <label for="name">Max</label>
+                    <input type="text" id="NoiseMax" value=""></input>
+                </div>
+                <div class="knobs" id="noiseMin">
+                    <label for="name">Min</label>
+                    <input type="text" id="NoiseMin" value=""></input>
+                </div>
+            </div>
+            <div class="cat">
+                <h3>Impact</h3>
+                <div class="knobs" id="impactMax">
+                    <label for="name">Max</label>
+                    <input type="text" id="impactMax" value=""></input>
+                </div>
+                <div class="knobs" id="impactMin">
+                    <label for="name">Min</label>
+                    <input type="text" id="impactMax" value=""></input>
+                </div>
+            </div>
+            <input type="submit" value="Submit" id="submit" />
+        </form>
+    </div>
+    <div id="leftSide">
+    </div>
+    <div id="rightSide">
+    </div>
+</div>    
+{% endblock %}
+{%block footer %}    
+{% endblock %}
