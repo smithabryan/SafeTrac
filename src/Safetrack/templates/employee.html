@@ -55,6 +55,7 @@
 	});	    
 	});	
 	setInterval(function(){
+		$.getJSON("/serialSafetyFeedback/",function(data){})
 	
 		$.getJSON("/getNewChartData/",
 	        function(data){
@@ -91,8 +92,6 @@
 
 {% block content %}
 <!-- Employee View  -->
-	<!--	$('#chart').replaceWith('<div id="chart">'+{{views.getNewChartData}}+'</div>');	  -->
-
         <div id="leftSide">
             <div id="profile">
                 <img src="{{ STATIC_URL }}{{imgsrc}}" />

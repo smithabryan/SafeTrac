@@ -308,7 +308,7 @@ def addDummyDataToDb(request):
         
     abc = User.objects.create(username='abc', password='abc',accessLevel=1,lastLogin=then,email='falcx@gmail.com')
     falco = User.objects.create(username='Falco', password='starfoxisawimp',accessLevel=3,lastLogin=then,email='falcoRox@gmail.com')
-    starfox = User.objects.create(username='Starfox', password='falcocantfly',accessLevel=3,lastLogin=then,email='starfoxy@gmail.com')    
+    starfox = User.objects.create(username='Starfox', password='falcocantfly',accessLevel=2,lastLogin=then,email='starfoxy@gmail.com')    
     team1 = Team.objects.create(supervisor=starfox)
     team1.members.add(abc)
     team1.members.add(falco)
@@ -316,25 +316,25 @@ def addDummyDataToDb(request):
 
     SensorData.objects.get_or_create(sensorType='T',value='0.4',time=thenString, dataNum=1, user=falco) 
     SensorData.objects.get_or_create(sensorType='H',value='50',time=thenString, dataNum=1, user=falco) 
-    SensorData.objects.get_or_create(sensorType='N',value='10',time=thenString, dataNum=1, user=falco)
+    SensorData.objects.get_or_create(sensorType='N',value='1',time=thenString, dataNum=1, user=falco)
     SensorData.objects.get_or_create(sensorType='I',value='100',time=thenString, dataNum=1, user=falco) 
     SensorData.objects.get_or_create(sensorType='T',value='0.6',time=LaterString, dataNum=1, user=falco) 
     SensorData.objects.get_or_create(sensorType='H',value='60',time=LaterString, dataNum=2, user=falco) 
-    SensorData.objects.get_or_create(sensorType='N',value='12',time=LaterString, dataNum=2, user=falco)
+    SensorData.objects.get_or_create(sensorType='N',value='2',time=LaterString, dataNum=2, user=falco)
     SensorData.objects.get_or_create(sensorType='I',value='110',time=LaterString, dataNum=2, user=falco) 
 
     SensorData.objects.get_or_create(sensorType='T',value='0.4',time=thenString, dataNum=1, user=abc) 
     SensorData.objects.get_or_create(sensorType='H',value='50',time=thenString, dataNum=1, user=abc) 
-    SensorData.objects.get_or_create(sensorType='N',value='10',time=thenString, dataNum=1, user=abc)
+    SensorData.objects.get_or_create(sensorType='N',value='1',time=thenString, dataNum=1, user=abc)
     SensorData.objects.get_or_create(sensorType='I',value='100',time=thenString, dataNum=1, user=abc)
 
     SensorData.objects.get_or_create(sensorType='T',value='22.1',time=thenString, dataNum=2, user=starfox) 
     SensorData.objects.get_or_create(sensorType='H',value='50.0',time=thenString, dataNum=2, user=starfox) 
-    SensorData.objects.get_or_create(sensorType='N',value='10.0',time=thenString, dataNum=2, user=starfox)
+    SensorData.objects.get_or_create(sensorType='N',value='1',time=thenString, dataNum=2, user=starfox)
     SensorData.objects.get_or_create(sensorType='I',value='100.0',time=thenString, dataNum=2, user=starfox) 
 
     Goal.objects.get_or_create(sensorType='T',value='100.0')
-    SafetyConstraint.objects.get_or_create(sensorType='T',maxValue='100',minValue='90')
+    SafetyConstraint.objects.get_or_create(sensorType='N',maxValue='5',minValue='-1')
 
     html = "<html><body>Added two users with 4 sensorData each</body></html>"
     return HttpResponse(html)    
@@ -369,7 +369,7 @@ def getNewChartData(request):
     return HttpResponse(data, mimetype='application/javascript')
 
 def testFeedback(request):
-    ser = serial.Serial('/dev/tty.usbmodemfa121',9600, timeout=1)
+    ser = serial.Serial('/dev/tty.usbmodemfa131',9600, timeout=1)
     ser.write('@')
     html = "<html><body>Sending an Asterisk to serial port</body></html>"
     return HttpResponse(html)    

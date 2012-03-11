@@ -1,6 +1,7 @@
 from Safetrack.tracker.models import SensorData, User, Goal, SafetyConstraint, Team
 from django.http import HttpResponse
 from django.utils import simplejson
+import serial
 
 header = {'logo':'assets/logo.png'}
 defaults = {'profilepic':'assets/defaultprofile.jpg'}
@@ -45,7 +46,10 @@ def getLatestData(user):
                         if constraint.sensorType == 'I' : sensorName = "Impact"
                         if constraint.sensorType == 'H' : sensorName = "Humidity"
                         dangerValues.append({"dataItem":dataItem,"constraint":constraint,"isHigh":isHigh,"sensorName":sensorName})
-    return {'state':isSafe,'aboveLimits': dangerValues, 'currentValues':{'temp':temp,'humid':humidity,'noise':noise,'impact':impact,'time':latestDataItem.time}}
+
+    returnData = {'state':isSafe,'aboveLimits': dangerValues, 'currentValues':{'temp':temp,'humid':humidity,'noise':noise,'impact':impact,'time':latestDataItem.time}}
+    serialSafetyFeedback(returnData)    
+    return returnData
 
 def getTemperatureData(request):
     request.session['dataViewingType'] = "Temp"
@@ -59,6 +63,7 @@ def getTemperatureData(request):
     data = simplejson.dumps([returnListValues,returnListTimes])
     return HttpResponse(data, mimetype='application/javascript')
 
+#TODO: factor out a method here to reduce overlap 
 def getNoiseData(request):
     request.session['dataViewingType'] = "Noise"
     user = request.session['user']
@@ -92,3 +97,15 @@ def getImpactData(request):
         returnListTimes.append(sensorData.time)
     data = simplejson.dumps([returnListValues,returnListTimes])
     return HttpResponse(data, mimetype='application/javascript')
+
+def serialSafetyFeedbackAjax(request):
+    user = request.session['user']
+    latestData = getLatestData(user)
+    serialSafetyFeedback(latestData)
+
+def serialSafetyFeedback(latestData):
+    ser = serial.Serial('/dev/tty.usbmodemfa131',9600, timeout=1)
+    if latestData['state'] == False:
+        ser.write('$*')
+    else:
+        ser.write('$*')
