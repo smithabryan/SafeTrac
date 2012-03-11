@@ -25,13 +25,15 @@ function getMembers(onComplete,delBtn) {
         success: function(data) {
             $.each(data, function(ind) {
                 console.log(data[ind])
-                var liTag = '<li id="'+data[ind].name+'"';
+                var liTag = '<li class="highlighted" id="'+data[ind].name+'"';
                     liTag += ' data-location="'+data[ind].location+'">';
                 if (delBtn) {
                     liTag += '<img class="xBtn" src="/static/assets/x.png" />'
                 }
                     liTag += '<img src="'+data[ind].profile+'" /></li>';
                 items.push(liTag);
+
+                monitored[data[ind].name] = true;
             });
 
             $('#groupBlk #member').html(items.join(''))
@@ -83,10 +85,9 @@ function latestInfo() {
 
                 $('<tr />',{html:tableTags}).appendTo(detailTable)
                 if (!details['state']) { 
-                   //this is BAD!
                     summaryDiv.find('h3').addClass('warning');
                     summaryDiv.find('h3').html("Attention"); 
-                    $('<li >',{"class":warning,html:name+" is in danger."}).appendTo(summaryDiv); 
+                    $('<li >',{"class":'warning',html:name+" is in danger."}).appendTo(summaryDiv); 
 
                     for (var i = 0; i < details['aboveLimits'].length; i++) {
                         var txt = "#"+name+details['aboveLimits'][i]['sensorName'];
