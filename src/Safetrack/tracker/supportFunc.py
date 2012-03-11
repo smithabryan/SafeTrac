@@ -1,4 +1,5 @@
 from Safetrack.tracker.models import SensorData, User, Goal, SafetyConstraint, Team
+from django.template import RequestContext, loader
 from django.http import HttpResponse
 from django.utils import simplejson
 import serial
@@ -35,6 +36,7 @@ def getLatestData(user):
         for constraint in safetyConstraints:
             for dataItem in latestDataItems:
                 if dataItem.sensorType == constraint.sensorType:
+                    print "Test"+repr(dataItem.sensorType)+" dataItem.value:"+repr(dataItem.value)+" time:"+repr(dataItem.time)
                     if dataItem.value > constraint.maxValue or dataItem.value < constraint.minValue:
                         isSafe = False
                         isHigh = False;
@@ -102,10 +104,25 @@ def serialSafetyFeedbackAjax(request):
     user = request.session['user']
     latestData = getLatestData(user)
     serialSafetyFeedback(latestData)
+    return HttpResponse([], mimetype='application/javascript')
 
 def serialSafetyFeedback(latestData):
-    ser = serial.Serial('/dev/tty.usbmodemfa131',9600, timeout=1)
-    if latestData['state'] == False:
-        ser.write('$*')
-    else:
-        ser.write('$*')
+    try:
+        ser = serial.Serial('/dev/tty.usbmodemfa131',9600, timeout=1)
+        if latestData['state'] == False:
+            ser.write('$@')
+        else:
+            ser.write('$*')
+    except: 
+        print "Serial not connected"    
+        
+def serialSafetyRefresh(request):
+    t = loader.get_template('safety.html')
+    user = request.session['user']
+    latestData = getLatestData(user)
+    c = RequestContext(request,         {'isSafe':latestData['state'],
+                                         'dangerValues':latestData['aboveLimits'],
+                                         'currentValues':latestData['currentValues']
+                                         })
+    response = HttpResponse(t.render(c))
+    return response

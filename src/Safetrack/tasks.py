@@ -32,7 +32,7 @@ def SerialReadTask(username, time, **kwargs):
                     cleanedData.append(splitItem)
             if len(cleanedData) == 4:
 #                dummyUser = User.objects.get(pk=1)
-                falco = list(User.objects.filter(username='Falco'))[0]
+                falco = list(User.objects.filter(username='Starfox'))[0]
                 roundedDecimalValue = Decimal('%.3f' % float(cleanedData[3]))
                 now = str(datetime.datetime.strptime(str(datetime.datetime.now()), '%Y-%m-%d %H:%M:%S.%f'))[0:22]
                 returnstring = "noise,time is ("+repr(cleanedData[2])+","+repr(now)+")"

@@ -1,0 +1,44 @@
+<html>
+    <head>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+        <script src="{{ STATIC_URL }}scripts/init.js"></script>
+		<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/style.css" />
+		{% block headSection %}{% endblock %}
+        <title>{%block title %}{% endblock %}</title>    
+	</head>
+	<body>
+		<div id="status">
+			  {% if not isSafe %}
+		          <div id="warning">
+		          <h2 style="color: #EFEFFB;">DANGER</h2>
+		            <ul>
+		            {% for item in dangerValues %}
+					    {% if item.isHigh %}
+		                    <li><p>Type:{{ item.sensorName }}: {{item.dataItem.value}} is too high!</p></li>
+						{% else %}
+		                    <li><p>Type:{{ item.sensorName }}: {{item.dataItem.value}} is too low!</p></li>
+			  			{% endif %}
+		            {% endfor %}
+		            </ul>
+		          </div>
+		          
+			  {% else %}
+		          <h2 style="color: #EFEFFB;">Workers in safe conditions</h2>
+			  {% endif %}
+		    <table>
+		        <tr>
+		            <td style="color: #EFEFFB;">Temperature</td>
+		            <td style="color: #EFEFFB;">Humidity</td>
+		            <td style="color: #EFEFFB;">Noise</td>
+		            <td style="color: #EFEFFB;">Impact</td>
+		        </tr>
+		        <tr>
+		            <td>{{currentValues.temp}}</td>
+		            <td>{{currentValues.humid}}</td>
+		            <td>{{currentValues.noise}}</td>
+		            <td>{{currentValues.impact}}</td>
+		        </tr>
+		    </table>
+		</div>	
+	</body>
+</html>

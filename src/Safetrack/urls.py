@@ -36,6 +36,7 @@ urlpatterns = patterns('',
     url(r'^getNoiseData/', supportFunc.getNoiseData),
     url(r'^getHumidityData/', supportFunc.getHumidityData),
     url(r'^getImpactData/', supportFunc.getImpactData),
-    url(r'^serialSafetyFeedback/', supportFunc.serialSafetyFeedbackAjax),    
+    url(r'^serialSafetyFeedback/', supportFunc.serialSafetyFeedbackAjax),
+    url(r'^serialSafetyRefresh/', supportFunc.serialSafetyRefresh),
 )
 urlpatterns += staticfiles_urlpatterns()
