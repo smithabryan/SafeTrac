@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block title %}SafeTrac -- Supervisor{% endblock %}
 {% block headSection %}
-    <link rel=StyleSheet href="{{STATIC_URL}}css/tmp.css" type="text/css" MEDIA=screen>
+<link rel=StyleSheet href="{{STATIC_URL}}css/tmp.css" type="text/css" MEDIA=screen>
     <link rel="stylesheet" href="http://code.jquery.com/ui/1.8.18/themes/base/jquery-ui.css" type="text/css" media="all" />
 
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js"></script>
@@ -15,6 +15,13 @@
 	    #city { width: 25em; }
 	</style>
 {% endblock %}
+
+{% block titleTextImage %}
+            <div id="supervisorTitle"> 
+            	<img id="titleImage" src="{{ STATIC_URL }}assets/title.png"> 
+            </div>
+{% endblock %}
+
 {% block content %}
 <div class="page">
     <div id="leftSide">

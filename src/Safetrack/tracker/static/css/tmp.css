@@ -35,11 +35,11 @@ form div                            { overflow: hidden; margin: 0 0 5px 0; }
     border-style: solid;
 }
 
-#groupBlk {
+/* #groupBlk {
     background-color:yellow;
     width:50%;
     height:50%;
-}
+} */
 
 #groupBlk li img:hover {
     size: 120%;
