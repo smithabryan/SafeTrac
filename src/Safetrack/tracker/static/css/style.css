@@ -18,8 +18,9 @@ h3 {
 }
 
 button {
-    background-color: #880000;
-    font-style
+    color: #0000FF;
+    border: 14px;
+    font-weight: bold;
 }
 
 tr {
