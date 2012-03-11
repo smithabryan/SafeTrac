@@ -17,7 +17,7 @@ h3 {
 	color: #EFEFFB;
 }
 
-button {
+.button, button {
     color: #0000FF;
     border: 14px;
     font-weight: bold;
@@ -42,11 +42,11 @@ table{
 	color: #EFEFFB;
 	text-align: center;
 }
-
+/*
 .button{
 	float: right;
 	color: #EFEFFB;
-}
+}*/
 
 .warning {
 	color: red;
