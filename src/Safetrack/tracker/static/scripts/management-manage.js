@@ -15,7 +15,7 @@ $(function() {
         }
 	});
 
-    $("form div.knobs").append('<div class="inc numbutton">+</div><div class="dec numbutton">-</div>');
+    $("#form div.knobs").append('<div class="inc numbutton">+</div><div class="dec numbutton">-</div>');
     
     $(".numbutton").click(function() {
         var $button = $(this);
@@ -26,24 +26,24 @@ $(function() {
     	  // AJAX save would go here
     	} else {
     	  // Don't allow decrementing below zero
-    	  if (oldValue >= 1) {
     	      var newVal = parseFloat(oldValue) - 1;
     	      // AJAX save would go here
-    	  }
     	}
     	$button.parent().find("input").val(newVal);
     });
+
     $("#submit").click(function () {
         $.ajax({
 		    url: "/setConstraints.py/",
-		    data: {"data":[
-                {"type":"T","max":$("#tempMax").val(),"min":$("#tempMin").val()},
-                {"type":"N","max":$("#noiseMax").val(),"min":$("#noiseMin").val()},
-                {"type":"I","max":$("#impactMax").val(),"min":$("#impactMax").val(),},
-                {"type":"H","max":$("#humidMax").val(),"min":$("#humidMax").val(),},
-            ]},
-            dataType: "json",
+            type: "GET",   
+		    data: {
+                "typeTmax":$("#tempMax").val(),"typeTmin":$("#tempMin").val(),
+                "typeNmax":$("#noiseMax").val(),"typeNmin":$("#noiseMin").val(),
+                "typeImax":$("#impactMax").val(),"typeImin":$("#impactMax").val(),
+                "typeHmax":$("#humidMax").val(),"typeHmin":$("#humidMax").val()
+            },
 		    success: function( data ) {
+               location.reload(true) 
             }
 	    });
 

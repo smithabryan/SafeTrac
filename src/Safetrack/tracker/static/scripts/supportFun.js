@@ -48,7 +48,7 @@ function latestInfo() {
     var searchName = "";
     var teamView = false;
 
-    if ($("#userType").val().substr(14,1)=="M") {
+    if ($("#userType").val().substr(13,1)=="M") {
         searchName = $("#searchName").val();
         teamView = $("#teamView").checked ? true : false; 
     }

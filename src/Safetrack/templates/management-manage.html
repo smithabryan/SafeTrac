@@ -20,7 +20,7 @@
 <div class="page" id="page1">
     <a href="management">View</a>
     <div class="center">
-        <form method="post" action="{% url SET_GOAL %}">{% csrf_token %}
+        <div id="form">
             <div class="cat">
                 <h3>Temperature</h3>
                 <div class="knobs">
@@ -32,6 +32,7 @@
                     <input type="text" id="tempMin" value=""></input>
                 </div>
             </div>
+            <br />
             <div class="cat">
                 <h3>Humidity</h3>
                 <div class="knobs">
@@ -43,6 +44,7 @@
                     <input type="text" id="humidMin" value=""></input>
                 </div>
             </div>
+            <br />
             <div class="cat">
                 <h3>Noise</h3>
                 <div class="knobs">
@@ -54,6 +56,7 @@
                     <input type="text" id="noiseMin" value=""></input>
                 </div>
             </div>
+            <br />
             <div class="cat">
                 <h3>Impact</h3>
                 <div class="knobs">
@@ -65,8 +68,8 @@
                     <input type="text" id="impactMin" value=""></input>
                 </div>
             </div>
-            <input type="submit" value="Submit" id="submit" />
-        </form>
+            <button type="submit" id="submit">Update</button>
+        </div>
     </div>
     <div id="leftSide">
     </div>

@@ -86,13 +86,22 @@ def setConstraints(request):
     if not authorized(request):
         return loginView(request)
 
-    sensorData = request.POST.get('sensorData')
-
-    for sensor in sensorData['data']:
-        constraint = SafetyConstraint.objects.filter(sensorType=sensor['type'])[0]
-        constraint.gminValue = sensor['min']
-        constraint.gmaxValue = sensor['max'] 
-        constraint.save()
+    constraint = SafetyConstraint.objects.filter(sensorType="T")[0]
+    constraint.gminValue = request.GET.get('typeTmin')
+    constraint.gmaxValue = request.GET.get('typeTmax')
+    constraint.save()
+    constraint = SafetyConstraint.objects.filter(sensorType="N")[0]
+    constraint.gminValue = request.GET.get('typeNmin')
+    constraint.gmaxValue = request.GET.get('typeNmax') 
+    constraint.save()
+    constraint = SafetyConstraint.objects.filter(sensorType="I")[0]
+    constraint.gminValue = request.GET.get('typeImin')
+    constraint.gmaxValue = request.GET.get('typeImax') 
+    constraint.save()
+    constraint = SafetyConstraint.objects.filter(sensorType="H")[0]
+    constraint.gminValue = request.GET.get('typeHmin')
+    constraint.gmaxValue = request.GET.get('typeHmax') 
+    constraint.save()
  
     return HttpResponse('200') 
 
