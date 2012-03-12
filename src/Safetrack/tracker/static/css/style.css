@@ -65,9 +65,17 @@ table{
 }
 
 #leftSide #stats {
+    padding-left: 50px;
+    padding-top: 20px;
+}
+
+#stats button {
+    margin-left: 30px;
 }
 
 #leftSide #profile {
+    padding-left: 100px;
+    padding-top: 50px;
 }
 
 #rightSide {

@@ -3,6 +3,8 @@
 {% block headSection %}
     <script src="http://code.highcharts.com/highcharts.js"></script>
     <script src="http://code.highcharts.com/modules/exporting.js"></script>
+    <script src="{{STATIC_URL}}js/swfobject.js"></script>
+    <script src="{{STATIC_URL}}js/downloadify.min.js"></script>
     <script src="{{STATIC_URL}}scripts/supportFun.js"></script>
     <script src="{{STATIC_URL}}scripts/employee.js"></script>
     {% load chartit %}
@@ -147,7 +149,7 @@
 {% endblock %}
 
 {% block content %}
-<!-- Employee View  -->
+<!-- Employee View-->
         <div id="leftSide">
             <div id="profile">
                 <img src="{{ STATIC_URL }}{{imgsrc}}" />
@@ -158,8 +160,8 @@
                     <li>{{ key }}: {{ value }}</li>
                 {% endfor %}
                 </ul>
+                <button id="downloadBtn">Create Report</button>
             </div>
-            <button>Create Report</button>
         </div>
         <div id="rightSide">
             <div id="controls">
@@ -186,4 +188,6 @@
                 </table>
             </div>
         </div>
+    <div class="outputData">
+    </div>
 {% endblock %}
