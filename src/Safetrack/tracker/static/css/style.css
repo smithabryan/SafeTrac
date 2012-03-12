@@ -40,7 +40,8 @@ table{
 }
 
 #headerSection {
-	height: 20%
+	height: 20%;
+    min-height: 100px;
 }
 
 #leftSide {
@@ -121,4 +122,12 @@ table{
     background-color:yellow;
     width:100%;
     height:100%;
+}
+
+.ui-widget {
+    margin-left: 20px;
+}
+
+.searchtitle {
+    width: 200px;
 }
