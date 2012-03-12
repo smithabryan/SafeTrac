@@ -30,10 +30,10 @@ form div                            { overflow: hidden; margin: 0 0 5px 0; }
     padding-left: 30%;
 }
 
-#highlighted {
+/*#highlighted {
     border-color: red;
     border-style: solid;
-}
+}*/
 
 /* #groupBlk {
     background-color:yellow;
