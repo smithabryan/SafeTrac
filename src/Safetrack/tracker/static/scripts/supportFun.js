@@ -86,7 +86,7 @@ function latestInfo() {
                    //this is BAD!
                     summaryDiv.find('h3').addClass('warning');
                     summaryDiv.find('h3').html("Attention"); 
-                    $('<li >',{html:name+" is in danger."}).appendTo(summaryDiv); 
+                    $('<li >',{"class":warning,html:name+" is in danger."}).appendTo(summaryDiv); 
 
                     for (var i = 0; i < details['aboveLimits'].length; i++) {
                         var txt = "#"+name+details['aboveLimits'][i]['sensorName'];
