@@ -1,5 +1,4 @@
 function addToMonitored(added) {
-    console.log(added);
     monitored[added] = true;
 }
 
