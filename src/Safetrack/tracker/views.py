@@ -371,14 +371,20 @@ def addDummyDataToDb(request):
     SensorData.objects.get_or_create(sensorType='N',value='1',time=thenString, dataNum=2, user=starfox)
     SensorData.objects.get_or_create(sensorType='I',value='100.0',time=thenString, dataNum=2, user=starfox) 
 
-    Goal.objects.get_or_create(sensorType='T',value='100.0')
-    SafetyConstraint.objects.get_or_create(sensorType='N',maxValue='5',minValue='-1')
+    Goal.objects.get_or_create(sensorType='N',value='2')
+
+    SafetyConstraint.objects.get_or_create(sensorType='N',maxValue='5',minValue='-1',gmaxValue='5',gminValue='-1')
+    SafetyConstraint.objects.get_or_create(sensorType='T',maxValue='45',minValue='-15',gmaxValue='45',gminValue='-15')
+    SafetyConstraint.objects.get_or_create(sensorType='H',maxValue='5',minValue='1',gmaxValue='5',gminValue='1')
+    SafetyConstraint.objects.get_or_create(sensorType='I',maxValue='5',minValue='-1',gmaxValue='5',gminValue='-1')
 
     html = "<html><body>Added two users with 4 sensorData each</body></html>"
     return HttpResponse(html)    
 
 def getNewChartData(request):
-    user = list(User.objects.filter(username='Falco'))[0]
+    user = request.session['user'] 
+    #user = User.objects.filter(username='Falco')[0]
+
     latestDataItem = SensorData.objects.filter(user=user)
     latestDataItem = latestDataItem[latestDataItem.count()-1]
     latestDataItems = SensorData.objects.filter(time=latestDataItem.time)
