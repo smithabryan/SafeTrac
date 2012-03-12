@@ -27,6 +27,8 @@ urlpatterns = patterns('',
     url(r'^testingFeedback/', views.testFeedback),   
 
     #ajax calls
+    url(r'^setConstraints.py/', views.setConstraints,name="SET_GOAL"),
+    url(r'^getConstraints.py/', views.getConstraints),
     url(r'^addUser.py/', views.addUser),
     url(r'^removeUser.py/', views.removeUser),
     url(r'^getMembers.py/', views.getMembers),

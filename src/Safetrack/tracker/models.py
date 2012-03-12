@@ -29,6 +29,8 @@ class Goal(models.Model):
     
 class SafetyConstraint(models.Model):    
     sensorType = models.CharField(max_length=1, choices=SENSOR_TYPES)
+    gmaxValue = models.DecimalField(max_digits=10, decimal_places=3);
+    gminValue = models.DecimalField(max_digits=10, decimal_places=3);
     maxValue = models.DecimalField(max_digits=10, decimal_places=3);
     minValue = models.DecimalField(max_digits=10, decimal_places=3);
     

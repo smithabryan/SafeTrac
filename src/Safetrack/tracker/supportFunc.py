@@ -53,7 +53,6 @@ def getLatestDataX(users):
                             dangerValues.append({"dataItem":dataItem.value,"minValue":constraint.minValue,"maxValue":constraint.maxValue,"isHigh":isHigh,"sensorName":sensorName})
         res[user.name] = {'location':user.location,'state':isSafe,'aboveLimits': dangerValues, 'temp':temp,'humid':humidity,'noise':noise,'impact':impact,'time':latestDataItem.time}
 
-
     return res
 
 def getLatestData(user):

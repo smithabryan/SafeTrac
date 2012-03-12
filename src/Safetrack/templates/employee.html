@@ -3,6 +3,8 @@
 {% block headSection %}
     <script src="http://code.highcharts.com/highcharts.js"></script>
     <script src="http://code.highcharts.com/modules/exporting.js"></script>
+    <script src="{{STATIC_URL}}scripts/supportFun.js"></script>
+    <script src="{{STATIC_URL}}scripts/employee.js"></script>
     {% load chartit %}
     {{ chart1|load_charts:"graph1" }}
 	<script type="text/javascript" charset="utf-8">    
@@ -138,9 +140,10 @@
 	
 	</script>
 {% endblock %}
-
 {% block titleTextImage %}
-            <div id="employeeTitle"> <img id="titleImage" src="{{ STATIC_URL }}assets/title.png"> </div>
+    <div id="employeeTitle"> 
+    	<img id="titleImage" src="{{ STATIC_URL }}assets/title.png">
+    </div>
 {% endblock %}
 
 {% block content %}
@@ -165,12 +168,22 @@
                 <div id="graph1">
                 </div>
             </div>
-			    <div class="chartSwitch">
-	      			<a id="TemperatureButton" class="chartSwitch" href="#">Temperature</a>                
-    	  			<a id="NoiseButton" class="chartSwitch" href="#">Noise</a>
-      				<a id="HumidityButton" class="chartSwitch" href="#">Humidity</a>  
-      				<a id="ImpactButton" class="chartSwitch" href="#">Impacts</a>
-    			</div>	
-				{% include "safety.html" %}
+		    <div class="chartSwitch">
+      			<a id="TemperatureButton" class="chartSwitch" href="#">Temperature</a>                
+	  			<a id="NoiseButton" class="chartSwitch" href="#">Noise</a>
+  				<a id="HumidityButton" class="chartSwitch" href="#">Humidity</a>  
+  				<a id="ImpactButton" class="chartSwitch" href="#">Impacts</a>
+			</div>
+            <div id="status">
+                <h2>Summary</h2>
+                <div id="summary">
+                <h3>Normal</h3>
+                    <ul>
+                    </ul>
+                </div>
+                <button id="tableHeader">Details</button>
+                <table id="memberTable">
+                </table>
+            </div>
         </div>
 {% endblock %}

@@ -1,5 +1,4 @@
 function addToMonitored(added) {
-    console.log(added);
     monitored[added] = true;
 }
 
@@ -19,6 +18,12 @@ function setInteractivity() {
                 corner: {
                     target: 'topRight',
                     tooltip: 'bottomLeft'
+                }
+            },
+            style: {
+                padding: 5,
+                border: {
+                    radius: 5
                 }
             }
         });                          
@@ -41,14 +46,26 @@ $(function() {
     $("#tableHeader").click(function () {
         $("#memberTable").toggle();    
     });  
-    $("#selectAll").click(function() {
-        //implement
+    $("#all").click(function() {
+        $.each(monitored, function (key,val) {
+            if (!$("#"+key).hasClass('highlighted')) {
+                monitored[key] = true;
+                $("#"+key).addClass('highlighted');
+            }
+        })
     });
     $("#none").click(function () {
-        //implement
+        $.each(monitored, function (key,val) {
+            if ($("#"+key).hasClass('highlighted')) {
+                monitored[key] = false;
+                $("#"+key).removeClass('highlighted');
+            }
+        })
     });
 
-    getMembers(setInteractivity);
+    if ($("#userType").text().substr(13,1)=="S") {
+        getMembers(setInteractivity);
+    }
 });
 
 //background ajax calls every 30seconds

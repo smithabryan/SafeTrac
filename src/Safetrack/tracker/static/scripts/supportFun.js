@@ -26,12 +26,17 @@ function getMembers(onComplete,delBtn) {
             $.each(data, function(ind) {
                 console.log(data[ind])
                 var liTag = '<li id="'+data[ind].name+'"';
-                    liTag += ' data-location="'+data[ind].location+'">';
+                    liTag += ' data-location="'+data[ind].location+'"';
                 if (delBtn) {
-                    liTag += '<img class="xBtn" src="/static/assets/x.png" />'
+                    liTag += '><img class="xBtn" src="/static/assets/x.png" />'
+                }
+                else {
+                    liTag += 'class="highlighted">'; 
                 }
                     liTag += '<img src="'+data[ind].profile+'" /></li>';
                 items.push(liTag);
+
+                monitored[data[ind].name] = true;
             });
 
             $('#groupBlk #member').html(items.join(''))
@@ -48,7 +53,7 @@ function latestInfo() {
     var searchName = "";
     var teamView = false;
 
-    if ($("#userType").val().substr(14,1)=="M") {
+    if ($("#userType").val().substr(13,1)=="M") {
         searchName = $("#searchName").val();
         teamView = $("#teamView").checked ? true : false; 
     }
@@ -82,21 +87,22 @@ function latestInfo() {
                 tableTags += '<td id="'+name+'impact">'+details['impact']+'</td>';
 
                 $('<tr />',{html:tableTags}).appendTo(detailTable)
-
                 if (!details['state']) { 
-                   //this is BAD!
                     summaryDiv.find('h3').addClass('warning');
                     summaryDiv.find('h3').html("Attention"); 
-                    $('<li >',{html:name+"is in danger."}).appendTo(summaryDiv.find('ul')); 
-              
-                    for (var i = 0; i < details['aboveLimits'].size; i++) {
-                        if (details['isHigh'])
-                            $("#"+name+details['sensorName']).addClass('dangerHigh')
+                    $('<li >',{"class":'warning',html:name+" is in danger."}).appendTo(summaryDiv); 
+
+                    for (var i = 0; i < details['aboveLimits'].length; i++) {
+                        var txt = "#"+name+details['aboveLimits'][i]['sensorName'];
+                        
+                        if (details['aboveLimits'][i]['isHigh'])
+                            $(txt).addClass('dangerHigh')
                         else
-                            $("#"+name+details['sensorName']).addClass('dangerLow')
+                            $(txt).addClass('dangerLow')
                     }        
                 } 
             })
+            $('<br />').appendTo(summaryDiv);
         },
         failure: function (data) {
             alert('fail')
