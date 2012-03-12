@@ -32,8 +32,16 @@ function setInteractivity() {
                 corner: {
                     target: 'topRight',
                     tooltip: 'bottomLeft'
+                    
+                }
+            },
+            style: {
+                padding: 5,
+                border: {
+                    radius: 5
                 }
             }
+            
         });
         $(members[ind]).click(function () {
             //need to delete the char
