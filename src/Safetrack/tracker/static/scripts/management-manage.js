@@ -1,8 +1,7 @@
 $(function() {
 
     $.ajax({
-		url: "/getGoals.py/",
-        },
+		url: "/getConstraints.py/",
         dataType: "json",
 		success: function(data) {
             $("#tempMax").attr('value',data['T']['max']);

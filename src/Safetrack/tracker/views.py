@@ -373,7 +373,9 @@ def addDummyDataToDb(request):
     return HttpResponse(html)    
 
 def getNewChartData(request):
-    user = list(User.objects.filter(username='Falco'))[0]
+    user = request.session['user'] 
+    #user = User.objects.filter(username='Falco')[0]
+
     latestDataItem = SensorData.objects.filter(user=user)
     latestDataItem = latestDataItem[latestDataItem.count()-1]
     latestDataItems = SensorData.objects.filter(time=latestDataItem.time)
@@ -382,7 +384,7 @@ def getNewChartData(request):
     if 'lastNewChartDataTime' not in request.session:
         request.session['lastNewChartDataTime'] = latestDataItem.time
     elif request.session['lastNewChartDataTime'] == latestDataItem.time:
-        return HttpResponse([], mimetype='application/javascript')
+        return HttpResponse(simplejson.dumps([]), mimetype='application/javascript')
     else:
         request.session['lastNewChartDataTime'] = latestDataItem.time
     
@@ -398,6 +400,7 @@ def getNewChartData(request):
             dataList.append([dataItem.time,dataItem.value] )    
         elif request.session['dataViewingType'] == "Impact" and dataItem.sensorType == 'I':
             dataList.append([dataItem.time,dataItem.value] )    
+
     data = simplejson.dumps(dataList)
     return HttpResponse(data, mimetype='application/javascript')
 

@@ -19,7 +19,7 @@
 <!-- Management View  -->
 <div class="page" id="page1">
     <div class="center">
-        <form method="post" action="">
+        <form method="post" action="{% url SET_GOAL %}">{% csrf_token %}
             <div class="cat">
                 <h3>Temperature</h3>
                 <div class="knobs">
