@@ -1,15 +1,17 @@
 $(function() {
 
     $.ajax({
-		url: "/getGoals.py/",
-		data: {"data":[
-            {"type":"T","max":,"min":},
-            {"type":"N","max":,"min":},
-            {"type":"I","max":,"min":},
-            {"type":"H","max":,"min":},
-        },
+		url: "/getConstraints.py/",
         dataType: "json",
-		success: function( data ) {
+		success: function(data) {
+            $("#tempMax").attr('value',data['T']['max']);
+            $("#tempMin").attr('value',data['T']['min']);
+            $("#humidMin").attr('value',data['H']['min']);
+            $("#humidMax").attr('value',data['H']['max']);
+            $("#impactMax").attr('value',data['I']['max']);
+            $("#impactMin").attr('value',data['I']['min']);
+            $("#noiseMax").attr('value',data['N']['max']);
+            $("#noiseMin").attr('value',data['N']['min']);
         }
 	});
 
@@ -31,17 +33,20 @@ $(function() {
     	}
     	$button.parent().find("input").val(newVal);
     });
+    $("#submit").click(function () {
+        $.ajax({
+		    url: "/setConstraints.py/",
+		    data: {"data":[
+                {"type":"T","max":$("#tempMax").val(),"min":$("#tempMin").val()},
+                {"type":"N","max":$("#noiseMax").val(),"min":$("#noiseMin").val()},
+                {"type":"I","max":$("#impactMax").val(),"min":$("#impactMax").val(),},
+                {"type":"H","max":$("#humidMax").val(),"min":$("#humidMax").val(),},
+            ]},
+            dataType: "json",
+		    success: function( data ) {
+            }
+	    });
 
-    $.ajax({
-		url: "/getGoals.py/",
-		data: {"data":[
-            {"type":"T","max":,"min":},
-            {"type":"N","max":,"min":},
-            {"type":"I","max":,"min":},
-            {"type":"H","max":,"min":},
-        },
-        dataType: "json",
-		success: function( data ) {
-        }
-	});
+ 
+    })
 });

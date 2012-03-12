@@ -3,100 +3,15 @@
 {% block headSection %}
     <script src="http://code.highcharts.com/highcharts.js"></script>
     <script src="http://code.highcharts.com/modules/exporting.js"></script>
+    <script src="{{STATIC_URL}}scripts/supportFun.js"></script>
+    <script src="{{STATIC_URL}}scripts/employee.js"></script>
     {% load chartit %}
     {{ chart1|load_charts:"graph1" }}
-	<script type="text/javascript" charset="utf-8">    
-	elem = document.getElementById('rightSide');	
-	$(document).ready(function()
-	{    
-	    chart.setSize(
-	       400,
-	       300,
-	       false
-	    );   
-	    
-	
-	$(".chartSwitch").click(function(event) {
-  		var callName = "";
-  		var type = "";
-		if(event.target.id == "TemperatureButton")
-  		{
-  			callName = "/getTemperatureData/";
-  			type = "Temperature"
-  		}
-  		else if(event.target.id == "HumidityButton")
-  		{
-  			callName = "/getHumidityData/";
-  			type = "Humidity"
-  		}
-  		else if(event.target.id == "NoiseButton")
-  		{
-  			callName = "/getNoiseData/";
-  			type = "Noise"
-  		}
-  		else if(event.target.id == "ImpactButton")
-  		{
-  			callName = "/getImpactData/";
-  			type = "Impact Force"
-  		}
-  		//set session (do on server through call)
-  		
-		$.getJSON(callName,
-	        function(data){
-		    	chart.yAxis[0].setTitle({
-        			text: type
-    			});
-    			chart.series[0].setData(data[0],false);
-				chart.xAxis[0].setCategories(data[1], false);
-				chart.redraw();
-	        }
-		);		
-		  		
-	});	    
-	});	
-	setInterval(function(){
-		$.getJSON("/serialSafetyFeedback/",function(data){});
-		$.getJSON("/serialSafetyRefresh/",function(data){
-			$('#status').replaceWith(data);
-		});
-		
-		$.getJSON("/getNewChartData/",
-	        function(data){
-	        	if(data.length>0)
-	        	{
-	        		if(chart.series[0].data.length < 10)
-	        		{
-					    chart.series[0].addPoint(
-					    	{y:data[0][1]},
-					    	false,
-							false
-					   	);
-	        		}
-	         		else 
-	        		{
-					    chart.series[0].addPoint(
-					    	{y:data[0][1]},
-					        false,
-					        true
-					   	);
-	        		}
-					categories = chart.xAxis[0].categories;
-					categories.push(data[0][0]);
-					chart.xAxis[0].setCategories(categories, false);
-					chart.redraw();
-	        	}
-	        }
-	    );
-	}, 1000);
-
-	
-	</script>
 {% endblock %}
-
 {% block titleTextImage %}
-            <div id="employeeTitle"> 
-            	<img id="titleImage" src="{{ STATIC_URL }}assets/title.png">
-            </div>
+    <div id="employeeTitle"> 
+    	<img id="titleImage" src="{{ STATIC_URL }}assets/title.png">
+    </div>
 {% endblock %}
 
 {% block content %}
@@ -121,12 +36,22 @@
                 <div id="graph1">
                 </div>
             </div>
-			    <div class="chartSwitch">
-	      			<a id="TemperatureButton" class="chartSwitch" href="#">Temperature</a>                
-    	  			<a id="NoiseButton" class="chartSwitch" href="#">Noise</a>
-      				<a id="HumidityButton" class="chartSwitch" href="#">Humidity</a>  
-      				<a id="ImpactButton" class="chartSwitch" href="#">Impacts</a>
-    			</div>	
-				{% include "safety.html" %}
+		    <div class="chartSwitch">
+      			<a id="TemperatureButton" class="chartSwitch" href="#">Temperature</a>                
+	  			<a id="NoiseButton" class="chartSwitch" href="#">Noise</a>
+  				<a id="HumidityButton" class="chartSwitch" href="#">Humidity</a>  
+  				<a id="ImpactButton" class="chartSwitch" href="#">Impacts</a>
+			</div>
+            <div id="status">
+                <h2>Summary</h2>
+                <div id="summary">
+                <h3>Normal</h3>
+                    <ul>
+                    </ul>
+                </div>
+                <h2 id="tableHeader">Details</h2>
+                <table id="memberTable">
+                </table>
+            </div>
         </div>
 {% endblock %}

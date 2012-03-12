@@ -18,50 +18,51 @@
 
 <!-- Management View  -->
 <div class="page" id="page1">
+    <a href="management">View</a>
     <div class="center">
-        <form method="post" action="">
+        <form method="post" action="{% url SET_GOAL %}">{% csrf_token %}
             <div class="cat">
                 <h3>Temperature</h3>
-                <div class="knobs" id="tempMax">
+                <div class="knobs">
                     <label for="name">Max</label>
                     <input type="text" id="tempMax" value=""></input>
                 </div>
-                <div class="knobs" id="tempMin">
+                <div class="knobs">
                     <label for="name">Min</label>
                     <input type="text" id="tempMin" value=""></input>
                 </div>
             </div>
             <div class="cat">
                 <h3>Humidity</h3>
-                <div class="knobs" id="humidMax">
+                <div class="knobs">
                     <label for="name">Max</label>
                     <input type="text" id="humidMax" value=""></input>
                 </div>
-                <div class="knobs" id="humidMin">
+                <div class="knobs">
                     <label for="name">Min</label>
                     <input type="text" id="humidMin" value=""></input>
                 </div>
             </div>
             <div class="cat">
                 <h3>Noise</h3>
-                <div class="knobs" id="noiseMax">
+                <div class="knobs">
                     <label for="name">Max</label>
-                    <input type="text" id="NoiseMax" value=""></input>
+                    <input type="text" id="noiseMax" value=""></input>
                 </div>
-                <div class="knobs" id="noiseMin">
+                <div class="knobs">
                     <label for="name">Min</label>
-                    <input type="text" id="NoiseMin" value=""></input>
+                    <input type="text" id="noiseMin" value=""></input>
                 </div>
             </div>
             <div class="cat">
                 <h3>Impact</h3>
-                <div class="knobs" id="impactMax">
+                <div class="knobs">
                     <label for="name">Max</label>
                     <input type="text" id="impactMax" value=""></input>
                 </div>
-                <div class="knobs" id="impactMin">
+                <div class="knobs">
                     <label for="name">Min</label>
-                    <input type="text" id="impactMax" value=""></input>
+                    <input type="text" id="impactMin" value=""></input>
                 </div>
             </div>
             <input type="submit" value="Submit" id="submit" />
