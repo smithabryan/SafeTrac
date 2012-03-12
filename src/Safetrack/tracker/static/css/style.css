@@ -157,3 +157,9 @@ table{
 .dangerLow {
     
 }
+
+.highlighted {
+    border-color: green;
+    border-style: inset;
+    border-width: 5px;
+}
