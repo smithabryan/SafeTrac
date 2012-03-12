@@ -48,7 +48,7 @@ function latestInfo() {
     var searchName = "";
     var teamView = false;
 
-    if ($("#userType").val().substr(14,1)=="M") {
+    if ($("#userType").val().substr(13,1)=="M") {
         searchName = $("#searchName").val();
         teamView = $("#teamView").checked ? true : false; 
     }
@@ -82,21 +82,23 @@ function latestInfo() {
                 tableTags += '<td id="'+name+'impact">'+details['impact']+'</td>';
 
                 $('<tr />',{html:tableTags}).appendTo(detailTable)
-
                 if (!details['state']) { 
                    //this is BAD!
                     summaryDiv.find('h3').addClass('warning');
                     summaryDiv.find('h3').html("Attention"); 
-                    $('<li >',{html:name+"is in danger."}).appendTo(summaryDiv.find('ul')); 
-              
-                    for (var i = 0; i < details['aboveLimits'].size; i++) {
-                        if (details['isHigh'])
-                            $("#"+name+details['sensorName']).addClass('dangerHigh')
+                    $('<li >',{html:name+" is in danger."}).appendTo(summaryDiv); 
+
+                    for (var i = 0; i < details['aboveLimits'].length; i++) {
+                        var txt = "#"+name+details['aboveLimits'][i]['sensorName'];
+                        
+                        if (details['aboveLimits'][i]['isHigh'])
+                            $(txt).addClass('dangerHigh')
                         else
-                            $("#"+name+details['sensorName']).addClass('dangerLow')
+                            $(txt).addClass('dangerLow')
                     }        
                 } 
             })
+            $('<br />').appendTo(summaryDiv);
         },
         failure: function (data) {
             alert('fail')

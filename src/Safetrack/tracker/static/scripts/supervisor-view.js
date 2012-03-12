@@ -48,7 +48,9 @@ $(function() {
         //implement
     });
 
-    getMembers(setInteractivity);
+    if ($("#userType").text().substr(13,1)=="S") {
+        getMembers(setInteractivity);
+    }
 });
 
 //background ajax calls every 30seconds
