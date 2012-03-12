@@ -105,7 +105,7 @@ table{
 	color:#EFEFFB;
 } */
 
-#loggedInText #userType {
+#loggedInText {
 	display: block;
 	float: right;
 	color: #EFEFFB;
@@ -126,10 +126,9 @@ table{
 }
 
 #groupBlk {
-  background-color: #CBCEAE; 
-    width:100%;
+  /*background-color: #CBCEAE; */
+    width:60%;
     height:100%;
-    
 }
 
 .ui-widget {
@@ -137,8 +136,9 @@ table{
 }
 
 .searchtitle {
-    width: 200px;
+    color: #EFEFFB;
 }
+
 #tableHeader{
 
 }
