@@ -317,7 +317,7 @@ def addDummyDataToDb(request):
     abc = User.objects.create(username='e', password='e',accessLevel=1,lastLogin=then,email='falcx@gmail.com',location="US",name="A")
     falco = User.objects.create(username='s', password='s',accessLevel=2,lastLogin=then,email='falcoRox@gmail.com',location="CA",name="AA")
     starfox = User.objects.create(username='m', password='m',accessLevel=3,lastLogin=then,email='starfoxy@gmail.com',location="UK",name="AAA")    
-    team1 = Team.objects.create(supervisor=starfox)
+    team1 = Team.objects.create(supervisor=falco)
     team1.members.add(abc)
     team1.members.add(starfox)
 
@@ -340,14 +340,14 @@ def addDummyDataToDb(request):
     SensorData.objects.get_or_create(sensorType='N',value='1',time=thenString, dataNum=2, user=starfox)
     SensorData.objects.get_or_create(sensorType='I',value='100.0',time=thenString, dataNum=2, user=starfox) 
 
-    Goal.objects.get_or_create(sensorType='T',value='100.0')
+    Goal.objects.get_or_create(sensorType='N',value='2')
     SafetyConstraint.objects.get_or_create(sensorType='N',maxValue='5',minValue='-1')
 
     html = "<html><body>Added two users with 4 sensorData each</body></html>"
     return HttpResponse(html)    
 
 def getNewChartData(request):
-    user = list(User.objects.filter(username='Falco'))[0]
+    user = request.session['user']
     latestDataItem = SensorData.objects.filter(user=user)
     latestDataItem = latestDataItem[latestDataItem.count()-1]
     latestDataItems = SensorData.objects.filter(time=latestDataItem.time)

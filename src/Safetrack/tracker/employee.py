@@ -8,6 +8,7 @@ from Safetrack.tracker.supportFunc import *
 #Employee?
 def render(request):
     user = request.session['user']
+    request.session['dataViewingType'] = "Noise"
     sensorData = SensorData.objects.filter(sensorType='N', user=user)[0:10]
     latestData = getLatestData(user)
     request.session['lastNewChartDataTime'] = latestData['currentValues']['time']
@@ -22,8 +23,7 @@ def render(request):
     employeeInfo = {'Name':user.username,'Title':"Worker"}
     
     '''Creating Charts'''
-    dataSeries = \
-        DataPool(
+    dataSeries = DataPool(
             series = 
             [{'options':{'source': sensorData},
             'terms':[

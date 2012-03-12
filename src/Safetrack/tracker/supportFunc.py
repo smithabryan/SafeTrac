@@ -171,3 +171,29 @@ def serialSafetyRefresh(request):
                                          })
     response = HttpResponse(t.render(c))
     return response
+
+def getGoalData(request):
+    #We're just going to return an array with ten of the goal items
+    #will take the first goal if  multiple goals are of a single sensorType 
+    type = request.session['dataViewingType']
+    sensorType = ""
+    if type == "Temperature":
+        sensorType = "T"
+    elif type == "Noise":
+        sensorType = "N"
+    elif type == "Humidity":
+        sensorType = "H"
+    elif type == "Impact":
+        sensorType = "I"
+    goal = Goal.objects.filter(sensorType=sensorType)
+    if goal.count() > 0:
+        goal = goal[0]
+    else:
+        data = simplejson.dumps([])
+        return HttpResponse(data, mimetype='application/javascript')
+    datalist = []
+    if goal:
+        for i in xrange(0,10,1):
+            datalist.append(goal.value)
+    data = simplejson.dumps(datalist)
+    return HttpResponse(data, mimetype='application/javascript')

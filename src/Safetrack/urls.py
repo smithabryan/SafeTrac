@@ -39,6 +39,7 @@ urlpatterns = patterns('',
     url(r'^getImpactData/', supportFunc.getImpactData),
     url(r'^serialSafetyFeedback/', supportFunc.serialSafetyFeedbackAjax),
     url(r'^serialSafetyRefresh/', supportFunc.serialSafetyRefresh),
+    url(r'^getGoalData/', supportFunc.getGoalData),
 
     url(r'', views.loginView,name="LOGIN"),
 )
