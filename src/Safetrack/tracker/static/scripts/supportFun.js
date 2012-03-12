@@ -86,7 +86,9 @@ function latestInfo() {
                 tableTags += '<td id="'+name+'noise">'+details['noise']+'</td>';
                 tableTags += '<td id="'+name+'impact">'+details['impact']+'</td>';
 
-                $('<tr />',{html:tableTags}).appendTo(detailTable)
+                $('<tr />',{html:tableTags}).appendTo(detailTable);
+                $('#outputData').append(tableTags);
+
                 if (!details['state']) { 
                     summaryDiv.find('h3').addClass('warning');
                     summaryDiv.find('h3').html("Attention"); 
