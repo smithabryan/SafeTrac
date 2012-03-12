@@ -5,7 +5,9 @@ body {
 
 a { 
     text-decoration: none; color: #9bf9ff; 
-    border-bottom: 1px dotted #9bf9ff; 
+    border-bottom: 1px dotted #9bf9ff;
+    display: block;
+    width: 55px; 
 }
 a:hover { border-bottom-style: solid; }
 #page-wrap                          { width: 500px; margin: 25px auto; }

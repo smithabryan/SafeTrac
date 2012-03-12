@@ -21,6 +21,7 @@ button {
     color: #0000FF;
     border: 14px;
     font-weight: bold;
+
 }
 
 tr {
@@ -45,6 +46,11 @@ table{
 .button{
 	float: right;
 	color: #EFEFFB;
+}
+
+.warning {
+	color: red;
+	font-size: 200%;
 }
 
 #headerSection {
@@ -128,7 +134,7 @@ table{
 
 #groupBlk {
   /*background-color: #CBCEAE; */
-    width:60%;
+    width:80%;
     height:100%;
 }
 
