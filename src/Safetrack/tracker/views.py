@@ -31,7 +31,7 @@ messages = {'logout': "You are logged out",
             'login': "You have to log in",
             'wrong': "Wrong username/password"}
 accessLevel = {1:'Employee',2:'Supervisor',3:'Management'}
-homepage = {1:'/employee/',2:'/supervisor/',3:'/management/'}
+homepage = {1:'/employee/',2:'/supervisor/',3:'/management/?page=manage'}
 
 '''Support functions - globally used'''
 def authorized(request):
