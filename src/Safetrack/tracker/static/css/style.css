@@ -132,6 +132,13 @@ table{
     
 }
 
+.ui-widget {
+    margin-left: 20px;
+}
+
+.searchtitle {
+    width: 200px;
+}
 #tableHeader{
 
 }
