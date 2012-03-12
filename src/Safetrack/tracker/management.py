@@ -8,7 +8,7 @@ from Safetrack.tracker.supportFunc import *
 
 #Management Py.
 def renderView(request):
-    t = loader.get_template('supervisor-view.html')
+    t = loader.get_template('management-view.html')
     c = RequestContext(request, {'auth':True,
                                  'header':header,
                                 })
