@@ -3,8 +3,8 @@
 {% block headSection %}
     <script src="http://code.highcharts.com/highcharts.js"></script>
     <script src="http://code.highcharts.com/modules/exporting.js"></script>
-    <script src="{{STATIC_URL}}js/swfobject.js"></script>
-    <script src="{{STATIC_URL}}js/downloadify.min.js"></script>
+    <!--<script src="{{STATIC_URL}}js/swfobject.js"></script>
+    <script src="{{STATIC_URL}}js/downloadify.min.js"></script>-->
     <script src="{{STATIC_URL}}scripts/supportFun.js"></script>
     <script src="{{STATIC_URL}}scripts/employee.js"></script>
     {% load chartit %}
@@ -160,7 +160,7 @@
                     <li>{{ key }}: {{ value }}</li>
                 {% endfor %}
                 </ul>
-                <p id="downloadBtn">You must have Flash</p>
+                <p id="downloadBtn"></p>
             </div>
         </div>
         <div id="rightSide">

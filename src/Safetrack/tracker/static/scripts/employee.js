@@ -1,9 +1,10 @@
 elem = document.getElementById('rightSide');	
 $(document).ready(function()
 {    	    
+    $('#download').hide();
     $("#outputData").hide();
 
-    Downloadify.create('downloadBtn',{
+/*    Downloadify.create('downloadBtn',{
 				filename: 'employeeData',
 				data: function(){ 
 					return document.getElementById('outputData').value;
@@ -19,7 +20,7 @@ $(document).ready(function()
 				transparent: true,
 				append: false
 			});
-
+*/
 	$(".chartSwitch").click(function(event) {
 	var callName = "";
 	var type = "";

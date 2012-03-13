@@ -6,46 +6,34 @@ function rmFromMonitored(removed) {
     monitored[removed] = false;
 }
 
-function setInteractivity() {
-    var groupBlk = $('#groupBlk ul');
-    var members = groupBlk.find('li');
-    $.each(members,function (ind) {
-        $(members[ind]).qtip({
-            content: $(members[ind]).attr('id')+"<br />"+$(members[ind]).attr('data-location'),
-            show: 'mouseover',
-            hide: 'mouseout',
-            position: {
-                corner: {
-                    target: 'topRight',
-                    tooltip: 'bottomLeft'
-                }
-            },
-            style: {
-                padding: 5,
-                border: {
-                    radius: 5
-                }
-            }
-        });                          
+function getTeams() {
+    $.ajax({
+        url:getTeamsURL,
+        dataType: 'json',
+        success: function(data) {
 
-        $(members[ind]).click(function () {
+            var optionTags = '<option value="">Please Select a Group</option>';
 
-            if ($(this).hasClass('highlighted')) {
-                $(this).removeClass('highlighted');
-                rmFromMonitored($(this).attr('id'));
-            }
-            else {
-                $(this).addClass('highlighted');
-                addToMonitored($(this).attr('id')); 
-            }
-       }); 
+            for (var i = 0; i < data.length; i++) {
+                optionTags += '<option value="';
+                optionTags += data[i];
+                optionTags += '">'+data[i]+'</option>';
+            } 
+    
+            $('#teamSelect').html(optionTags);
+
+        },
+        failure: function (data) {
+            console.log('Failed at getTeams');
+        } 
     });
 }
 
 $(function() {
     $("#tableHeader").click(function () {
         $("#memberTable").toggle();    
-    });  
+    });
+
     $("#all").click(function() {
         $.each(monitored, function (key,val) {
             if (!$("#"+key).hasClass('highlighted')) {
@@ -64,8 +52,23 @@ $(function() {
     });
 
     if ($("#userType").text().substr(13,1)=="S") {
-        getMembers(setInteractivity);
+        getMembers(setViewInteractivity);
     }
+    if ($("#userType").text().substr(13,1)=="M") {
+
+        $("#teamSelect").change(function () {
+            if ($(this).val() != "") {
+                getMembers(setViewInteractivity,false,$(this).val()); 
+            } 
+            else {
+                $("#member").empty();
+            }
+        });
+
+        getTeams();
+        initSearchbar(setViewInteractivity);
+    }
+    
 });
 
 //background ajax calls every 30seconds

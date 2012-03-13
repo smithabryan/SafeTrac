@@ -119,13 +119,32 @@ def getUsers(request):
 def getMembers(request):
     if not authorized(request):
         return loginView(request)
- 
-    team = Team.objects.filter(supervisor=request.session['user'])[0] 
+     
+    teamLead = request.session['user']
+    supervisorName = request.GET.get('supervisorname',"")
+
+    if supervisorName:
+        teamLead = User.objects.filter(name=supervisorName)[0]
+
+    team = Team.objects.filter(supervisor=teamLead)[0] 
     retJSON = [] 
 
     for member in team.members.all():
         retJSON.append({'location':member.location,'name':member.name,'profile':'/static/assets/defaultprofile.jpg'})    
     
+    return HttpResponse(simplejson.dumps(retJSON),mimetype="application/javascript") 
+
+def getTeams(request):
+    if not authorized(request):
+        return loginView(request)
+
+    teams = Team.objects.all()
+
+    retJSON = []
+
+    for team in teams:
+        retJSON.append(team.supervisor.name)         
+   
     return HttpResponse(simplejson.dumps(retJSON),mimetype="application/javascript") 
 
 def removeUser(request):
@@ -141,7 +160,11 @@ def removeUser(request):
 def addUser(request):
     if not authorized(request):
         return loginView(request)
- 
+
+    #ideally not done like this but oh well
+    if request.session['userType'] != 2:
+        return HttpResponse('Not A Supervisor') 
+
     team = Team.objects.filter(supervisor=request.session['user'])[0] 
     user = User.objects.filter(name=request.GET.get('name'))[0]
 
