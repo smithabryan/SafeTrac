@@ -196,3 +196,30 @@ def getGoalData(request):
             datalist.append(goal.value)
     data = simplejson.dumps(datalist)
     return HttpResponse(data, mimetype='application/javascript')
+
+#Note this approach is brute force, and very inefficient
+def getAllData(request):
+    users = User.objects.all()
+    goals = Goal.objects.all()
+    dataDict = {}
+    dataDict['times'] = []
+    
+    for user in users:
+        dataDict[user.username] = {}
+        userSensorData = SensorData.objects.filter(user=user).order_by('-time')
+        for sensorData in userSensorData:
+            if sensorData.time not in dataDict['times']:
+                dataDict['times'].append(sensorData.time)
+            if sensorData.sensorType in dataDict[user.username]:
+                dataDict[user.username][sensorData.sensorType].append(sensorData.value)
+            else :
+                dataDict[user.username][sensorData.sensorType] = []
+                dataDict[user.username][sensorData.sensorType].append(sensorData.value)
+    
+    dataDict['goals'] = {}
+    for goal in goals:
+        if goal.sensorType not in dataDict['goals']:
+            dataDict['goals'][goal.sensorType] = [];
+            dataDict['goals'][goal.sensorType].append(goal.value)
+    data = simplejson.dumps(dataDict)
+    return HttpResponse(data, mimetype='application/javascript') 

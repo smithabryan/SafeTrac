@@ -24,6 +24,7 @@ from supportFunc import getLatestDataX, getLatestData
 from decimal import *
 import datetime
 import re
+import random
 
 defaults = {'profilepic':'assets/defaultprofile.jpg',
             'logo':'assets/logo.png'}
@@ -130,7 +131,7 @@ def getMembers(request):
     retJSON = [] 
 
     for member in team.members.all():
-        retJSON.append({'location':member.location,'name':member.name,'profile':'/static/assets/defaultprofile.jpg'})    
+        retJSON.append({'location':member.location,'name':member.name,'username':member.username,'profile':'/static/assets/defaultprofile.jpg'})    
     
     return HttpResponse(simplejson.dumps(retJSON),mimetype="application/javascript") 
 
@@ -315,15 +316,15 @@ def renderDataManagement(request):
                                          })
     return HttpResponse(t.render(c))       
  
-def startPolling(request):
+def startPolling(request):    
     ser = serial.Serial('/dev/tty.usbmodemfa131',9600, timeout=1)
     then = datetime.datetime.now()
 
     numDataTaken = 0
     while ( (datetime.datetime.now() - then) < datetime.timedelta(seconds=30)):
-        x = ser.readline(30)
-        print x
         try:
+            x = ser.read(30)
+            print x
             cleanedData = []
             for dataString in x.split(" "):
                 if dataString != '' or dataString != '\n':
@@ -331,14 +332,23 @@ def startPolling(request):
                     cleanedData.append(splitItem)
             if len(cleanedData) == 4:
 #                dummyUser = User.objects.get(pk=1)
-                falco = list(User.objects.filter(username='Falco'))[0]
+                falco = list(User.objects.filter(username='e'))[0]
                 roundedDecimalValue = Decimal('%.3f' % float(cleanedData[3]))
                 now = str(datetime.datetime.strptime(str(datetime.datetime.now()), '%Y-%m-%d %H:%M:%S.%f'))[0:22]
                 print "noise,time is ("+repr(cleanedData[2])+","+repr(now)+")"
                 SensorData.objects.get_or_create(sensorType='T',value=cleanedData[0],time=now, dataNum=numDataTaken, user=falco) 
                 SensorData.objects.get_or_create(sensorType='H',value=cleanedData[1],time=now, dataNum=numDataTaken, user=falco) 
                 SensorData.objects.get_or_create(sensorType='N',value=cleanedData[2],time=now, dataNum=numDataTaken, user=falco)
-                SensorData.objects.get_or_create(sensorType='I',value=roundedDecimalValue,time=now, dataNum=numDataTaken, user=falco) 
+                SensorData.objects.get_or_create(sensorType='I',value=roundedDecimalValue,time=now, dataNum=numDataTaken, user=falco)
+                
+                users = User.objects.exclude(username='e')
+                for user in users:
+                    roundedDecimalValue = Decimal('%.3f' % float(cleanedData[3])) + random.randint(-1,2)
+                    SensorData.objects.get_or_create(sensorType='T',value=(Decimal(cleanedData[0])+random.randint(-5,5)),time=now, dataNum=numDataTaken, user=user) 
+                    SensorData.objects.get_or_create(sensorType='H',value=(Decimal(cleanedData[1])+random.randint(-10,10)),time=now, dataNum=numDataTaken, user=user)
+                    SensorData.objects.get_or_create(sensorType='N',value=(Decimal(cleanedData[2])+random.randint(0,20)),time=now, dataNum=numDataTaken, user=user)
+                    SensorData.objects.get_or_create(sensorType='I',value=roundedDecimalValue,time=now, dataNum=numDataTaken, user=user)                
+                 
         except Exception as inst:
             print type(inst)     # the exception instance
             print inst.args      # arguments stored in .args
@@ -497,7 +507,6 @@ def addDummyDataToDb(request):
 
 def getNewChartData(request):
     user = request.session['user'] 
-    #user = User.objects.filter(username='Falco')[0]
 
     latestDataItem = SensorData.objects.filter(user=user)
     latestDataItem = latestDataItem[latestDataItem.count()-1]
