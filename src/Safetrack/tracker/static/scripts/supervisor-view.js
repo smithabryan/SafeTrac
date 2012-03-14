@@ -146,7 +146,7 @@ function filterAndAddData(data) {
 	//set data
 	var chartDataCopy = [];
 	var i = 0;
-	var users = {'e':0,'s':1,'m':2};
+//	var users = {'e':0,'s':1,'m':2};
 	for (user in monitored)
 	{
 		if(monitored[user] == true)
@@ -213,8 +213,8 @@ function filterAndAddData(data) {
 }
 
 //set data at start
-//getAllData();
+getAllData();
 
 //background ajax calls every 30seconds
-//periodicCheck = setInterval(latestInfo,5000)
-//updateData = setInterval(getAllData,1000)
+periodicCheck = setInterval(latestInfo,5000)
+updateData = setInterval(getAllData,1000)

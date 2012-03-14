@@ -330,6 +330,10 @@ def startPolling(request):
                 if dataString != '' or dataString != '\n':
                     splitItem = re.sub(r'[^\w.]', '', dataString)
                     cleanedData.append(splitItem)
+#            extra clean, stuff sometimes sneaks in?
+            for dataString in cleanedData:
+                if dataString == '':
+                    cleanedData.remove(dataString)                    
             if len(cleanedData) == 4:
 #                dummyUser = User.objects.get(pk=1)
                 falco = list(User.objects.filter(username='e'))[0]
@@ -348,7 +352,7 @@ def startPolling(request):
                     SensorData.objects.get_or_create(sensorType='H',value=(Decimal(cleanedData[1])+random.randint(-10,10)),time=now, dataNum=numDataTaken, user=user)
                     SensorData.objects.get_or_create(sensorType='N',value=(Decimal(cleanedData[2])+random.randint(0,20)),time=now, dataNum=numDataTaken, user=user)
                     SensorData.objects.get_or_create(sensorType='I',value=roundedDecimalValue,time=now, dataNum=numDataTaken, user=user)                
-                 
+                print "successfully added data"
         except Exception as inst:
             print type(inst)     # the exception instance
             print inst.args      # arguments stored in .args

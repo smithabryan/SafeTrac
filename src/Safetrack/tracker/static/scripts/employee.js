@@ -168,5 +168,5 @@ setInterval(function(){
 	});
 	
 	getAllData();
-}, 5000);
+}, 1000);
 

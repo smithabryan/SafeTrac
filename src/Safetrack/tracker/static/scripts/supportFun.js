@@ -5,9 +5,9 @@ var getTeamUserURL = "/getMembers.py/"
 var updateUsersStatus = "/getUsersStatus.py/"
 
 //this file definitely needs to be cleaned soon~
-$.ajaxSetup ({
-    cache: false
-});
+//$.ajaxSetup ({
+//    cache: false
+//});
 
 Object.size = function(obj) {
     var size = 0, key;
@@ -173,10 +173,10 @@ function getMembers(onComplete,delBtn,data) {
                     liTag += '<img src="'+data[ind].profile+'" /></li>';
                 items.push(liTag);
 
-                monitored[data[ind].username] = true;
+                monitored[data[ind].name] = true;
     
                 //need change here!
-                nameToUsernameMap[data[ind].] = [data[ind].username];
+                nameToUsernameMap[data[ind].name] = [data[ind].username];
             });
 
             $('#groupBlk #member').html(items.join(''))
