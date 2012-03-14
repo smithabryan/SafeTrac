@@ -157,8 +157,11 @@ def serialSafetyFeedbackAjax(request):
 def serialSafetyFeedback(latestData):
     try:
         ser = serial.Serial('/dev/tty.usbmodemfa131',9600, timeout=1)
-        if latestData['state'] == False:
-            ser.write('$@')
+        user = User.objects.filter(username='e')
+        latestDataItem = SensorData.objects.filter(user=user, sensorType='N').order_by('-time')[0]
+        noiseGoal = SafetyConstraint.objects.filter(sensorType='N')[0]
+        if latestDataItem.value > noiseGoal.gmaxValue:
+            ser.write('$@') 
         else:
             ser.write('$*')
     except: 
@@ -204,7 +207,7 @@ def getGoalData(request):
 #Note this approach is brute force, and very inefficient
 def getAllData(request):
     users = User.objects.all()
-    goals = Goal.objects.all()
+    goals = SafetyConstraint.objects.all()
     dataDict = {}
     dataDict['times'] = []
     
@@ -224,6 +227,6 @@ def getAllData(request):
     for goal in goals:
         if goal.sensorType not in dataDict['goals']:
             dataDict['goals'][goal.sensorType] = [];
-            dataDict['goals'][goal.sensorType].append(goal.value)
+            dataDict['goals'][goal.sensorType].append(goal.gmaxValue)
     data = simplejson.dumps(dataDict)
     return HttpResponse(data, mimetype='application/javascript') 
