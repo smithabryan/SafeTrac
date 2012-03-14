@@ -142,7 +142,7 @@ function filterAndAddData(data) {
 	});
 
 	//set data
-	var chartDataCopy;
+	var chartDataCopy = [];
 	var i = 0;
 	var users = {'e':0,'s':1,'m':2};
 	for (user in monitored)

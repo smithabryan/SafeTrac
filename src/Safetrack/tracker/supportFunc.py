@@ -3,6 +3,7 @@ from django.template import RequestContext, loader
 from django.http import HttpResponse
 from django.utils import simplejson
 import serial
+from django.db.models.query import QuerySet
 
 header = {'logo':'assets/logo.png'}
 defaults = {'profilepic':'assets/defaultprofile.jpg'}
@@ -56,6 +57,9 @@ def getLatestDataX(users):
     return res
 
 def getLatestData(user):
+    if isinstance(user, QuerySet):
+        if user.count() == 0:
+            return {}
     safetyConstraints = SafetyConstraint.objects.all()
     latestDataItem = SensorData.objects.filter(user=user).order_by('-time')[0]
     latestDataItems = SensorData.objects.filter(time=latestDataItem.time)
