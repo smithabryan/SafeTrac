@@ -1,4 +1,5 @@
-var monitored = new Object() 
+var monitored = new Object();
+var nameToUsernameMap = new Object();
 var getTeamUserURL = "/getMembers.py/"
 var updateUsersStatus = "/getUsersStatus.py/"
 
@@ -37,6 +38,7 @@ function getMembers(onComplete,delBtn) {
                 items.push(liTag);
 
                 monitored[data[ind].name] = true;
+                nameToUsernameMap[data[ind].name] = [data[ind].username];
             });
 
             $('#groupBlk #member').html(items.join(''))

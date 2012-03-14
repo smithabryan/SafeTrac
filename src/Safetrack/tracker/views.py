@@ -125,7 +125,7 @@ def getMembers(request):
     retJSON = [] 
 
     for member in team.members.all():
-        retJSON.append({'location':member.location,'name':member.name,'profile':'/static/assets/defaultprofile.jpg'})    
+        retJSON.append({'location':member.location,'name':member.name,'username':member.username,'profile':'/static/assets/defaultprofile.jpg'})    
     
     return HttpResponse(simplejson.dumps(retJSON),mimetype="application/javascript") 
 

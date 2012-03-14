@@ -76,16 +76,14 @@ $(document).ready(function()
 			yAxisType = "Impact"			
 		}
 		
-		$.getJSON("/getAllData/", function(data){
-			filterAndAddData(data);
-		});
+		getAllData();
 	});	    
 });	
 
 function filterAndAddData(data) {
 	//remove everything from chart 
 	while(chart.series.length > 0)
-	    chart.series[0].remove(true);
+	    chart.series[0].remove(false);
 	
 	//set axis name
 	chart.yAxis[0].setTitle({
@@ -111,7 +109,7 @@ function filterAndAddData(data) {
 				            marker: {
 				                symbol: chartSymbols[0]
 				            }
-		},true,true);
+		},false,true);
 	}
 	
 	//set goals
@@ -135,7 +133,7 @@ function filterAndAddData(data) {
 	            marker: {
 	                symbol: chartSymbols[1]
 	            }
-			},true,true);
+			},false,true);
 		}
 	}
 		
@@ -147,8 +145,9 @@ function filterAndAddData(data) {
 		{
 			chartData = chartData.slice(0, chartMaxItems-1 );			
 		}		
-		chart.xAxis[0].setCategories(chartData, true);
+		chart.xAxis[0].setCategories(chartData, false);
 	}
+	chart.redraw();
 }
 
 function getAllData(){

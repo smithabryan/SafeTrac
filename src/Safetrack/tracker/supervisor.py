@@ -11,7 +11,7 @@ def renderView(request):
     #assuming only managing 1 team
     team = Team.objects.filter(supervisor=request.session['user'])[0]
   
-    sensorData = SensorData.objects.filter(sensorType='N')
+    sensorData = SensorData.objects.filter(sensorType='N')[0:10]
     latestData = getLatestData(team.members.all())
 
     #groupID = request.session['user'].groupID
