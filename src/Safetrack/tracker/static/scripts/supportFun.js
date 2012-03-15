@@ -3,6 +3,7 @@ var getTeamsURL = "/getTeams.py/"
 var usernameToNameMap = new Object();
 var getTeamUserURL = "/getMembers.py/"
 var updateUsersStatus = "/getUsersStatus.py/"
+var connectionLost = false;
 
 //this file definitely needs to be cleaned soon~
 //$.ajaxSetup ({
@@ -261,8 +262,20 @@ function latestInfo() {
                     
                     } 
                 } 
-            })
-            $('<br />').appendTo(summaryDiv);
+
+                if (connectionLost) {
+                    detailTable.empty();
+	                summaryDiv.html("<h3>Connection Lost!</h3>");
+	                var heading = '<td id="name"></td>';
+                    heading += '<td id="temp"></td>';
+	                heading += '<td id="humid"></td>';
+	                heading += '<td id="noise"></td>';
+	                heading += '<td id="impact"></td>';		
+		        }
+	     })
+
+         $('<br />').appendTo(summaryDiv);
+
         },
         failure: function (data) {
             alert('fail')
@@ -274,22 +287,14 @@ function checkConnection(){
 	$.getJSON("/checkIfConnected/", function(data){
 		if(data == true)
 		{
-	        var summaryDiv = $("#summary");
-	        var detailTable = $("#memberTable");
-
-	        detailTable.empty();
-	        summaryDiv.html("<h3>Connection Lost!</h3>");
-
-	        var heading = '<td id="name"></td>';
-	        heading += '<td id="temp"></td>';
-	        heading += '<td id="humid"></td>';
-	        heading += '<td id="noise"></td>';
-	        heading += '<td id="impact"></td>';		
-		}
+           connectionLost = true; 
+	      } 
+        else {
+}   
 	});
 };
 
-function serialSafetyFeedback(){
+function serialSafetyFeedback() {
 	$.getJSON("/serialSafetyFeedback/",function(data){});	
 }
 
