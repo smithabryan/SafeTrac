@@ -396,7 +396,7 @@ def addDummyDataToDb(request):
                                     email='fa@gl.com',
                                     location="Roof",
                                     name="Peter Kruzlics", 
-                                    pictureName="defaultprofile.jpg")
+                                    pictureName="profilepictures/Peter100x100.jpg")
     abc = User.objects.create(  username='e', 
                                 password='e',
                                 accessLevel=1,
@@ -404,7 +404,7 @@ def addDummyDataToDb(request):
                                 email='falcx@gmail.com',
                                 location="Second Floor",
                                 name="Zach Goldstein", 
-                                pictureName="defaultprofile.jpg")
+                                pictureName="profilepictures/zach100x100.jpg")
     falco = User.objects.create(username='s', 
                                 password='s',
                                 accessLevel=2,
@@ -412,7 +412,7 @@ def addDummyDataToDb(request):
                                 email='falcoRox@gmail.com',
                                 location="First Floor",
                                 name="Paul Mou", 
-                                pictureName="defaultprofile.jpg")
+                                pictureName="profilepictures/Paul100x100.jpg")
     
     starfox = User.objects.create(  username='m', 
                                     password='m',
@@ -421,7 +421,7 @@ def addDummyDataToDb(request):
                                     email='starfoxy@gmail.com',
                                     location="Crane",
                                     name="Bryan Smith", 
-                                    pictureName="defaultprofile.jpg")
+                                    pictureName="profilepictures/Bryan100x100.jpg")
 
     team1 = Team.objects.create(supervisor=falco)
     team1.members.add(abc)
