@@ -233,10 +233,10 @@ def getAllData(request):
     return HttpResponse(data, mimetype='application/javascript') 
 
 def checkIfConnected(request):
-    lastDataItem = SensorData.objects.order_by('created').latest()
+    lastDataItem = SensorData.objects.order_by('created').latest('created')
     lastTime = lastDataItem.created
     timeSinceData = datetime.datetime.now() - lastTime
-    if (lastTime > datetime.timedelta(seconds=30)):
+    if (timeSinceData > datetime.timedelta(seconds=30)):
         data = simplejson.dumps(True)
         return HttpResponse(data, mimetype='application/javascript') 
     else :

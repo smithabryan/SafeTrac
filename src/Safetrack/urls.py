@@ -46,6 +46,8 @@ urlpatterns = patterns('',
     url(r'^serialSafetyRefresh/', supportFunc.serialSafetyRefresh),
     url(r'^getGoalData/', supportFunc.getGoalData),
     url(r'^getAllData/', supportFunc.getAllData),
+    
+    url(r'^checkIfConnected/', supportFunc.checkIfConnected),
 
     #url(r'', views.loginView,name="LOGIN"),
 )
