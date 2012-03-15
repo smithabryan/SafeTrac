@@ -285,12 +285,12 @@ function latestInfo() {
 
 function checkConnection(){
 	$.getJSON("/checkIfConnected/", function(data){
-		if(data == true)
-		{
+		if(data == true) {
            connectionLost = true; 
-	      } 
+	    } 
         else {
-}   
+            connectionLost = false;
+        }
 	});
 };
 
