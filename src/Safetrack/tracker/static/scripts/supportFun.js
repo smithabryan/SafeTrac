@@ -217,7 +217,8 @@ function latestInfo() {
             var detailTable = $("#memberTable");
 
             detailTable.empty();
-            summaryDiv.html("<h3>Normal</h3>");
+            summaryDiv.find('h3').html("Normal");
+            summaryDiv.find('ul').empty(); 
 
             var heading = '<td id="name">Name</td>';
             heading += '<td id="temp">Temperature</td>';
@@ -227,8 +228,8 @@ function latestInfo() {
 
             $('<tr />',{html:heading}).appendTo(detailTable)
             
+
             $.each(data, function (name,details) {
-                
                 var tableTags = '<td>'+details['name']+'</td>';
                 tableTags += '<td id="'+name+'temp">'+details['temp']+'</td>';
                 tableTags += '<td id="'+name+'humid">'+details['humid']+'</td>';
@@ -241,6 +242,7 @@ function latestInfo() {
                 if (!details['state']) { 
                     summaryDiv.find('h3').addClass('warning');
                     summaryDiv.find('h3').html("Attention"); 
+
                     $('<li >',{"class":'warning',html:details['name']+" is in danger."}).appendTo(summaryDiv.find('ul')); 
 
                     for (var i = 0; i < details['aboveLimits'].length; i++) {
@@ -263,7 +265,7 @@ function latestInfo() {
                         $(txt).removeClass('dangerLow');
                     } 
                 } 
-                if (connectionLost) {
+                if (false ) {//connectionLost) {
                     detailTable.empty();
 	                summaryDiv.html("<h3>Connection Lost!</h3>");
 	                var heading = '<td id="name"></td>';
