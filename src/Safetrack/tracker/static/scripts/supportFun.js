@@ -252,6 +252,15 @@ function latestInfo() {
                             $(txt).addClass('dangerLow')
                     }        
                 } 
+                else {
+                    summaryDiv.find('h3').removeClass('warning');
+                    summaryDiv.find('h3').html("Attention");
+                    for (var i = 0; i < details['aboveLimits'].length; i++) {
+                        var txt = "#"+name+details['aboveLimits'][i]['sensorName'];
+                        $(txt).removeClass('dangerHigh');
+                    
+                    } 
+                } 
             })
             $('<br />').appendTo(summaryDiv);
         },
