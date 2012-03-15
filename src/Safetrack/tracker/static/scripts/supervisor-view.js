@@ -1,4 +1,3 @@
-
 //TODO: factor out these common variables from the js file for each view
 var type = "N"
 var yAxisType = "Noise"
@@ -61,22 +60,24 @@ function getAllData(){
 	});
 };
 
-$(document).ready(function()
-	{    	    
+$(document).ready(function() {    	    
+    $("#outputData").hide();
+
     $("#tableHeader").click(function () {
         $("#memberTable").toggle();    
     });
 
     $("#all").click(function() {
         $.each(monitored, function (key,val) {
+            addToMonitored(key)
             if (!$("#"+key).hasClass('highlighted')) {
-                monitored[key] = true;
                 $("#"+key).addClass('highlighted');
             }
         })
     });
     $("#none").click(function () {
         $.each(monitored, function (key,val) {
+            rmFromMonitored(key);
             if ($("#"+key).hasClass('highlighted')) {
                 monitored[key] = false;
                 $("#"+key).removeClass('highlighted');
@@ -99,7 +100,7 @@ $(document).ready(function()
         });
 
         getTeams();
-        initSearchbar(setViewInteractivity);
+        initSearchbar(setViewInteractivity,false);
     }
     
   //chart switching functionality
@@ -217,4 +218,4 @@ getAllData();
 
 //background ajax calls every 30seconds
 periodicCheck = setInterval(latestInfo,5000)
-updateData = setInterval(getAllData,1000)
+//updateData = setInterval(getAllData,5000)

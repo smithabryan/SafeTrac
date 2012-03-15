@@ -20,7 +20,7 @@ def render(request):
    
     '''Getting user data'''
     #Need to fix to grab data
-    employeeInfo = {'Name':user.username,'Title':"Worker"}
+    employeeInfo = {'Name':user.name,'Title':"Worker",'Location': user.location}
     
     '''Creating Charts'''
     dataSeries = DataPool(

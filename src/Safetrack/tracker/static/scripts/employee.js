@@ -24,7 +24,6 @@ var chartColors = [
 
 $(document).ready(function()
 {    	    
-    $('#download').hide();
     $("#outputData").hide();
 
     Downloadify.create('downloadBtn',{
@@ -161,12 +160,12 @@ function getAllData(){
 //background ajax calls every 30seconds
 periodicCheck = setInterval(latestInfo,5000)
 
-setInterval(function(){
+/*setInterval(function(){
 	$.getJSON("/serialSafetyFeedback/",function(data){});
 	$.getJSON("/serialSafetyRefresh/",function(data){
 		$('#status').replaceWith(data);
 	});
 	
 	getAllData();
-}, 1000);
-
+}, 5000);
+*/

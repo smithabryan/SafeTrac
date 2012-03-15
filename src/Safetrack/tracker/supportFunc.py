@@ -52,7 +52,7 @@ def getLatestDataX(users):
                             if constraint.sensorType == 'I' : sensorName = "impact"
                             if constraint.sensorType == 'H' : sensorName = "humid"
                             dangerValues.append({"dataItem":dataItem.value,"minValue":constraint.minValue,"maxValue":constraint.maxValue,"isHigh":isHigh,"sensorName":sensorName})
-        res[user.name] = {'location':user.location,'state':isSafe,'aboveLimits': dangerValues, 'temp':temp,'humid':humidity,'noise':noise,'impact':impact,'time':latestDataItem.time}
+        res[user.username] = {'name':user.name,'location':user.location,'state':isSafe,'aboveLimits': dangerValues, 'temp':temp,'humid':humidity,'noise':noise,'impact':impact,'time':latestDataItem.time}
 
     return res
 

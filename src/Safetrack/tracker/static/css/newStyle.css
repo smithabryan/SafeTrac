@@ -5,15 +5,7 @@ p {
     color: #EFEFFB;
 }
 
-h1 {
-	color: #EFEFFB;
-}
-
-h2 {
-	color: #EFEFFB;
-}
-
-h3 {
+h1,h2,h3 {
 	color: #EFEFFB;
 }
 
@@ -33,7 +25,8 @@ li {
 	list-style-type: none;
 }
 
-table{
+table,td{
+    border: solid white;
 	margin-left: auto;
 	margin-right: auto;
 }
@@ -50,7 +43,6 @@ table{
 
 .warning {
 	color: red;
-	font-size: 200%;
 }
 
 #headerSection {
@@ -59,17 +51,30 @@ table{
 }
 
 #leftSide {
-    height: 50%;
     float: left;    
+    text-align: center;
 }
-
-#leftSide div {
-    float: left;    
+#leftSide button {
 }
-
 #leftSide #stats {
     padding-left: 50px;
     padding-top: 20px;
+	color: #EFEFFB;
+}
+#leftSide #groupBlk {
+    margin-right: auto;
+    margin-top: 0;
+    padding-bottom: 0;
+    padding-left: 150px;
+    padding-right: 120px;
+    padding-top: 20px;
+}
+#groupBlk li {
+    float: left;
+    margin-left: 10px;
+}
+#member {
+    display: inline;
 }
 
 #stats button {
@@ -82,18 +87,10 @@ table{
 }
 
 #rightSide {
-    width: 75%;
+    width: 65%;
     height: 50%;
+    margin-right: 100px;
     float: right;    
-}
-
-#rightSide #status{
-    /*
-    This needs to be changed.
-
-    color: red;
-    font-size: 51px;
-    */
 }
 
 #footer {
@@ -119,40 +116,27 @@ table{
 	margin-left: 0;
 }
 
-/*#status #warning {
-	color:#EFEFFB;
-} */
-
 #loggedInText {
 	display: block;
 	float: right;
 	color: #EFEFFB;
 }
 
-/* #status #VariableTable {
-	color: #EFEFFB;
-	text-align: center;
-} */
-
-#stats {
+#stat,#status {
 	color: #EFEFFB;
 }
 
-#status {
-	color: #EFEFFB;
-	text-align: center;
+#status .column {
+    text-align: left;
+    float: left;
+    padding: 20px 200px 100px 20px;
+
 }
 
-.center {
-    margin: 0 auto;
-}
-
-#groupBlk {
-  /*background-color: #CBCEAE; */
-    display: block;
-    clear: both;
-    width:80%;
-    height:100%;
+.center #groupBlk {
+    text-align: left;
+    float: left;
+    padding-top: 25px;
 }
 
 .ui-widget {
@@ -180,3 +164,14 @@ table{
     border-style: inset;
     border-width: 5px;
 }
+
+#downloadBtn {
+    padding-left: 50px;
+}
+
+.xBtn {
+    left: 15px;
+    position: relative;
+    top: -80px;
+}
+    

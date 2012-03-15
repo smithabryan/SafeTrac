@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block title %}SafeTrac -- Employee{% endblock %}
 {% block headSection %}
+    <link rel="stylesheet" type="text/css" src="{{STATIC_URL}}css/tableStyle.css"></link>
     <script src="http://code.highcharts.com/highcharts.js"></script>
     <script src="http://code.highcharts.com/modules/exporting.js"></script>
     <script src="{{STATIC_URL}}js/swfobject.js"></script>
@@ -45,17 +46,21 @@
   				<a id="ImpactButton" class="chartSwitch" href="#">Impacts</a>
 			</div>
             <div id="status">
-                <h2>Summary</h2>
-                <div id="summary">
-                <h3>Normal</h3>
-                    <ul>
-                    </ul>
+                <div class="column">
+                    <h2>Summary</h2>
+                    <div id="summary">
+                        <h3>Normal</h3>
+                        <ul>
+                        </ul>
+                    </div>
                 </div>
-                <button id="tableHeader">Details</button>
-                <table id="memberTable">
-                </table>
+                <div class="column">
+                    <h2 id="tableHeader">Details</h2>
+                    <table id="memberTable">
+                    </table>
+                </div>
             </div>
         </div>
-    <div class="outputData">
+    <div id="outputData">
     </div>
 {% endblock %}

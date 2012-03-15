@@ -1,9 +1,7 @@
 {% extends "base.html" %}
 {% block title %}SafeTrac -- Supervisor{% endblock %}
 {% block headSection %}
-<link rel=StyleSheet href="{{STATIC_URL}}css/tmp.css" type="text/css" MEDIA=screen>
     <link rel="stylesheet" href="http://code.jquery.com/ui/1.8.18/themes/base/jquery-ui.css" type="text/css" media="all" />
-
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js"></script>
     <script type="text/javascript" src="{{STATIC_URL}}js/jquery.qtip-1.0.0-rc3.min.js"></script> 
     <script src="{{STATIC_URL}}scripts/supportFun.js"></script>
@@ -21,26 +19,18 @@
 {% endblock %}
 
 {% block content %}
-<div class="page">
+<div class="center">
     <a href="supervisor">View</a>
-    <!--<div id="leftSide">-->
-
-        <h2>Group</h2>
-
-        <div class="ui-widget">
-        	<label class="searchtitle" for="employee">Add Employee</label>
-        	<input id="search" />
-        </div>
-
-        <div id="groupBlk">
-            <ul id="member">
-            </ul>
-        </div>
-        <div id="viewBlk">
-            <ul id="member">
-            </ul>
-        </div> 
-    <!--</div>-->
+    <h2>Manage Group</h2>
+    <div class="ui-widget">
+        <label class="searchtitle" for="employee">Add Employee</label>
+        <br />
+        <input id="search" />
+    </div>
+    <div id="groupBlk">
+        <ul id="member">
+        </ul>
+    </div>
 </div>
 {% endblock %}
 {%block footer %}

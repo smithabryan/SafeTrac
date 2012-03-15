@@ -22,13 +22,17 @@
 {% block content %}
 <div class="page">
 	<div>
-    <a href="supervisor/?page=manage">Manage</a>
+        <a href="supervisor/?page=manage">Manage</a>
     </div>
     <div id="leftSide">
         <h2>Group</h2>
-        <div id="groupBlk">
+        <div>
+            <h2>Currently Viewing</h2>
             <button id="all">Select All</button>
             <button id="none">Deselect All</button>
+        </div>
+
+        <div id="groupBlk">
             <ul id="member">
             </ul>
         </div>
@@ -47,16 +51,22 @@
 			<a id="ImpactButton" class="chartSwitch" href="#">Impacts</a>
 		</div>
         <div id="status">
-            <h2>Summary</h2>
-            <div id="summary">
-            <h3>Normal</h3>
-                <ul>
-                </ul>
+            <div class="column">
+                <h2>Summary</h2>
+                <div id="summary">
+                    <h3>Normal</h3>
+                    <ul>
+                    </ul>
+                </div>
             </div>
-            <button id="tableHeader"> Details </button>
-            <table id="memberTable">
-            </table>
+            <div class="column">
+                <h2 id="tableHeader"> Details </h2>
+                <table id="memberTable">
+                </table>
+            </div>
         </div>
+    </div>
+    <div id="outputData">
     </div>
 </div>
 {% endblock %}
