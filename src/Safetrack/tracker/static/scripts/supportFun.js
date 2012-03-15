@@ -22,7 +22,7 @@ function log( message ) {
 		$( "#log" ).scrollTop( 0 );
 };
 
-function initSearchbar (onSearchFunc) {
+function initSearchbar (onSearchFunc,manageFlag) {
 	$( "#search" ).autocomplete({
 		source: function( request, response ) {
 			$.ajax({
@@ -46,14 +46,12 @@ function initSearchbar (onSearchFunc) {
 		},
 		minLength: 2,
 		select: function( event, ui ) {
-			log( ui.item ?
-                "Selected: " + ui.item.label :
-				"Nothing selected, input was " + this.value);
+            //console.log(ui.item.value)
             $.ajax({
 				url: "/addUser.py/",
 				data: {"name":ui.item.value},
 				success: function(data) {
-                    getMembers(onSearchFunc,true);
+                    getMembers(onSearchFunc,manageFlag,ui.item.value);
 				}
 			});
 		},
@@ -101,6 +99,7 @@ function setViewInteractivity() {
             }
        }); 
     });
+    getAllData();
 }
 
 function setManageInteractivity() {
@@ -112,7 +111,7 @@ function setManageInteractivity() {
 
         $.ajax({
         		url: "/removeUser.py/",
-				data: {name: $(".xBtn").parent().attr('id')},
+				data: {name: $(".xBtn").parent().attr('data-name')},
 
 				success: function( data ) {
                     $(clicked).parent().fadeOut('slow', function() {
@@ -125,7 +124,7 @@ function setManageInteractivity() {
 
     $.each(members,function (ind) {
         $(members[ind]).qtip({
-            content: $(members[ind]).attr('id')+"<br />"+$(members[ind]).attr('data-location'),
+            content: $(members[ind]).attr('data-name')+"<br />"+$(members[ind]).attr('data-location'),
             show: 'mouseover',
             hide: 'mouseout',
             position: {
@@ -159,8 +158,9 @@ function getMembers(onComplete,delBtn,data) {
         data: {'supervisorname':data },
         dataType: "json",
         success: function(data) {
+            //console.log(data);
             $.each(data, function(ind) {
-                console.log(data[ind])
+                //console.log(data[ind])
                 var liTag = '<li id="'+data[ind].username+'"';
                     liTag += ' data-location="'+data[ind].location+'"';
                     liTag += ' data-name="'+data[ind].name+'"';
@@ -171,14 +171,14 @@ function getMembers(onComplete,delBtn,data) {
                     liTag += 'class="highlighted">'; 
                 }
                     liTag += '<img src="'+data[ind].profile+'" /></li>';
+
                 items.push(liTag);
 
-                monitored[data[ind].name] = true;
-    
-                //need change here!
+                monitored[data[ind].username] = true;
                 nameToUsernameMap[data[ind].name] = [data[ind].username];
             });
 
+            //console.log(items)
             $('#groupBlk #member').html(items.join(''))
             onComplete();
         },
@@ -189,19 +189,27 @@ function getMembers(onComplete,delBtn,data) {
 };    
 
 function latestInfo() {
-    //if management, should read two var
-    var searchName = "";
-    var teamView = false;
+    var teamFlag = 0;
+    var searchName = '';
 
-    if ($("#userType").val().substr(13,1)=="M") {
-        searchName = $("#searchName").val();
-        teamView = $("#teamView").checked ? true : false; 
+    if ($("#userType").text().substr(13,1)=="M") {
+        teamFlag = $("#member li").size();
+
+        if (teamFlag > 1) {
+            searchName = $("#teamSelect").val(); 
+            teamFlag = true;
+        }
+        else {
+            searchName = $("#member li").attr("data-name");
+            teamFlag = false;
+            console.log(searchName)
+        }
     }
 
     $.ajax ({
         type: "GET",
         url: updateUsersStatus,
-        data: {"searchName":searchName,"teamView":teamView},
+        data: {"searchName":searchName,"teamFlag":teamFlag},
         dataType: "json",
         success: function(data) {
             var summaryDiv = $("#summary");
@@ -220,7 +228,7 @@ function latestInfo() {
             
             $.each(data, function (name,details) {
                 
-                var tableTags = '<td>'+name+'</td>';
+                var tableTags = '<td>'+details['name']+'</td>';
                 tableTags += '<td id="'+name+'temp">'+details['temp']+'</td>';
                 tableTags += '<td id="'+name+'humid">'+details['humid']+'</td>';
                 tableTags += '<td id="'+name+'noise">'+details['noise']+'</td>';
@@ -232,11 +240,12 @@ function latestInfo() {
                 if (!details['state']) { 
                     summaryDiv.find('h3').addClass('warning');
                     summaryDiv.find('h3').html("Attention"); 
-                    $('<li >',{"class":'warning',html:name+" is in danger."}).appendTo(summaryDiv); 
+                    $('<li >',{"class":'warning',html:details['name']+" is in danger."}).appendTo(summaryDiv); 
 
                     for (var i = 0; i < details['aboveLimits'].length; i++) {
                         var txt = "#"+name+details['aboveLimits'][i]['sensorName'];
-                        
+                        //console.log(txt) 
+
                         if (details['aboveLimits'][i]['isHigh'])
                             $(txt).addClass('dangerHigh')
                         else

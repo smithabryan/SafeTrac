@@ -1,13 +1,21 @@
 {% extends "base.html" %}
 {% block title %}SafeTrac -- Supervisor{% endblock %}
 {% block headSection %}
-   <link rel="stylesheet" href="http://code.jquery.com/ui/1.8.18/themes/base/jquery-ui.css" type="text/css" media="all" />
-   <link rel=StyleSheet href="{{STATIC_URL}}css/newStyle.css" type="text/css" MEDIA=screen>
-
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.8.18/themes/base/jquery-ui.css" type="text/css" media="all" />
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js"></script>
     <script type="text/javascript" src="{{STATIC_URL}}js/jquery.qtip-1.0.0-rc3.min.js"></script> 
     <script src="{{STATIC_URL}}scripts/supportFun.js"></script>
     <script src="{{STATIC_URL}}scripts/supervisor-view.js"></script>
+
+    <script src="http://code.highcharts.com/highcharts.js"></script>
+    <script src="http://code.highcharts.com/modules/exporting.js"></script>
+    {% load chartit %}
+    {{ chart1|load_charts:"graph1" }}
+{% endblock %}
+{% block titleTextImage %}
+    <div id="supervisorTitle"> 
+        <img id="titleImage" src="{{ STATIC_URL }}assets/title.png"> 
+    </div>
 {% endblock %}
 {% block content %}
 <div class="page">
@@ -18,17 +26,20 @@
             <select id="teamSelect">
             </select>
         </div>
-        <div>&nbsp&nbsp&nbsp<b>or</b></div>
         <div>
             <div class="ui-widget">
                 <label class="searchtitle" for="name"></label>
                 <input id="search" />
             </div>
         </div>
-        <div style="padding-left: 120px;" id="groupBlk">
+
+        <div>
             <h2>Currently Viewing</h2>
             <button id="all">Select All</button>
             <button id="none">Deselect All</button>
+        </div>
+
+        <div id="groupBlk">
             <ul id="member">
             </ul>
         </div>
@@ -40,16 +51,26 @@
             <div id="graph1">
             </div>
         </div>
+        <div class="chartSwitch">
+     		<a id="TemperatureButton" class="chartSwitch" href="#">Temperature</a>                
+  			<a id="NoiseButton" class="chartSwitch" href="#">Noise</a>
+ 			<a id="HumidityButton" class="chartSwitch" href="#">Humidity</a>  
+			<a id="ImpactButton" class="chartSwitch" href="#">Impacts</a>
+		</div>
         <div id="status">
-            <h2>Summary</h2>
-            <div id="summary">
-            <h3>Normal</h3>
-                <ul>
-                </ul>
+            <div class="column">
+                <h2>Summary</h2>
+                <div id="summary">
+                    <h3>Normal</h3>
+                    <ul>
+                    </ul>
+                </div>
             </div>
-            <button id="tableHeader">Details</button>
-            <table id="memberTable">
-            </table>
+            <div class="column">
+                <h2 id="tableHeader"> Details </h2>
+                <table id="memberTable">
+                </table>
+            </div>
         </div>
     </div>
 </div>

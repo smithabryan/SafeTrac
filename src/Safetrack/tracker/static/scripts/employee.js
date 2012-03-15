@@ -24,7 +24,6 @@ var chartColors = [
 
 $(document).ready(function()
 {    	    
-    $('#download').hide();
     $("#outputData").hide();
 
     Downloadify.create('downloadBtn',{

@@ -56,13 +56,13 @@ def getUsersStatus(request):
         team = Team.objects.filter(supervisor=request.session['user'])[0]
         return HttpResponse(simplejson.dumps(getLatestDataX(team.members.all())),mimetype="application/javascript") 
     else: #managment
-        searchName = request.POST.get('name',"")
-        teamView = request.POST.get('teamView',False)
+        searchName = request.GET.get('searchName',"")
+        teamView = request.GET.get('teamFlag',False)
 
         if searchName:
             users = User.objects.filter(name=searchName)
 
-            if teamView:
+            if teamView == "true":
                 users = Team.objects.filter(supervisor=users)[0].members.all() 
 
             return HttpResponse(simplejson.dumps(getLatestDataX(users)),mimetype="application/javascript") 
@@ -127,10 +127,18 @@ def getMembers(request):
     if supervisorName:
         teamLead = User.objects.filter(name=supervisorName)[0]
 
-    team = Team.objects.filter(supervisor=teamLead)[0] 
+    team = Team.objects.filter(supervisor=teamLead)
+
+    if len(team):
+        team = team[0]
+        members = team.members.all()
+    else:
+        members = []
+        members.append(teamLead)
+
     retJSON = [] 
 
-    for member in team.members.all():
+    for member in members:
         retJSON.append({'location':member.location,'name':member.name,'username':member.username,'profile':'/static/assets/defaultprofile.jpg'})    
     
     return HttpResponse(simplejson.dumps(retJSON),mimetype="application/javascript") 
@@ -163,7 +171,7 @@ def addUser(request):
         return loginView(request)
 
     #ideally not done like this but oh well
-    if request.session['userType'] != 2:
+    if request.session['accessLevel'] != 2:
         return HttpResponse('Not A Supervisor') 
 
     team = Team.objects.filter(supervisor=request.session['user'])[0] 

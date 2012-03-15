@@ -1,8 +1,3 @@
-body { 
-/*    background: #393939;  */
-/*    color: white; font: 14px Helvetica, sans-serif;  */
-}
-
 a { 
     text-decoration: none; color: #9bf9ff; 
     border-bottom: 1px dotted #9bf9ff;
@@ -14,7 +9,6 @@ a:hover { border-bottom-style: solid; }
 h1                                  { font: 26px Georgia, Serif; margin: 0 0 10px 0; }
 form                                { margin: 50px 0 0 0; }
 label                               { font: bold 20px Helvetica, sans-serif; display: block; float: left; text-align: right; padding: 5px 10px 0 0; width: 140px; }
-input[type=text]                    { float: left; width: 60px; font: bold 20px Helvetica, sans-serif; padding: 3px 0 0 0; text-align: center; }
 form div                            { overflow: hidden; margin: 0 0 5px 0; }
 .numbutton                          { margin: 0 0 0 5px; text-indent: -9999px; cursor: pointer; width: 29px; height: 29px; float: left; text-align: center; background: url(../assets/buttons.png) no-repeat; }
 .dec                                { background-position: 0 -29px; }
@@ -26,28 +20,10 @@ form div                            { overflow: hidden; margin: 0 0 5px 0; }
     display: block;
 }
 
+.center {
+    text-align: center;
+}
 .cat{
-    padding-left: 30%;
-}
-
-/*#highlighted {
-    border-color: red;
-    border-style: solid;
-}*/
-
-/* #groupBlk {
-    background-color:yellow;
-    width:80%;
-    height:100%;
-} */
-
-#groupBlk li img:hover {
-    size: 120%;
-}
-
-#groupBlk li {
-    display: block;
-    float: left;
-    margin: 10px;
+    padding-left: 20%;
 }
 

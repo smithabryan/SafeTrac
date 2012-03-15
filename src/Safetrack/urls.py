@@ -47,6 +47,6 @@ urlpatterns = patterns('',
     url(r'^getGoalData/', supportFunc.getGoalData),
     url(r'^getAllData/', supportFunc.getAllData),
 
-    url(r'', views.loginView,name="LOGIN"),
+    #url(r'', views.loginView,name="LOGIN"),
 )
 urlpatterns += staticfiles_urlpatterns()
