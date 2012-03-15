@@ -539,7 +539,7 @@ def addDummyDataToDb(request):
 
     Goal.objects.get_or_create(sensorType='N',value='2')
 
-    SafetyConstraint.objects.get_or_create(sensorType='N',maxValue='5',minValue='-1',gmaxValue='5',gminValue='-1')
+    SafetyConstraint.objects.get_or_create(sensorType='N',maxValue='5',minValue='-10',gmaxValue='5',gminValue='-1')
     SafetyConstraint.objects.get_or_create(sensorType='T',maxValue='45',minValue='-15',gmaxValue='45',gminValue='-15')
     SafetyConstraint.objects.get_or_create(sensorType='H',maxValue='5',minValue='1',gmaxValue='5',gminValue='1')
     SafetyConstraint.objects.get_or_create(sensorType='I',maxValue='5',minValue='-1',gmaxValue='5',gminValue='-1')

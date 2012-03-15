@@ -241,11 +241,10 @@ function latestInfo() {
                 if (!details['state']) { 
                     summaryDiv.find('h3').addClass('warning');
                     summaryDiv.find('h3').html("Attention"); 
-                    $('<li >',{"class":'warning',html:details['name']+" is in danger."}).appendTo(summaryDiv); 
+                    $('<li >',{"class":'warning',html:details['name']+" is in danger."}).appendTo(summaryDiv.find('ul')); 
 
                     for (var i = 0; i < details['aboveLimits'].length; i++) {
                         var txt = "#"+name+details['aboveLimits'][i]['sensorName'];
-                        //console.log(txt) 
 
                         if (details['aboveLimits'][i]['isHigh'])
                             $(txt).addClass('dangerHigh')
@@ -255,14 +254,15 @@ function latestInfo() {
                 } 
                 else {
                     summaryDiv.find('h3').removeClass('warning');
-                    summaryDiv.find('h3').html("Attention");
+                    summaryDiv.find('h3').html("Normal");
+                    summaryDiv.find('ul').empty();
+
                     for (var i = 0; i < details['aboveLimits'].length; i++) {
                         var txt = "#"+name+details['aboveLimits'][i]['sensorName'];
                         $(txt).removeClass('dangerHigh');
-                    
+                        $(txt).removeClass('dangerLow');
                     } 
                 } 
-
                 if (connectionLost) {
                     detailTable.empty();
 	                summaryDiv.html("<h3>Connection Lost!</h3>");
