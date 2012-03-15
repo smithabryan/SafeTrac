@@ -4,7 +4,7 @@ var usernameToNameMap = new Object();
 var getTeamUserURL = "/getMembers.py/"
 var updateUsersStatus = "/getUsersStatus.py/"
 var connectionLost = false;
-
+//
 //this file definitely needs to be cleaned soon~
 ////$.ajaxSetup ({
 //    cache: false
@@ -265,7 +265,7 @@ function latestInfo() {
                         $(txt).removeClass('dangerLow');
                     } 
                 } 
-                if (false ) {//connectionLost) {
+                if (connectionLost) {
                     detailTable.empty();
 	                summaryDiv.html("<h3>Connection Lost!</h3>");
 	                var heading = '<td id="name"></td>';
