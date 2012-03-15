@@ -4,6 +4,7 @@ from django.http import HttpResponse
 from django.utils import simplejson
 import serial
 from django.db.models.query import QuerySet
+import datetime
 
 header = {'logo':'assets/logo.png'}
 defaults = {'profilepic':'assets/defaultprofile.jpg'}
@@ -230,3 +231,14 @@ def getAllData(request):
             dataDict['goals'][goal.sensorType].append(goal.gmaxValue)
     data = simplejson.dumps(dataDict)
     return HttpResponse(data, mimetype='application/javascript') 
+
+def checkIfConnected(request):
+    lastDataItem = SensorData.objects.order_by('created').latest()
+    lastTime = lastDataItem.created
+    timeSinceData = datetime.datetime.now() - lastTime
+    if (lastTime > datetime.timedelta(seconds=30)):
+        data = simplejson.dumps(True)
+        return HttpResponse(data, mimetype='application/javascript') 
+    else :
+        data = simplejson.dumps(False)
+        return HttpResponse(data, mimetype='application/javascript')

@@ -215,6 +215,8 @@ function filterAndAddData(data) {
 //set data at start
 getAllData();
 
-//background ajax calls every 30seconds
+//background ajax calls
+isConnected = setInterval(checkConnection,10000)
 periodicCheck = setInterval(latestInfo,5000)
 updateData = setInterval(getAllData,1000)
+safetyFeedback = setInterval(serialSafetyFeedback,1000)

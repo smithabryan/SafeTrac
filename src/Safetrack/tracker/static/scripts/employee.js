@@ -158,15 +158,8 @@ function getAllData(){
 	});
 }
 
-//background ajax calls every 30seconds
+//background ajax calls
 periodicCheck = setInterval(latestInfo,5000)
-
-setInterval(function(){
-	$.getJSON("/serialSafetyFeedback/",function(data){});
-	$.getJSON("/serialSafetyRefresh/",function(data){
-		$('#status').replaceWith(data);
-	});
-	
-	getAllData();
-}, 1000);
-
+isConnected = setInterval(checkConnection,10000)
+safetyFeedback = setInterval(serialSafetyFeedback,1000)
+dataUpdate = setInterval(getAllData,1000)

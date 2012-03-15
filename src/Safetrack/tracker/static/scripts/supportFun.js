@@ -251,3 +251,27 @@ function latestInfo() {
         } 
     });
 }
+
+function checkConnection(){
+	$.getJSON("/checkIfConnected/", function(data){
+		if(data == true)
+		{
+	        var summaryDiv = $("#summary");
+	        var detailTable = $("#memberTable");
+
+	        detailTable.empty();
+	        summaryDiv.html("<h3>Connection Lost!</h3>");
+
+	        var heading = '<td id="name"></td>';
+	        heading += '<td id="temp"></td>';
+	        heading += '<td id="humid"></td>';
+	        heading += '<td id="noise"></td>';
+	        heading += '<td id="impact"></td>';		
+		}
+	});
+};
+
+function serialSafetyFeedback(){
+	$.getJSON("/serialSafetyFeedback/",function(data){});	
+}
+

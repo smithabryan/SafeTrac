@@ -16,6 +16,10 @@ def renderView(request):
 
     #groupID = request.session['user'].groupID
     group = User.objects.filter(accessLevel=1)#filtering for members in this supvisor's group; only worker 
+    
+    images = {}
+    for user in group:
+        images['user.username']= user.pictureName
 
     dataSeries = \
         DataPool(
@@ -50,7 +54,7 @@ def renderView(request):
     t = loader.get_template('supervisor-view.html')
     c = RequestContext(request, {'auth':True,
                                  'chart1':cht,
-                                 'imgsrc':defaults['profilepic'],
+                                 'imgsrc':images,
                                  'header':header,
                                  'workerState':latestData,
                                  'group':group})

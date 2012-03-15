@@ -17,7 +17,7 @@ def render(request):
 #    noiseSensor = SensorData.objects.filter(sensorType='N', user=user)
 #    impactSensor = SensorData.objects.filter(sensorType='I', user=user)
 #    SensorData.objects.get_or_create(sensorType='T',value='2',time=datetime.datetime.now(), user=user ) 
-   
+
     '''Getting user data'''
     #Need to fix to grab data
     employeeInfo = {'Name':user.username,'Title':"Worker"}
@@ -52,13 +52,13 @@ def render(request):
     '''Current Status; check status returns a dictionary'''
     status = checkStatus(sensorData)
    
-    header['userType'] = request.session['userType']
+    header['userType'] = request.session['userType']    
  
     # View code here...
     t = loader.get_template('employee.html')
     c = RequestContext(request,         {'auth':True,
                                          'chart1':cht,
-                                         'imgsrc':defaults['profilepic'],
+                                         'imgsrc':user.pictureName,
                                          'employeeInfo':employeeInfo,
                                          'header':header,
                                          'isSafe':latestData['state'],

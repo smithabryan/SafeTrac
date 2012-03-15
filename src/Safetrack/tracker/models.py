@@ -1,4 +1,5 @@
 from django.db import models
+import datetime
 
 SENSOR_TYPES = (
     ('H', 'Humidity'),
@@ -15,6 +16,7 @@ class User(models.Model):
     email = models.EmailField()
     name = models.CharField(max_length=100)
     location = models.CharField(max_length=100) 
+    pictureName = models.CharField(max_length=100)
 
 class SensorData(models.Model):
     sensorType = models.CharField(max_length=1, choices=SENSOR_TYPES)
@@ -22,6 +24,14 @@ class SensorData(models.Model):
     time = models.CharField(max_length=30)
     dataNum = models.PositiveIntegerField()    
     user = models.ForeignKey(User)
+    created     = models.DateTimeField(editable=False)
+    modified    = models.DateTimeField()
+    def save(self, *args, **kwargs):
+        ''' On save, update timestamps '''
+        if not self.id:
+            self.created = datetime.datetime.today()
+        self.modified = datetime.datetime.today()
+        super(SensorData, self).save(*args, **kwargs)
     
 class Goal(models.Model):
     sensorType = models.CharField(max_length=1, choices=SENSOR_TYPES)
