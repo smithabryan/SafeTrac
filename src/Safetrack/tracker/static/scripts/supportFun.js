@@ -69,9 +69,10 @@ function initSearchbar (onSearchFunc) {
 function setViewInteractivity() {
     var groupBlk = $('#groupBlk ul');
     var members = groupBlk.find('li');
+
     $.each(members,function (ind) {
         $(members[ind]).qtip({
-            content: $(members[ind]).attr('id')+"<br />"+$(members[ind]).attr('data-location'),
+            content: $(members[ind]).attr('data-name')+"<br />"+$(members[ind]).attr('data-location'),
             show: 'mouseover',
             hide: 'mouseout',
             position: {
@@ -160,8 +161,9 @@ function getMembers(onComplete,delBtn,data) {
         success: function(data) {
             $.each(data, function(ind) {
                 console.log(data[ind])
-                var liTag = '<li id="'+data[ind].name+'"';
+                var liTag = '<li id="'+data[ind].username+'"';
                     liTag += ' data-location="'+data[ind].location+'"';
+                    liTag += ' data-name="'+data[ind].name+'"';
                 if (delBtn) {
                     liTag += '><img class="xBtn" src="/static/assets/x.png" />'
                 }
@@ -171,8 +173,10 @@ function getMembers(onComplete,delBtn,data) {
                     liTag += '<img src="'+data[ind].profile+'" /></li>';
                 items.push(liTag);
 
-                monitored[data[ind].name] = true;
-                nameToUsernameMap[data[ind].name] = [data[ind].username];
+                monitored[data[ind].username] = true;
+    
+                //need change here!
+                nameToUsernameMap[data[ind].] = [data[ind].username];
             });
 
             $('#groupBlk #member').html(items.join(''))

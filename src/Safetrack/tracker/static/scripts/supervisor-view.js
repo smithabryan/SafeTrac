@@ -151,9 +151,9 @@ function filterAndAddData(data) {
 	{
 		if(monitored[user] == true)
 		{
-			if (data.hasOwnProperty( nameToUsernameMap[user] )) 
+			if (data.hasOwnProperty(user)) 
 			{
-				chartData = data[nameToUsernameMap[user]][type];
+				chartData = data[user][type];
 				if(chartData.length > chartMaxItems)
 				{
 					chartData = chartData.slice(0, chartMaxItems-1 );			
@@ -213,8 +213,8 @@ function filterAndAddData(data) {
 }
 
 //set data at start
-getAllData();
+//getAllData();
 
 //background ajax calls every 30seconds
-periodicCheck = setInterval(latestInfo,5000)
-updateData = setInterval(getAllData,1000)
+//periodicCheck = setInterval(latestInfo,5000)
+//updateData = setInterval(getAllData,1000)
