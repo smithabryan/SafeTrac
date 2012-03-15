@@ -42,10 +42,11 @@ def getLatestDataX(users):
             for constraint in safetyConstraints:
                 for dataItem in latestDataItems:
                     if dataItem.sensorType == constraint.sensorType:
-                        if dataItem.value > constraint.maxValue or dataItem.value < constraint.minValue:
+                        if dataItem.value > constraint.maxValue: # or dataItem.value < constraint.minValue:
                             isSafe = False
                             isHigh = False;
                             sensorName = ""
+
                             if dataItem.value > constraint.maxValue:
                                 isHigh = True;
                             if constraint.sensorType == 'T' : sensorName = "temp"
