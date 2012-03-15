@@ -137,9 +137,9 @@ def getMembers(request):
         members.append(teamLead)
 
     retJSON = [] 
-
+    
     for member in members:
-        retJSON.append({'location':member.location,'name':member.name,'username':member.username,'profile':'/static/assets/defaultprofile.jpg'})    
+        retJSON.append({'location':member.location,'name':member.name,'username':member.username,'profile':'/static/assets/'+member.pictureName })
     
     return HttpResponse(simplejson.dumps(retJSON),mimetype="application/javascript") 
 
@@ -389,10 +389,40 @@ def addDummyDataToDb(request):
     User.objects.all().delete()
     SensorData.objects.all().delete()
         
-    added = User.objects.create(username='add', password='e',accessLevel=1,lastLogin=then,email='fa@gl.com',location="Roof",name="Peter Kruzlics", pictureName="defaultprofile.jpg")
-    abc = User.objects.create(username='e', password='e',accessLevel=1,lastLogin=then,email='falcx@gmail.com',location="Second Floor",name="Zach Goldstein", pictureName="defaultprofile.jpg")
-    falco = User.objects.create(username='s', password='s',accessLevel=2,lastLogin=then,email='falcoRox@gmail.com',location="First Floor",name="Paul Mou", pictureName="defaultprofile.jpg")
-    starfox = User.objects.create(username='m', password='m',accessLevel=3,lastLogin=then,email='starfoxy@gmail.com',location="Crane",name="Bryan Smith", pictureName="defaultprofile.jpg")
+    added = User.objects.create(    username='add', 
+                                    password='e',
+                                    accessLevel=1,
+                                    lastLogin=then,
+                                    email='fa@gl.com',
+                                    location="Roof",
+                                    name="Peter Kruzlics", 
+                                    pictureName="defaultprofile.jpg")
+    abc = User.objects.create(  username='e', 
+                                password='e',
+                                accessLevel=1,
+                                lastLogin=then,
+                                email='falcx@gmail.com',
+                                location="Second Floor",
+                                name="Zach Goldstein", 
+                                pictureName="defaultprofile.jpg")
+    falco = User.objects.create(username='s', 
+                                password='s',
+                                accessLevel=2,
+                                lastLogin=then,
+                                email='falcoRox@gmail.com',
+                                location="First Floor",
+                                name="Paul Mou", 
+                                pictureName="defaultprofile.jpg")
+    
+    starfox = User.objects.create(  username='m', 
+                                    password='m',
+                                    accessLevel=3,
+                                    lastLogin=then,
+                                    email='starfoxy@gmail.com',
+                                    location="Crane",
+                                    name="Bryan Smith", 
+                                    pictureName="defaultprofile.jpg")
+
     team1 = Team.objects.create(supervisor=falco)
     team1.members.add(abc)
     team1.members.add(starfox)

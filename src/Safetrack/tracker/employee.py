@@ -58,7 +58,7 @@ def render(request):
     t = loader.get_template('employee.html')
     c = RequestContext(request,         {'auth':True,
                                          'chart1':cht,
-                                         'imgsrc':user.pictureName,
+                                         'imgsrc':"assets/"+user.pictureName,
                                          'employeeInfo':employeeInfo,
                                          'header':header,
                                          'isSafe':latestData['state'],

@@ -163,11 +163,11 @@ function filterAndAddData(data) {
 				chartDataCopy = chartData;
 				chart.addSeries({	animation:false, 
 									data:chartData, 
-									name:user,
-									showInLegend: true, 
-									color:chartColors[i],
+									name:usernameToNameMap[user],
+									showInLegend: true,
+									color:chartColors[i+1],
 						            marker: {
-						                symbol: chartSymbols[i]
+						                symbol: chartSymbols[i+1]
 						            }
 				},false,true);
 			}
@@ -192,9 +192,9 @@ function filterAndAddData(data) {
 				data:chartData, 
 				name:"Goals",
 				showInLegend: true, 
-				color:chartColors[1],
+				color:chartColors[0],
 	            marker: {
-	                symbol: chartSymbols[1]
+	                symbol: chartSymbols[0]
 	            }
 			},false,true);
 		}
