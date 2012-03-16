@@ -40,20 +40,21 @@ def getLatestDataX(users):
             isSafe = True
             dangerValues = [];
             for constraint in safetyConstraints:
-                for dataItem in latestDataItems:
-                    if dataItem.sensorType == constraint.sensorType:
-                        if dataItem.value > constraint.maxValue: # or dataItem.value < constraint.minValue:
-                            isSafe = False
-                            isHigh = False;
-                            sensorName = ""
+            #    for dataItem in latestDataItems:
+                dataItem = latestDataItem
+                if dataItem.sensorType == constraint.sensorType:
+                    if dataItem.value > constraint.maxValue: # or dataItem.value < constraint.minValue:
+                        isSafe = False
+                        isHigh = False;
+                        sensorName = ""
 
-                            if dataItem.value > constraint.maxValue:
-                                isHigh = True;
-                            if constraint.sensorType == 'T' : sensorName = "temp"
-                            if constraint.sensorType == 'N' : sensorName = "noise"
-                            if constraint.sensorType == 'I' : sensorName = "impact"
-                            if constraint.sensorType == 'H' : sensorName = "humid"
-                            dangerValues.append({"dataItem":dataItem.value,"minValue":constraint.minValue,"maxValue":constraint.maxValue,"isHigh":isHigh,"sensorName":sensorName})
+                        if dataItem.value > constraint.maxValue:
+                            isHigh = True;
+                        if constraint.sensorType == 'T' : sensorName = "temp"
+                        if constraint.sensorType == 'N' : sensorName = "noise"
+                        if constraint.sensorType == 'I' : sensorName = "impact"
+                        if constraint.sensorType == 'H' : sensorName = "humid"
+                        dangerValues.append({"dataItem":dataItem.value,"minValue":constraint.minValue,"maxValue":constraint.maxValue,"isHigh":isHigh,"sensorName":sensorName})
         res[user.username] = {'name':user.name,'location':user.location,'state':isSafe,'aboveLimits': dangerValues, 'temp':temp,'humid':humidity,'noise':noise,'impact':impact,'time':latestDataItem.time}
 
     return res

@@ -265,7 +265,7 @@ function latestInfo() {
                         $(txt).removeClass('dangerLow');
                     } 
                 } 
-                if (false ) { //connectionLost) {
+                if (connectionLost) {
                     detailTable.empty();
 	                summaryDiv.html("<h3>Connection Lost!</h3>");
 	                var heading = '<td id="name"></td>';
