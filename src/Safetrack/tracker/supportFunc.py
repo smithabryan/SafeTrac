@@ -14,13 +14,14 @@ def checkStatus(modelObj):
 
 def getLatestDataX(users):
     
-    
     safetyConstraints = SafetyConstraint.objects.all()
     res = {}
 
     for user in users:
         latestDataItem = SensorData.objects.filter(user=user).order_by('-time')[0]
-        latestDataItems = SensorData.objects.filter(time=latestDataItem.time)
+        UserModelObj = User.objects.get(username=user.username)
+        latestDataItems = UserModelObj.sensordata_set.all().filter(time=latestDataItem.time)
+#        latestDataItems = SensorData.objects.filter(time=latestDataItem.time)
 
         temps = latestDataItems.filter(sensorType='T')
         noises = latestDataItems.filter(sensorType='N')
@@ -42,21 +43,23 @@ def getLatestDataX(users):
             isSafe = True
             dangerValues = [];
             for constraint in safetyConstraints:
-            #    for dataItem in latestDataItems:
-                dataItem = latestDataItem
-                if dataItem.sensorType == constraint.sensorType:
-                    if dataItem.value > constraint.maxValue: # or dataItem.value < constraint.minValue:
-                        isSafe = False
-                        isHigh = False;
-                        sensorName = ""
-
-                        if dataItem.value > constraint.maxValue:
-                            isHigh = True;
-                        if constraint.sensorType == 'T' : sensorName = "temp"
-                        if constraint.sensorType == 'N' : sensorName = "noise"
-                        if constraint.sensorType == 'I' : sensorName = "impact"
-                        if constraint.sensorType == 'H' : sensorName = "humid"
-                        dangerValues.append({"dataItem":dataItem.value,"minValue":constraint.minValue,"maxValue":constraint.maxValue,"isHigh":isHigh,"sensorName":sensorName})
+                print "constraint type is"+constraint.sensorType
+                for dataItem in latestDataItems:
+                    print "data type is"+dataItem.sensorType
+#                    dataItem = latestDataItem
+                    if dataItem.sensorType == constraint.sensorType:
+                        if dataItem.value > constraint.maxValue: # or dataItem.value < constraint.minValue:
+                            isSafe = False
+                            isHigh = False;
+                            sensorName = ""
+    
+                            if dataItem.value > constraint.maxValue:
+                                isHigh = True;
+                            if constraint.sensorType == 'T' : sensorName = "temp"
+                            if constraint.sensorType == 'N' : sensorName = "noise"
+                            if constraint.sensorType == 'I' : sensorName = "impact"
+                            if constraint.sensorType == 'H' : sensorName = "humid"
+                            dangerValues.append({"dataItem":dataItem.value,"minValue":constraint.minValue,"maxValue":constraint.maxValue,"isHigh":isHigh,"sensorName":sensorName})
         res[user.username] = {'name':user.name,'location':user.location,'state':isSafe,'aboveLimits': dangerValues, 'temp':temp,'humid':humidity,'noise':noise,'impact':impact,'time':latestDataItem.time}
 
     return res

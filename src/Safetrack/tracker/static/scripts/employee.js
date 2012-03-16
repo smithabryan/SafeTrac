@@ -161,4 +161,4 @@ function getAllData(){
 periodicCheck = setInterval(latestInfo,5000)
 isConnected = setInterval(checkConnection,10000)
 safetyFeedback = setInterval(serialSafetyFeedback,1000)
-dataUpdate = setInterval(getAllData,1000)
+dataUpdate = setInterval(getAllData,3000)
