@@ -218,7 +218,7 @@ function latestInfo() {
 
             detailTable.empty();
             summaryDiv.find('h3').html("Normal");
-            summaryDiv.find('ul').empty(); 
+            summaryDiv.find('ul').empty();
 
             var heading = '<td id="name">Name</td>';
             heading += '<td id="temp">Temperature</td>';
@@ -227,7 +227,7 @@ function latestInfo() {
             heading += '<td id="impact">Impact</td>';
 
             $('<tr />',{html:heading}).appendTo(detailTable)
-            
+           
 
             $.each(data, function (name,details) {
                 var tableTags = '<td>'+details['name']+'</td>';
@@ -239,11 +239,11 @@ function latestInfo() {
                 $('<tr />',{html:tableTags}).appendTo(detailTable);
                 $('#outputData').append(tableTags);
 
-                if (!details['state']) { 
+                if (!details['state']) {
                     summaryDiv.find('h3').addClass('warning');
-                    summaryDiv.find('h3').html("Attention"); 
+                    summaryDiv.find('h3').html("Attention");
 
-                    $('<li >',{"class":'warning',html:details['name']+" is in danger."}).appendTo(summaryDiv.find('ul')); 
+                    $('<li >',{"class":'warning',html:details['name']+" is in danger."}).appendTo(summaryDiv.find('ul'));
 
                     for (var i = 0; i < details['aboveLimits'].length; i++) {
                         var txt = "#"+name+details['aboveLimits'][i]['sensorName'];
@@ -252,8 +252,8 @@ function latestInfo() {
                             $(txt).addClass('dangerHigh')
                         else
                             $(txt).addClass('dangerLow')
-                    }        
-                } 
+                    }       
+                }
                 else {
                     summaryDiv.find('h3').removeClass('warning');
                     summaryDiv.find('h3').html("Normal");
@@ -263,25 +263,25 @@ function latestInfo() {
                         var txt = "#"+name+details['aboveLimits'][i]['sensorName'];
                         $(txt).removeClass('dangerHigh');
                         $(txt).removeClass('dangerLow');
-                    } 
-                } 
-                if (false ) { //connectionLost) {
+                    }
+                }
+                if (connectionLost) {
                     detailTable.empty();
-	                summaryDiv.html("<h3>Connection Lost!</h3>");
-	                var heading = '<td id="name"></td>';
+                    summaryDiv.html("<h3>Connection Lost!</h3>");
+                    var heading = '<td id="name"></td>';
                     heading += '<td id="temp"></td>';
-	                heading += '<td id="humid"></td>';
-	                heading += '<td id="noise"></td>';
-	                heading += '<td id="impact"></td>';		
-		        }
-	     })
+                    heading += '<td id="humid"></td>';
+                    heading += '<td id="noise"></td>';
+                    heading += '<td id="impact"></td>';       
+                }
+         })
 
          $('<br />').appendTo(summaryDiv);
 
         },
         failure: function (data) {
             alert('fail')
-        } 
+        }
     });
 }
 
