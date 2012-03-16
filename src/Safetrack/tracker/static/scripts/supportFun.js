@@ -6,7 +6,7 @@ var updateUsersStatus = "/getUsersStatus.py/"
 var connectionLost = false;
 
 //this file definitely needs to be cleaned soon~
-//$.ajaxSetup ({
+////$.ajaxSetup ({
 //    cache: false
 //});
 
