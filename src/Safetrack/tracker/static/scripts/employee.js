@@ -26,22 +26,22 @@ $(document).ready(function()
 {    	    
     $("#outputData").hide();
 
-    Downloadify.create('downloadBtn',{
-	    filename: 'employeeData',
-		data: function(){ 
-		    return document.getElementById('outputData').value;
-		},
-		onComplete: function(){ alert('Your File Has Been Saved!'); },
-		onCancel: function(){ alert('You have cancelled the saving of this file.'); },
-		onError: function(){ alert('You must put something in the File Contents or there will be nothing to save!'); },
-		transparent: false,
-		swf: '/static/assets/downloadify.swf',
-		downloadImage: '/static/assets/download.png',
-		width: 100,
-		height: 30,
-		transparent: true,
-		append: false
-    });
+//    Downloadify.create('downloadBtn',{
+//	    filename: 'employeeData',
+//		data: function(){ 
+//		    return document.getElementById('outputData').value;
+//		},
+//		onComplete: function(){ alert('Your File Has Been Saved!'); },
+//		onCancel: function(){ alert('You have cancelled the saving of this file.'); },
+//		onError: function(){ alert('You must put something in the File Contents or there will be nothing to save!'); },
+//		transparent: false,
+//		swf: '/static/assets/downloadify.swf',
+//		downloadImage: '/static/assets/download.png',
+//		width: 100,
+//		height: 30,
+//		transparent: true,
+//		append: false
+//    });
 
     //initially assume that the data loaded in from the server is wrong, 
     //and that we need to get it again to set it on the chart
